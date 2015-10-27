@@ -1,6 +1,8 @@
 
 include <MCAD/materials.scad>
 
+$fn = 100;
+
 // Flexible Coupling:
 // height = 249
 // diameter = 189
