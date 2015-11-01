@@ -1,0 +1,15 @@
+HOWTO CONVERT OPENSCAD MODELS TO BLENDER HQ IMAGES
+==================================================
+
+1. Generate STL files from the OpenSCAD user interface
+
+
+2. Run the Python Script:
+blender -b render.blend -P viz.py -- <stlfilename>.stl <stlfilename>.png
+
+E.g.
+blender -b render.blend -P viz.py -- GT2_20tooth.stl GT2_20tooth.png
+
+or
+
+blender -b render.blend -P viz.py -- flexible_coupling.stl flexible_coupling.png
