@@ -10,21 +10,30 @@
 // USER PARAMETERS
 // //////////////////////////////
 
+// GT2 timing pulley
+// hole = 5 mm
+// height = 16.2 mm
+// diameter = 16 mm
+// height of track = 7.2 mm
+// height if base = 7.7 mm
+// height of top = 1.5 mm
+// 20 teeth
+
 // Pulley properties
 shaftDiameter = 5; // the shaft at the center, will be subtracted from the pulley. Better be too small than too wide.
-hubDiameter = 22; // if the hub or timing pulley is big enough to fit a nut, this will be embedded.
-hubHeight = 8; // the hub is the thick cylinder connected to the pulley to allow a set screw to go through or as a collar for a nut.
-flanges = 2; // the rims that keep the belt from going anywhere
+hubDiameter = 16; // if the hub or timing pulley is big enough to fit a nut, this will be embedded.
+hubHeight = 7.7; // the hub is the thick cylinder connected to the pulley to allow a set screw to go through or as a collar for a nut.
+flanges = 1; // the rims that keep the belt from going anywhere
 hubSetScewDiameter = 3; // use either a set screw or nut on a shaft. Set to 0 to not use a set screw.
 numSetScrews = 3;
 numTeeth = 20; // this value together with the pitch determines the pulley diameter
-toothType = 1; // 1 = slightly rounded, 2 = oval sharp, 3 = square. For square, set the toothWith a little low.
+toothType = 2; // 1 = slightly rounded, 2 = oval sharp, 3 = square. For square, set the toothWith a little low.
 
 // Belt properties:
-pitch = 3; // distance between the teeth
+pitch = 2; // distance between the teeth
 beltWidth = 6; // the width/height of the belt. The (vertical) size of the pulley is adapted to this.
 beltThickness = 0.65; // thickness of the part excluding the notch depth!
-notchDepth = 1.8; // make it slightly bigger than actual, there's an outward curvature in the inner solid part of the pulley
+notchDepth = 1.5; // make it slightly bigger than actual, there's an outward curvature in the inner solid part of the pulley
 toothWidth = 1.4; // Teeth of the PULLEY, that is.
 
 // //////////////////////////////
@@ -43,7 +52,7 @@ module GT2Pulley() {
 
 PI = 3.14159265;
 $fs=0.2; // def 1, 0.2 is high res
-$fa=3;//def 12, 3 is very nice
+$fa=3; // def 12, 3 is very nice
 
 pulleyDiameter = pitch*numTeeth/PI;
 

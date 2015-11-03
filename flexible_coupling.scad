@@ -30,7 +30,7 @@ module coupling(height=25, dia=19)
 			square(size=dia);
         }
         
-        // skrew holes
+        // screw holes
         // bottom 1
         translate([-5,0,3]) rotate([0,90,0]) cylinder(r=2,h=9.5,center=true);
 
