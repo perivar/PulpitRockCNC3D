@@ -44,16 +44,16 @@ ridge_dia = 5;		// small ridge at the top and botom, diameter in mm
 // https://en.wikipedia.org/wiki/Countersink
 // https://en.wikipedia.org/wiki/Counterbore
 // Openscad : how to do a chamfered hole https://www.youtube.com/watch?v=EuzOxNo2fe0
-chamfer_ht = 0.2; 	// chamfered hole depth, standard = 0.2
-chamfer_cone_ht = 1.5; // depth of cone used to countersink the screw holes (chamfer)
+chamfer_ht = 0.2; 		// chamfered hole depth, standard = 0.2
+chamfer_cone_ht = 1.5; 	// depth of cone used to countersink the screw holes (chamfer)
 
 // Calculated values
 nut_elevation = pulley_b_ht/2;
 GT2_2mm_pulley_dia = tooth_spacing (2, 0.254);
 
-//color(Aluminum) {
+color(Aluminum) {
 	pulley ( "GT2 2mm", GT2_2mm_pulley_dia, 0.764, 1.494 );
-//}
+}
 
 function tooth_spacing(tooth_pitch,pitch_line_offset)
 = (2*((teeth*tooth_pitch)/(3.14159265*2)-pitch_line_offset)) ;
@@ -69,8 +69,9 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 		union()
 		{			
 			// base
-			cylinder(r=pulley_b_dia/2, h=pulley_b_ht); // , $fn=teeth*4
-			//rcylinder(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=pulley_b_ht, b=0.2);
+			//cylinder(r=pulley_b_dia/2, h=pulley_b_ht); // , $fn=teeth*4
+			//rcylinder(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=pulley_b_ht, rt=0.2);
+			rcylinder_chamfer(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=pulley_b_ht, rt=0.2);
 			
 			difference()
 			{
@@ -89,7 +90,8 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 
 			// belt retainer / idler
 			translate ([0,0,pulley_b_ht + pulley_t_ht])
-			cylinder(r=pulley_b_dia/2, h=retainer_ht); // , $fn=teeth*4
+			//cylinder(r=pulley_b_dia/2, h=retainer_ht); // , $fn=teeth*4
+			rcylinder_chamfer(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=retainer_ht, rt=0.2);
 		}
 
 		// hole for motor shaft
@@ -132,20 +134,6 @@ module GT2_2mm()
 	linear_extrude(height=pulley_t_ht+2) polygon([[0.747183,-0.5],[0.747183,0],[0.647876,0.037218],[0.598311,0.130528],[0.578556,0.238423],[0.547158,0.343077],[0.504649,0.443762],[0.451556,0.53975],[0.358229,0.636924],[0.2484,0.707276],[0.127259,0.750044],[0,0.76447],[-0.127259,0.750044],[-0.2484,0.707276],[-0.358229,0.636924],[-0.451556,0.53975],[-0.504797,0.443762],[-0.547291,0.343077],[-0.578605,0.238423],[-0.598311,0.130528],[-0.648009,0.037218],[-0.747183,0],[-0.747183,-0.5]]);
 }
 
-module cylinderr(r = 10, h = 10, rt = 0.2) {
-	translate ([0, 0, rt])
-		rotate_extrude (convexity = 10, $fn = 256)
-			translate ([r - rt, 0, 0])
-				circle (r = rt);
-	translate ([0, 0, h - rt])
-		rotate_extrude (convexity = 10, $fn = 256)
-			translate ([r - rt, 0, 0])
-				circle (r = rt);
-	cylinder(r=r - rt, h = h, $fn=256);
-	translate([0, 0, rt])
-		cylinder(r=r, h = h - 2 * rt, $fn=256);
-}
-
 // Rounded primitives for openscad
 // (c) 2013 Wouter Robers 
 
@@ -153,27 +141,37 @@ module cylinderr(r = 10, h = 10, rt = 0.2) {
 //translate([-15,0,10]) rcube([20,20,20],2);
 
 // Syntax example for a rounded cylinder
-//translate([15,0,10]) rcylinder(r1=15,r2=10,h=20,b=2);
+//translate([15,0,10]) rcylinder(r1=15,r2=10,h=20,rt=2);
 
-module rcube(Size=[20,20,20],b=2)
+module rcube(Size=[20,20,20],rt=2)
 {
 	hull() {
-		for(x=[-(Size[0]/2-b),(Size[0]/2-b)]) {
-			for(y=[-(Size[1]/2-b),(Size[1]/2-b)]) {
-				for(z=[-(Size[2]/2-b),(Size[2]/2-b)]) { 
-					translate([x,y,z]) sphere(b);
+		for(x=[-(Size[0]/2-rt),(Size[0]/2-rt)]) {
+			for(y=[-(Size[1]/2-rt),(Size[1]/2-rt)]) {
+				for(z=[-(Size[2]/2-rt),(Size[2]/2-rt)]) { 
+					translate([x,y,z]) sphere(rt);
 				}
 			}
 		}
 	}
 }
 
-module rcylinder(r1=10,r2=10,h=10,b=2)
+module rcylinder(r1=10,r2=10,h=10,rt=2)
 {
 	//translate([0,0,-h/2]) 
 	hull() {
-		rotate_extrude() translate([r1-b,b,0]) circle(r = b); 
-		rotate_extrude() translate([r2-b, h-b, 0]) circle(r = b);
+		rotate_extrude() translate([r1-rt,rt,0]) circle(r = rt); 
+		rotate_extrude() translate([r2-rt, h-rt, 0]) circle(r = rt);
 	}
 }
+
+module rcylinder_chamfer(r1=10,r2=10,h=10,rt=2)
+{
+	//translate([0,0,-h/2]) 
+	hull() {
+		rotate_extrude() translate([r1-rt,0,0]) rotate([0,0,45]) square(rt); 
+		rotate_extrude() translate([r2-rt, h-rt, 0]) rotate([0,0,45]) square(rt);
+	}
+}
+
 
