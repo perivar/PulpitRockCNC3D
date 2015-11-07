@@ -49,11 +49,14 @@ chamfer_cone_ht = 1.5; 	// depth of cone used to countersink the screw holes (ch
 
 // Calculated values
 nut_elevation = pulley_b_ht/2;
-GT2_2mm_pulley_dia = tooth_spacing (2, 0.254);
+GT2_2mm_pulley_dia = tooth_spacing(2, 0.254);
 
 color(Aluminum) {
 	pulley ( "GT2 2mm", GT2_2mm_pulley_dia, 0.764, 1.494 );
 }
+
+//parabolic_bend([40, 40, 1],0.03) cylinder(r=20);
+//cylindric_bend([40, 40, 1],20) circle(r=20);
 
 function tooth_spacing(tooth_pitch,pitch_line_offset)
 = (2*((teeth*tooth_pitch)/(3.14159265*2)-pitch_line_offset)) ;
@@ -69,9 +72,7 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 		union()
 		{			
 			// base
-			//cylinder(r=pulley_b_dia/2, h=pulley_b_ht); // , $fn=teeth*4
-			//rcylinder(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=pulley_b_ht, rt=0.2);
-			rcylinder_chamfer(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=pulley_b_ht, rt=0.2);
+			rcylinder(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=pulley_b_ht, rt=chamfer_ht);
 			
 			difference()
 			{
@@ -83,15 +84,14 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 				for(i=[1:teeth])
 				{				
 					rotate([0,0,i*(360/teeth)])
-					translate([0,-tooth_distance_from_centre,pulley_b_ht -1]) 
+					translate([0,-tooth_distance_from_centre,pulley_b_ht-1]) 
 					GT2_2mm();		
 				}
 			}
 
 			// belt retainer / idler
 			translate ([0,0,pulley_b_ht + pulley_t_ht])
-			//cylinder(r=pulley_b_dia/2, h=retainer_ht); // , $fn=teeth*4
-			rcylinder_chamfer(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=retainer_ht, rt=0.2);
+			rcylinder(r1=pulley_b_dia/2, r2=pulley_b_dia/2, h=retainer_ht, rt=chamfer_ht);
 		}
 
 		// hole for motor shaft
@@ -123,7 +123,7 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 			cylinder(r=m3_dia/2,h=pulley_b_dia/2+tol);
 						
 			// grub screw taper (chamfered hole)
-			rotate([0,0,j*nut_angle]) translate([pulley_b_ht,0,nut_elevation]) rotate([0,90,0]) 
+			#rotate([0,0,j*nut_angle]) translate([pulley_b_ht,0,nut_elevation]) rotate([0,90,0]) 
 			color("red") cylinder(h=chamfer_cone_ht, r1=m3_dia/2, r2=(m3_dia/2)+2);
 		}			
 	}	
@@ -134,8 +134,10 @@ module GT2_2mm()
 	linear_extrude(height=pulley_t_ht+2) polygon([[0.747183,-0.5],[0.747183,0],[0.647876,0.037218],[0.598311,0.130528],[0.578556,0.238423],[0.547158,0.343077],[0.504649,0.443762],[0.451556,0.53975],[0.358229,0.636924],[0.2484,0.707276],[0.127259,0.750044],[0,0.76447],[-0.127259,0.750044],[-0.2484,0.707276],[-0.358229,0.636924],[-0.451556,0.53975],[-0.504797,0.443762],[-0.547291,0.343077],[-0.578605,0.238423],[-0.598311,0.130528],[-0.648009,0.037218],[-0.747183,0],[-0.747183,-0.5]]);
 }
 
+
 // Rounded primitives for openscad
 // (c) 2013 Wouter Robers 
+// Enhanced by Per Ivar Nerseth
 
 // Syntax example for a rounded block
 //translate([-15,0,10]) rcube([20,20,20],2);
@@ -143,6 +145,7 @@ module GT2_2mm()
 // Syntax example for a rounded cylinder
 //translate([15,0,10]) rcylinder(r1=15,r2=10,h=20,rt=2);
 
+// Rounder Cube
 module rcube(Size=[20,20,20],rt=2)
 {
 	hull() {
@@ -156,21 +159,15 @@ module rcube(Size=[20,20,20],rt=2)
 	}
 }
 
-module rcylinder(r1=10,r2=10,h=10,rt=2)
+// Rounded Cylinder
+// For rounded cylinders with chamfer use fn=4, 
+// or use fn > 10 for properly rounded corners.
+module rcylinder(r1=10,r2=10,h=10,rt=2,fn=4)
 {
 	//translate([0,0,-h/2]) 
 	hull() {
-		rotate_extrude() translate([r1-rt,rt,0]) circle(r = rt); 
-		rotate_extrude() translate([r2-rt, h-rt, 0]) circle(r = rt);
-	}
-}
-
-module rcylinder_chamfer(r1=10,r2=10,h=10,rt=2)
-{
-	//translate([0,0,-h/2]) 
-	hull() {
-		rotate_extrude() translate([r1-rt,0,0]) rotate([0,0,45]) square(rt); 
-		rotate_extrude() translate([r2-rt, h-rt, 0]) rotate([0,0,45]) square(rt);
+		rotate_extrude() translate([r1-rt,rt,0]) circle(r = rt, $fn=fn); 
+		rotate_extrude() translate([r2-rt, h-rt, 0]) circle(r = rt, $fn=fn);
 	}
 }
 
