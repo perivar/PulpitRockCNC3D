@@ -18,7 +18,7 @@
 // Examples.
 //
 // Standard M8 x 1.
-metric_thread (diameter=8, pitch=1, length=4);
+//metric_thread (diameter=8, pitch=1, length=4);
 
 // Square thread.
 //metric_thread (diameter=8, pitch=1, length=4, square=true);
