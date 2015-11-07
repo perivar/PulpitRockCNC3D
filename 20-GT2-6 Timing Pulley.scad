@@ -7,8 +7,6 @@
 // by Per Ivar Nerseth, Nov 2015
 
 include <MCAD/materials.scad>
-use <threads.scad>
-use <bend.scad>
 
 // GT2 timing pulley
 // hole = 5 mm
@@ -51,15 +49,13 @@ chamfer_cone_ht = 1.5; 	// depth of cone used to countersink the screw holes (ch
 nut_elevation = pulley_b_ht/2;
 GT2_2mm_pulley_dia = tooth_spacing(2, 0.254);
 
-color(Aluminum) {
-	pulley ( "GT2 2mm", GT2_2mm_pulley_dia, 0.764, 1.494 );
-}
-
-//parabolic_bend([40, 40, 1],0.03) cylinder(r=20);
-//cylindric_bend([40, 40, 1],20) circle(r=20);
-
 function tooth_spacing(tooth_pitch,pitch_line_offset)
 = (2*((teeth*tooth_pitch)/(3.14159265*2)-pitch_line_offset)) ;
+
+
+module GT2Pulley() {
+	color(Aluminum) pulley("GT2 2mm", GT2_2mm_pulley_dia, 0.764, 1.494);
+}
 
 module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 {
@@ -123,7 +119,8 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 			cylinder(r=m3_dia/2,h=pulley_b_dia/2+tol);
 						
 			// grub screw taper (chamfered hole)
-			#rotate([0,0,j*nut_angle]) translate([pulley_b_ht,0,nut_elevation]) rotate([0,90,0]) 
+			// NOTE! This is not perfect since the cylinder isn't bent properly
+			rotate([0,0,j*nut_angle]) translate([pulley_b_ht,0,nut_elevation]) rotate([0,90,0]) 
 			color("red") cylinder(h=chamfer_cone_ht, r1=m3_dia/2, r2=(m3_dia/2)+2);
 		}			
 	}	
