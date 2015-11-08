@@ -7,6 +7,7 @@ include <MCAD/materials.scad>
 use <linear_bearing.scad>
 use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
+use <rounded.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
@@ -36,11 +37,12 @@ $fs=1.5; // default minimum facet size
 module GT2TimingPulley() {          
     rotate([180,0,0]) motor(Nema17);
     //color("silver") rotate([0,-90,0]) import("GT2_20tooth.stl");
-	GT2Pulley();
+	//GT2Pulley();
+	FlexibleCoupling();
 }
 
 GT2TimingPulley();
-//coupling();
+//FlexibleCoupling();
 
 //bearing(model=608);
 //linearBearing(model="LM8UU");
