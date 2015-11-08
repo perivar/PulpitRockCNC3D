@@ -1,3 +1,9 @@
+
+// Example:
+// cylindric_bend([20, 150, 2], 70)
+// or
+// parabolic_bend([20, 150, 2], 0.007)
+
 // Bend flat object on the cylinder width specified radius
 // dimensions: vector with dimensions of the object that should be bent
 // radius:     distance of the cylinder axis

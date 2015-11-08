@@ -1,5 +1,5 @@
 
-include <MCAD/stepper.scad>
+include <stepper.scad>
 include <MCAD/bearing.scad>
 include <MCAD/metric_fastners.scad> // washer
 include <MCAD/materials.scad>
@@ -35,7 +35,7 @@ $fs=1.5; // default minimum facet size
 // 5mm hole = 5,05
 
 module GT2TimingPulley() {          
-    rotate([180,0,0]) motor(Nema17);
+    motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
     //color("silver") rotate([0,-90,0]) import("GT2_20tooth.stl");
 	//GT2Pulley();
 	FlexibleCoupling();
