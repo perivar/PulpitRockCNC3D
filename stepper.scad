@@ -1,19 +1,18 @@
-/*
+ï»¿/*
 * A nema standard stepper motor module.
 * 
-* Originally by Hans Häggström, 2010.
-* Modified with colors etc, Per Ivar Nerseth, 2015
+* Originally by Hans Hastrom, 2010.
+* Modified so that the 17HS4401 has correct measurements and colors, Per Ivar Nerseth, 2015
 * Dual licenced under Creative Commons Attribution-Share Alike 3.0 and LGPL2 or later
 */
 
 include <MCAD/units.scad>
 include <MCAD/materials.scad>
-include <rounded.scad>
+use <roundedcube.scad>
 
 // Demo, uncomment to show:
 //nema_demo();
-
-motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
+//motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
 
 module nema_demo(){
 	for (size = [NemaShort, NemaMedium, NemaLong]) {  
@@ -48,13 +47,9 @@ NemaAxleFlatDepth = 16;
 NemaAxleFlatLengthFront = 17;
 NemaAxleFlatLengthBack = 18;
 
-NemaA = 1;
-NemaB = 2;
-NemaC = 3;
-
-NemaShort = NemaA;
-NemaMedium = NemaB;
-NemaLong = NemaC;
+NemaShort = 1; 	// index 1
+NemaMedium = 2;	// index 2
+NemaLong = 3;	// index 3
 
 // TODO: The small motors seem to be a bit too long, I picked the size specs from all over the place, is there some canonical reference?
 Nema08 = [
@@ -126,20 +121,20 @@ Nema14 = [
 Nema17 = [
 [NemaModel, 17],
 [NemaLengthShort, 33*mm],
-[NemaLengthMedium, 39*mm],
+[NemaLengthMedium, 40*mm],	// standard spec length = 40 mm
 [NemaLengthLong, 47*mm],
-[NemaSideSize, 42.20*mm], 
-[NemaDistanceBetweenMountingHoles, 31.04*mm], 
-[NemaMountingHoleDiameter, 4*mm], 
-[NemaMountingHoleDepth, 4.5*mm], 
-[NemaMountingHoleLip, -1*mm], 
-[NemaMountingHoleCutoutRadius, 0*mm], 
+[NemaSideSize, 42.30*mm],	// max length = 42.3 mm
+[NemaDistanceBetweenMountingHoles, 31.00*mm], // standard spec length = 31 +/- 0.1 mm  
+[NemaMountingHoleDiameter, 3*mm],	// M3 screws
+[NemaMountingHoleDepth, 4.5*mm],	// M3 screw depth
+[NemaMountingHoleLip, -1*mm], 		// disabled
+[NemaMountingHoleCutoutRadius, 0*mm],	// disabled
 [NemaEdgeRoundingRadius, 7*mm], 
-[NemaRoundExtrusionDiameter, 22*mm], 
-[NemaRoundExtrusionHeight, 1.9*mm], 
+[NemaRoundExtrusionDiameter, 22*mm],	// base diameter
+[NemaRoundExtrusionHeight, 2*mm],		// base height
 [NemaAxleDiameter, 5*mm], 
-[NemaFrontAxleLength, 18*mm], 
-[NemaBackAxleLength, 15*mm],
+[NemaFrontAxleLength, 24*mm],	// this is the shaft including base height 
+[NemaBackAxleLength, 15*mm],	// if dualAxis
 [NemaAxleFlatDepth, 0.5*mm],
 [NemaAxleFlatLengthFront, 15*mm],
 [NemaAxleFlatLengthBack, 14*mm]
@@ -198,16 +193,17 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 
 	length = lookup(size, model);
 
-	echo(str("  Motor: Nema",lookup(NemaModel, model),", length= ",length,"mm, dual axis=",dualAxis));
+	echo(str("Motor: Nema",lookup(NemaModel, model),", length= ",length," mm, dual axis=",dualAxis));
 
 	stepperBlack    = BlackPaint;
 	stepperAluminum = Aluminum;
 
 	side = lookup(NemaSideSize, model);
 
+	echo(str("Side:= ",side, " mm"));
+	
 	cutR = lookup(NemaMountingHoleCutoutRadius, model);
 	lip = lookup(NemaMountingHoleLip, model);
-	holeDepth = lookup(NemaMountingHoleDepth, model);
 
 	axleLengthFront = lookup(NemaFrontAxleLength, model);
 	axleLengthBack = lookup(NemaBackAxleLength, model);
@@ -216,9 +212,14 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 	extrSize = lookup(NemaRoundExtrusionHeight, model);
 	extrRad = lookup(NemaRoundExtrusionDiameter, model) * 0.5;
 
+	echo(str("Length incl. base:= ",extrSize+length," mm"));
+	
+	holeDepth = lookup(NemaMountingHoleDepth, model);
 	holeDist = lookup(NemaDistanceBetweenMountingHoles, model) * 0.5;
 	holeRadius = lookup(NemaMountingHoleDiameter, model) * 0.5;
 
+	echo(str("Screw holes: Depth= ",holeDepth, " mm, Distance: ", holeDist, " mm, Radius: ", holeRadius, " mm"));
+	
 	mid = side / 2;
 
 	roundR = lookup(NemaEdgeRoundingRadius, model);
@@ -229,10 +230,37 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 
 	{
 		translate(pos) rotate(orientation) {
-			translate([-mid, -mid, 0]) 
+			translate([-mid, -mid, 0]) // center at the middle
 			difference() {          
-				color(stepperBlack) cube(size=[side, side, length + extrSize]);
+				// cube with height that includes the base
+				//color(stepperBlack) rcube(size=[side, side, length + extrSize], center = false, radius = 0.5);
+				
+				// 17HS4401:
+				// Top: 11.85 / 10.2 mm
+				// Bottom: 12.9 / 11 mm
+				// Corner Diameter: 53.7 / 50.2
+				top = 10.2*mm;
+				bottom = 11.0*mm;
+				middle = length-top-bottom;
+				chamfer_radius = 5;
+				tape_margin = 1;
+				union() {					
+					// bottom steel edge// base
+					color(stepperAluminum) rbox(size=[side, side, extrSize], radius=chamfer_radius); 
 
+					// top steel edge
+					translate([0, 0, extrSize])						
+					color(stepperAluminum) rbox(size=[side, side, top], radius=chamfer_radius); 
+					
+					// black tape
+					translate([tape_margin, tape_margin, extrSize+top])
+					color(stepperBlack) rbox(size=[side-2*tape_margin, side-2*tape_margin, middle], radius=chamfer_radius); 
+					
+					// bottom steel edge
+					translate([0, 0, extrSize+top+middle])
+					color(stepperAluminum) rbox(size=[side, side, bottom], radius=chamfer_radius); 
+				}
+				
 				// Corner cutouts
 				if (lip > 0) {
 					translate([0,    0,    lip]) cylinder(h=length, r=cutR);
@@ -240,25 +268,7 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 					translate([0,    side, lip]) cylinder(h=length, r=cutR);
 					translate([side, side, lip]) cylinder(h=length, r=cutR);
 				}
-
-				// Rounded edges
-				if (roundR > 0) {
-					color(stepperBlack) {
-						translate([mid+mid, mid+mid, length/2])
-						rotate([0,0,45])
-						cube(size=[roundR, roundR*2, 4+length + extrSize+2], center=true);
-						translate([mid-(mid), mid+(mid), length/2])
-						rotate([0,0,45])
-						cube(size=[roundR*2, roundR, 4+length + extrSize+2], center=true);
-						translate([mid+mid, mid-mid, length/2])
-						rotate([0,0,45])
-						cube(size=[roundR*2, roundR, 4+length + extrSize+2], center=true);
-						translate([mid-mid, mid-mid, length/2])
-						rotate([0,0,45])
-						cube(size=[roundR, roundR*2, 4+length + extrSize+2], center=true);
-					}
-				}
-
+				
 				// Bolt holes
 				color(stepperAluminum, $fs=holeRadius/8) {
 					translate([mid+holeDist,mid+holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
@@ -267,7 +277,7 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 					translate([mid-holeDist,mid-holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
 				} 
 
-				// Grinded flat
+				// Grinded flat (base)
 				color(stepperAluminum) {
 					difference() {
 						translate([-1*mm, -1*mm, -extrSize]) 
@@ -278,7 +288,7 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 				}
 			}
 
-			// Axle
+			// Axle / Shaft
 			translate([0, 0, extrSize-axleLengthFront]) color(stepperAluminum) 
 			difference() {
 				

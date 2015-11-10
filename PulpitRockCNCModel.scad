@@ -1,13 +1,12 @@
 
-include <stepper.scad>
 include <MCAD/bearing.scad>
 include <MCAD/metric_fastners.scad> // washer
 include <MCAD/materials.scad>
+include <stepper.scad>
 
 use <linear_bearing.scad>
 use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
-use <rounded.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
@@ -37,8 +36,8 @@ $fs=1.5; // default minimum facet size
 module GT2TimingPulley() {          
     motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
     //color("silver") rotate([0,-90,0]) import("GT2_20tooth.stl");
-	//GT2Pulley();
-	FlexibleCoupling();
+	GT2Pulley();
+	//FlexibleCoupling();
 }
 
 GT2TimingPulley();

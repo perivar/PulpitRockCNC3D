@@ -1,6 +1,10 @@
+//
+// Flexible Coupling by Per Ivar Nerseth
+// originally based on a scad file I cannot locate again
+// 2015
 
 include <MCAD/materials.scad>
-use <rounded.scad>
+use <roundedcylinder.scad>
 use <threads.scad>
 
 // Flexible Coupling:
@@ -52,7 +56,7 @@ module coupling(height=25, dia=19)
 		color("red") cylinder(h=chamfer_cone_ht, r1=(5/2)+2, r2=5/2);
 		
 		// cuts in the coupling
-		translate([0,0,height*0.3]) rotate([0,0,90]) {
+		translate([0,0,height*0.3]) rotate([0,0,0]) {
 			linear_extrude(height = height*0.4, convexity = 10, twist = -1750)
 			square(size=dia);
 		}
@@ -61,23 +65,23 @@ module coupling(height=25, dia=19)
 		for(j=[1:no_of_nuts]) {		
 
 			// bottom			
-			rotate([0,90,90+j*nut_angle]) translate([-nut_margin,0,0]) 
+			rotate([0,90,j*nut_angle]) translate([-nut_margin,0,0]) 
 			//metric_thread(diameter=m3_dia, pitch=1, length=nut_height+tol);
 			cylinder(r=m3_dia/2,h=nut_height+tol);
 
 			// bottom grub screw taper (chamfered hole)
 			// NOTE! This is not perfect since the cylinder isn't bent properly			
-			rotate([0,90,90+j*nut_angle]) translate([-nut_margin,0,9.2]) color("red") 
+			rotate([0,90,j*nut_angle]) translate([-nut_margin,0,9.2]) color("red") 
 			cylinder(h=chamfer_cone_ht, r1=m3_dia/2, r2=(m3_dia/2)+2);				
 
 			// top
-			rotate([0,90,90+j*nut_angle]) translate([-height+nut_margin,0,0]) 
+			rotate([0,90,j*nut_angle]) translate([-height+nut_margin,0,0]) 
 			//metric_thread(diameter=m3_dia, pitch=1, length=nut_height+tol);
 			cylinder(r=m3_dia/2,h=nut_height+tol);
 
 			// top grub screw taper (chamfered hole)
 			// NOTE! This is not perfect since the cylinder isn't bent properly			
-			rotate([0,90,90+j*nut_angle]) translate([-height+nut_margin,0,9.2]) color("red") 
+			rotate([0,90,j*nut_angle]) translate([-height+nut_margin,0,9.2]) color("red") 
 			cylinder(h=chamfer_cone_ht, r1=m3_dia/2, r2=(m3_dia/2)+2);				
 			
 			// black grub screw?
@@ -85,4 +89,4 @@ module coupling(height=25, dia=19)
 	}
 }
 
-coupling();
+FlexibleCoupling();
