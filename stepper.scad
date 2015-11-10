@@ -1,8 +1,8 @@
-﻿/*
+/*
 * A nema standard stepper motor module.
 * 
-* Originally by Hans Hastrom, 2010.
-* Modified so that the 17HS4401 has correct measurements and colors, Per Ivar Nerseth, 2015
+* Originally by Hans Häggström, 2010.
+* Modified so that the 17HS4401 has correct measurements and colors, Per Ivar Nerseth, 2015.
 * Dual licenced under Creative Commons Attribution-Share Alike 3.0 and LGPL2 or later
 */
 
@@ -47,9 +47,9 @@ NemaAxleFlatDepth = 16;
 NemaAxleFlatLengthFront = 17;
 NemaAxleFlatLengthBack = 18;
 
-NemaShort = 1; 	// index 1
-NemaMedium = 2;	// index 2
-NemaLong = 3;	// index 3
+NemaShort = 1;
+NemaMedium = 2;
+NemaLong = 3;
 
 // TODO: The small motors seem to be a bit too long, I picked the size specs from all over the place, is there some canonical reference?
 Nema08 = [
@@ -185,6 +185,7 @@ Nema34 = [
 ];
 
 
+
 function motorWidth(model=Nema23) = lookup(NemaSideSize, model);
 function motorLength(model=Nema23, size=NemaMedium) = lookup(size, model);
 
@@ -228,87 +229,85 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 	axleFlatLengthFront = lookup(NemaAxleFlatLengthFront, model);
 	axleFlatLengthBack = lookup(NemaAxleFlatLengthBack, model);
 
-	{
-		translate(pos) rotate(orientation) {
-			translate([-mid, -mid, 0]) // center at the middle
-			difference() {          
-				// cube with height that includes the base
-				//color(stepperBlack) rcube(size=[side, side, length + extrSize], center = false, radius = 0.5);
-				
-				// 17HS4401:
-				// Top: 11.85 / 10.2 mm
-				// Bottom: 12.9 / 11 mm
-				// Corner Diameter: 53.7 / 50.2
-				top = 10.2*mm;
-				bottom = 11.0*mm;
-				middle = length-top-bottom;
-				chamfer_radius = 5;
-				tape_margin = 1;
-				union() {					
-					// bottom steel edge// base
-					color(stepperAluminum) rbox(size=[side, side, extrSize], radius=chamfer_radius); 
+	translate(pos) rotate(orientation) {
+		translate([-mid, -mid, 0]) // center at the middle
+		difference() {          
+			// cube with height that includes the base
+			//color(stepperBlack) rcube(size=[side, side, length + extrSize], center = false, radius = 0.5);
+			
+			// 17HS4401:
+			// Top: 11.85 / 10.2 mm
+			// Bottom: 12.9 / 11 mm
+			// Corner Diameter: 53.7 / 50.2
+			top = 10.2*mm;
+			bottom = 11.0*mm;
+			middle = length-top-bottom;
+			chamfer_radius = 5;
+			tape_margin = 1;
+			union() {					
+				// bottom steel edge// base
+				color(stepperAluminum) rbox(size=[side, side, extrSize], radius=chamfer_radius); 
 
-					// top steel edge
-					translate([0, 0, extrSize])						
-					color(stepperAluminum) rbox(size=[side, side, top], radius=chamfer_radius); 
-					
-					// black tape
-					translate([tape_margin, tape_margin, extrSize+top])
-					color(stepperBlack) rbox(size=[side-2*tape_margin, side-2*tape_margin, middle], radius=chamfer_radius); 
-					
-					// bottom steel edge
-					translate([0, 0, extrSize+top+middle])
-					color(stepperAluminum) rbox(size=[side, side, bottom], radius=chamfer_radius); 
-				}
+				// top steel edge
+				translate([0, 0, extrSize])						
+				color(stepperAluminum) rbox(size=[side, side, top], radius=chamfer_radius); 
 				
-				// Corner cutouts
-				if (lip > 0) {
-					translate([0,    0,    lip]) cylinder(h=length, r=cutR);
-					translate([side, 0,    lip]) cylinder(h=length, r=cutR);
-					translate([0,    side, lip]) cylinder(h=length, r=cutR);
-					translate([side, side, lip]) cylinder(h=length, r=cutR);
-				}
+				// black tape
+				translate([tape_margin, tape_margin, extrSize+top])
+				color(stepperBlack) rbox(size=[side-2*tape_margin, side-2*tape_margin, middle], radius=chamfer_radius); 
 				
-				// Bolt holes
-				color(stepperAluminum, $fs=holeRadius/8) {
-					translate([mid+holeDist,mid+holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
-					translate([mid-holeDist,mid+holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
-					translate([mid+holeDist,mid-holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
-					translate([mid-holeDist,mid-holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
-				} 
+				// bottom steel edge
+				translate([0, 0, extrSize+top+middle])
+				color(stepperAluminum) rbox(size=[side, side, bottom], radius=chamfer_radius); 
+			}
+			
+			// Corner cutouts
+			if (lip > 0) {
+				translate([0,    0,    lip]) cylinder(h=length, r=cutR);
+				translate([side, 0,    lip]) cylinder(h=length, r=cutR);
+				translate([0,    side, lip]) cylinder(h=length, r=cutR);
+				translate([side, side, lip]) cylinder(h=length, r=cutR);
+			}
+			
+			// Bolt holes
+			color(stepperAluminum, $fs=holeRadius/8) {
+				translate([mid+holeDist,mid+holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
+				translate([mid-holeDist,mid+holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
+				translate([mid+holeDist,mid-holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
+				translate([mid-holeDist,mid-holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
+			} 
 
-				// Grinded flat (base)
-				color(stepperAluminum) {
-					difference() {
-						translate([-1*mm, -1*mm, -extrSize]) 
-						cube(size=[side+2*mm, side+2*mm, extrSize + 1*mm]);
-						translate([side/2, side/2, -extrSize - 1*mm]) 
-						cylinder(h=4*mm, r=extrRad);
-					}
+			// Grinded flat (base)
+			color(stepperAluminum) {
+				difference() {
+					translate([-1*mm, -1*mm, -extrSize]) 
+					cube(size=[side+2*mm, side+2*mm, extrSize + 1*mm]);
+					translate([side/2, side/2, -extrSize - 1*mm]) 
+					cylinder(h=4*mm, r=extrRad);
 				}
 			}
+		}
 
-			// Axle / Shaft
-			translate([0, 0, extrSize-axleLengthFront]) color(stepperAluminum) 
+		// Axle / Shaft
+		translate([0, 0, extrSize-axleLengthFront]) color(stepperAluminum) 
+		difference() {
+			
+			cylinder(h=axleLengthFront + 1*mm , r=axleRadius, $fs=axleRadius/10);
+
+			// Flat
+			if (axleFlatDepth > 0)
+			translate([axleRadius - axleFlatDepth,-5*mm,-extrSize*mm -(axleLengthFront-axleFlatLengthFront)] ) cube(size=[5*mm, 10*mm, axleLengthFront]);
+		}
+
+		if (dualAxis) {
+			translate([0, 0, length+extrSize]) color(stepperAluminum) 
 			difference() {
 				
-				cylinder(h=axleLengthFront + 1*mm , r=axleRadius, $fs=axleRadius/10);
+				cylinder(h=axleLengthBack + 0*mm, r=axleRadius, $fs=axleRadius/10);
 
 				// Flat
 				if (axleFlatDepth > 0)
-				translate([axleRadius - axleFlatDepth,-5*mm,-extrSize*mm -(axleLengthFront-axleFlatLengthFront)] ) cube(size=[5*mm, 10*mm, axleLengthFront]);
-			}
-
-			if (dualAxis) {
-				translate([0, 0, length+extrSize]) color(stepperAluminum) 
-				difference() {
-					
-					cylinder(h=axleLengthBack + 0*mm, r=axleRadius, $fs=axleRadius/10);
-
-					// Flat
-					if (axleFlatDepth > 0)
-					translate([axleRadius - axleFlatDepth,-5*mm,(axleLengthBack-axleFlatLengthBack)]) cube(size=[5*mm, 10*mm, axleLengthBack]);
-				}
+				translate([axleRadius - axleFlatDepth,-5*mm,(axleLengthBack-axleFlatLengthBack)]) cube(size=[5*mm, 10*mm, axleLengthBack]);
 			}
 		}
 	}
