@@ -1,9 +1,7 @@
-
 // Most of this is based on the 
 // Parametric Pulley with multiple belt profiles
 // by droftarts January 2012
-// Changed into a standard 
-// 20 tooth timing pulley
+// Changed into a standard 20 tooth timing pulley
 // by Per Ivar Nerseth, Nov 2015
 
 include <MCAD/materials.scad>
@@ -60,7 +58,7 @@ module GT2Pulley() {
 
 module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 {
-	echo (str("Belt type = ",belt_type,"; Number of teeth = ",teeth,"; Pulley Outside Diameter = ",pulley_OD,"mm "));
+	echo (str("Pulley: Belt type = ",belt_type,"; Number of teeth = ",teeth,"; Pulley Outside Diameter = ",pulley_OD," mm "));
 	tooth_distance_from_centre = sqrt( pow(pulley_OD/2,2) - pow((tooth_width+additional_tooth_width)/2,2));
 	//echo (str("tooth_distance_from_centre = ", tooth_distance_from_centre));
 	

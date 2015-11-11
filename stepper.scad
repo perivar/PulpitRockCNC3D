@@ -201,7 +201,7 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 
 	side = lookup(NemaSideSize, model);
 
-	echo(str("Side:= ",side, " mm"));
+	echo(str("Side: ",side, " mm"));
 	
 	cutR = lookup(NemaMountingHoleCutoutRadius, model);
 	lip = lookup(NemaMountingHoleLip, model);
@@ -209,26 +209,28 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 	axleLengthFront = lookup(NemaFrontAxleLength, model);
 	axleLengthBack = lookup(NemaBackAxleLength, model);
 	axleRadius = lookup(NemaAxleDiameter, model) * 0.5;
+	axleFlatDepth = lookup(NemaAxleFlatDepth, model);
+	axleFlatLengthFront = lookup(NemaAxleFlatLengthFront, model);
+	axleFlatLengthBack = lookup(NemaAxleFlatLengthBack, model);
 
+	echo(str("Axle (shaft) length incl. base: ",axleLengthFront," mm"));
+	
+	// base
 	extrSize = lookup(NemaRoundExtrusionHeight, model);
 	extrRad = lookup(NemaRoundExtrusionDiameter, model) * 0.5;
 
-	echo(str("Length incl. base:= ",extrSize+length," mm"));
+	echo(str("Base height: ",extrSize," mm"));
 	
 	holeDepth = lookup(NemaMountingHoleDepth, model);
 	holeDist = lookup(NemaDistanceBetweenMountingHoles, model) * 0.5;
 	holeRadius = lookup(NemaMountingHoleDiameter, model) * 0.5;
 
-	echo(str("Screw holes: Depth= ",holeDepth, " mm, Distance: ", holeDist, " mm, Radius: ", holeRadius, " mm"));
+	echo(str("Screw diameter: ", holeRadius*2, " mm, distance: ", holeDist*2, " mm, depth= ",holeDepth, " mm"));
 	
 	mid = side / 2;
 
 	roundR = lookup(NemaEdgeRoundingRadius, model);
-
-	axleFlatDepth = lookup(NemaAxleFlatDepth, model);
-	axleFlatLengthFront = lookup(NemaAxleFlatLengthFront, model);
-	axleFlatLengthBack = lookup(NemaAxleFlatLengthBack, model);
-
+	
 	translate(pos) rotate(orientation) {
 		translate([-mid, -mid, 0]) // center at the middle
 		difference() {          
@@ -277,7 +279,8 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 				translate([mid-holeDist,mid-holeDist,-1*mm]) cylinder(h=holeDepth+1*mm, r=holeRadius);
 			} 
 
-			// Grinded flat (base)
+			// Grinded flat (i.e. base)
+			// the extra 1mm added to the height is cancelled out?!
 			color(stepperAluminum) {
 				difference() {
 					translate([-1*mm, -1*mm, -extrSize]) 
