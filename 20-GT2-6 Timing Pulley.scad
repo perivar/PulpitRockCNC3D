@@ -60,7 +60,7 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 {
 	echo (str("Pulley: Belt type = ",belt_type,"; Number of teeth = ",teeth,"; Pulley Outside Diameter = ",pulley_OD," mm "));
 	tooth_distance_from_centre = sqrt( pow(pulley_OD/2,2) - pow((tooth_width+additional_tooth_width)/2,2));
-	//echo (str("tooth_distance_from_centre = ", tooth_distance_from_centre));
+	echo (str("Pulley heigh: ", pulley_b_ht+pulley_t_ht+retainer_ht));
 	
 	difference()
 	{
@@ -73,7 +73,7 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 			{
 				// shaft - diameter is outside diameter of pulley
 				translate([0,0,pulley_b_ht]) 
-				cylinder(r=pulley_OD/2, h=pulley_t_ht); // , $fn=teeth*4
+				cylinder(r=pulley_OD/2, h=pulley_t_ht);
 				
 				// teeth - cut out of shaft
 				for(i=[1:teeth])

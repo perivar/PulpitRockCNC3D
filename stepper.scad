@@ -121,7 +121,7 @@ Nema14 = [
 Nema17 = [
 [NemaModel, 17],
 [NemaLengthShort, 33*mm],
-[NemaLengthMedium, 40*mm],	// standard spec length = 40 mm
+[NemaLengthMedium, 41*mm],	// standard spec length = 40 mm
 [NemaLengthLong, 47*mm],
 [NemaSideSize, 42.30*mm],	// max length = 42.3 mm
 [NemaDistanceBetweenMountingHoles, 31.00*mm], // standard spec length = 31 +/- 0.1 mm  

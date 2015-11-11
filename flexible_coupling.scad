@@ -22,7 +22,8 @@ no_of_nuts = 2;		// number of captive nuts required, standard = 1
 nut_angle = 90;		// angle between nuts, standard = 90
 nut_height = 9.5;
 nut_margin = 3.0;
-m3_dia = 3.2;		// 3mm hole diameter
+m3_dia = 3.2;		// 3mm screw hole diameter
+8mm_depth = 17.0;	// 8mm hole depth
 
 // https://en.wikipedia.org/wiki/Countersink
 // https://en.wikipedia.org/wiki/Counterbore
@@ -36,24 +37,27 @@ module FlexibleCoupling() {
 
 module coupling(height=25, dia=19)
 {
+	5mm_depth = height - 8mm_depth;
+
+	echo (str("Flexible coupling. Height = ",height,"; Diameter = ",dia,"; 8mm depth = ",8mm_depth," mm; 5mm depth = ", 5mm_depth));
+	
 	difference()
 	{
 		// the coupling body
 		rcylinder(h=height, r1=dia/2, r2=dia/2, rt=0.2);
 		
 		// m5 motor shaft
-		translate([0,0,-height*0.1]) cylinder(h=height, r=5/2);
+		translate([0,0,-tol]) cylinder(h=height, r=5/2);
 		
-		// motor shaft taper top (chamfered hole)
-		translate([0,0,height-chamfer_ht])
-		color("red") cylinder(h=chamfer_cone_ht, r1=8/2, r2=(8/2)+2);
-		
-		// m8 threaded rod
-		translate([0,0,height-17]) cylinder(h=17.1, r=8/2);                      
-
 		// motor shaft taper bottom (chamfered hole)
 		translate([0,0, -chamfer_cone_ht + chamfer_ht])
 		color("red") cylinder(h=chamfer_cone_ht, r1=(5/2)+2, r2=5/2);
+		
+		// m8 threaded rod
+		translate([0,0,height-8mm_depth]) cylinder(h=8mm_depth+tol, r=8/2);                      
+		// m8 threaded rod taper top (chamfered hole)
+		translate([0,0,height-chamfer_ht])
+		color("red") cylinder(h=chamfer_cone_ht, r1=8/2, r2=(8/2)+2);
 		
 		// cuts in the coupling
 		translate([0,0,height*0.3]) rotate([0,0,0]) {
