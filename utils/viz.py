@@ -20,14 +20,7 @@ def load_stl(file_path):
     print('Selected object: ', selObj)
     bpy.ops.object.select_all(action='DESELECT')
     selObj.select = True
-    
-    # remove doubles and clean
-    #py.ops.object.editmode_toggle()
-    #bpy.ops.mesh.select_all(action='TOGGLE')
-    #bpy.ops.mesh.remove_doubles(limit=0.0001)
-    #bpy.ops.mesh.normals_make_consistent(inside=False)
-    #bpy.ops.object.editmode_toggle()
-	
+    	
     # set origin
     bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='BOUNDS')
     
@@ -42,23 +35,6 @@ def load_stl(file_path):
     # Translate (move) selected items half it's height upwards
     bpy.ops.transform.translate(value=(0,0,zDim/2.0))
     # Note this throws an error 'convertviewvec called in invalid context'
-
-    # If you know where you are moving your object to:
-    # import bpy
-    #
-    # context = bpy.context
-    # obj = context.active_object 
-    # obj.location = (1, 0, 0)  # accepts tupples,  use Vector if you are going to do calcs.
-
-    # Similarly if you want to translate, ie move (1, 1, 0) from where it was:
-    # import bpy
-    # from mathutils import Vector
-    # 
-    # context = bpy.context
-    # obj = context.active_object
-    # obj.location += Vector([1, 1, 0])
-
-    #selObj.location += Vector(1,1,0)
 
     # calculate camera target in the z axis
     camTarget = (0,0,zDim/3.0)
@@ -81,7 +57,10 @@ def place_camera():
     print('Max dimensions: ', max_dim)
 	
     # place camera at the target calculated in the load_stl method
+    # this require a special 'empty - target - sphere' element named 'target'
     bpy.data.objects['target'].location = camTarget
+
+    # and the camera named 'Camera'
     cam = bpy.data.objects['Camera'].location.x = max_dim * 2.4
 
 def render_image(image,gl=False,anim=False):
@@ -112,4 +91,3 @@ print('image: ', image)
 load_stl(stl)
 place_camera()
 render_image(image,gl=False)
-#bpy.ops.object.delete()

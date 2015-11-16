@@ -35,8 +35,8 @@ $fs=1.5; // default minimum facet size
 
 module GT2TimingPulley() {          
     motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
-	translate ([0, 0, 22-16.2]) GT2Pulley();
-	//translate ([0, 0, 22-8]) FlexibleCoupling();
+	//translate ([0, 0, 22-16.2]) GT2Pulley();
+	translate ([0, 0, 22-8]) FlexibleCoupling();
 }
 
 GT2TimingPulley();

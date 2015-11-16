@@ -1,0 +1,1 @@
+blender -b  utils/render.blend -P utils/viz.py -- MotorAndCoupling.stl MotorAndCoupling.png
