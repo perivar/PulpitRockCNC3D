@@ -1,0 +1,30 @@
+# load stl
+bpy.ops.import_mesh.stl(filepath='../MotorAndCoupling.stl')
+
+# select properly
+selObj = bpy.context.selected_objects[0]
+print('Selected object: ', selObj)
+bpy.ops.object.select_all(action='DESELECT')
+selObj.select = True
+
+# set origin
+bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='BOUNDS')
+
+# resize 	
+#bpy.ops.transform.resize(value=(0.005, 0.005, 0.005))
+bpy.ops.transform.resize(value=(0.02, 0.02, 0.02))
+
+# x = d[0]
+# y = d[1]
+# z = d[2]
+zDim = selObj.dimensions[2]
+print('Z dimension: ', zDim)
+
+# translate (move) selected items half it's height upwards
+bpy.ops.transform.translate(value=(0,0,zDim/2.0 + 0.05))
+
+# rotate 45 degrees on the z axis
+#bpy.ops.transform.rotate(value=0.785398, axis=(0, 0, 1))
+
+# assign material
+selObj.material_slots.data.active_material = bpy.data.materials['chrome']
