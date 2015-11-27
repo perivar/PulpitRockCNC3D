@@ -34,4 +34,4 @@ bpy.ops.uv.smart_project()
 bpy.ops.object.editmode_toggle()
 
 # assign material
-selObj.material_slots.data.active_material = bpy.data.materials['ChocofurFreeWood15']
+selObj.material_slots.data.active_material = bpy.data.materials['Steel']

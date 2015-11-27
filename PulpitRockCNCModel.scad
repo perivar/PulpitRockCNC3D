@@ -34,9 +34,11 @@ $fs=1.5; // default minimum facet size
 // 5mm hole = 5,05
 
 module GT2TimingPulley() {          
-    motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
+    motor(Nema17, NemaMedium, [0,0,0], [180,0,0]);
 	//translate ([0, 0, 22-16.2]) GT2Pulley();
-	translate ([0, 0, 22-8]) FlexibleCoupling();
+	translate ([0, 0, 15]) FlexibleCoupling();
+	
+	//translate([0,0,-43]) cylinder(h=83, r=6); // check height
 }
 
 GT2TimingPulley();
