@@ -1,5 +1,7 @@
 # load stl
 bpy.ops.import_mesh.stl(filepath='../MotorAndCoupling.stl')
+#bpy.ops.import_mesh.stl(filepath='../20-GT2-6 Timing Pulley.stl');
+#bpy.ops.import_mesh.stl(filepath='../flexible_coupling.stl');
 
 # select properly
 selObj = bpy.context.selected_objects[0]
@@ -7,12 +9,22 @@ print('Selected object: ', selObj)
 bpy.ops.object.select_all(action='DESELECT')
 selObj.select = True
 
-# set origin
+# set origin (GEOMETRY_ORIGIN Geometry to Origin, Move object geometry to object origin.)
 bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='BOUNDS')
 
-# resize 	
-sizeFactor = 0.005
-bpy.ops.transform.resize(value=(sizeFactor, sizeFactor, sizeFactor))
+print('Orig dimensions: ', selObj.dimensions)
+
+# resize 
+# the imported STL from OpenSCad has dimensions in mm	
+# pulley: Orig dimensions:  <Vector (16.0000, 16.0000, 16.2000)>
+# MotorAndCoupling: Orig dimensions:  <Vector (42.3000, 42.3000, 83.0000)>
+# Coupling: Orig dimensions:  <Vector (19.0000, 19.0000, 25.0000)>
+#resizeFactor = 0.005 	# motor and coupling
+#resizeFactor = 0.013 	# coupling
+#resizeFactor = 0.022 	# pulley
+viewHeight = 0.4
+resizeFactor = viewHeight / selObj.dimensions[2]
+bpy.ops.transform.resize(value=(resizeFactor, resizeFactor, resizeFactor))
 
 # x = d[0]
 # y = d[1]
@@ -24,12 +36,12 @@ print('Z dimension: ', zDim)
 bpy.ops.transform.translate(value=(0,0,zDim/2.0))
 
 # rotate 45 degrees on the z axis
-#bpy.ops.transform.rotate(value=0.785398, axis=(0, 0, 1))
+#bpy.ops.transform.rotate(value=3.141592/4, axis=(0, 0, 1))
 
 # UV unwrap
 bpy.ops.object.editmode_toggle()
 bpy.ops.mesh.tris_convert_to_quads() # straigthens up when using a texture
-#bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
+#bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001) # margin = Space between islands
 bpy.ops.uv.smart_project()
 bpy.ops.object.editmode_toggle()
 

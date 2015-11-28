@@ -1,19 +1,13 @@
 import bpy
 import sys
 
-global selObj
-global camTargetPos
-#mat = 'abs' # The material to use on the imported STL is called "abs"  
-            # e.g. orange plastic with white gloss 
-            # this is saved with as "F abs" so that it is saved with the 
-	    # blend file even if the material isn't used
-
-mat = 'plastic'
+# The material to use on the imported STL
+# this is saved with as "F Steel" so that it is saved with the 
+# blend file even if the material isn't used
+mat = 'Steel'
 			
 # load stl file			
 def load_stl(file_path):
-    global camTargetPos,selObj
-    
     # load stl
     bpy.ops.import_mesh.stl(filepath=file_path)
     
@@ -23,48 +17,40 @@ def load_stl(file_path):
     bpy.ops.object.select_all(action='DESELECT')
     selObj.select = True
     	
-    # set origin
+    # set origin (GEOMETRY_ORIGIN Geometry to Origin, Move object geometry to object origin.)
     bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='BOUNDS')
-    
-    # place
+
+    # resize 
+    # the imported STL from OpenSCad has dimensions in mm	
+    # pulley:           Orig dimensions:  <Vector (16.0000, 16.0000, 16.2000)>
+    # MotorAndCoupling: Orig dimensions:  <Vector (42.3000, 42.3000, 83.0000)>
+    # Coupling:         Orig dimensions:  <Vector (19.0000, 19.0000, 25.0000)>
+    #resizeFactor = 0.005 	# motor and coupling
+    #resizeFactor = 0.013 	# coupling
+    #resizeFactor = 0.022 	# pulley
+    viewHeight = 0.4
+    resizeFactor = viewHeight / selObj.dimensions[2]
+    bpy.ops.transform.resize(value=(resizeFactor, resizeFactor, resizeFactor))
+
     # d = selObj.dimensions
     # x = d[0]
     # y = d[1]
     # z = d[2]
     zDim = selObj.dimensions[2]
     print('Z dimension: ', zDim)
-	
-    # resize to much smaller
-    bpy.ops.transform.resize(value=(0.001, 0.001, 0.001))
-	
-    # Translate (move) selected items half it's height upwards
-    #bpy.ops.transform.translate(value=(0,0,zDim/2.0))
-    # Note this throws an error 'convertviewvec called in invalid context'
+		
+    # translate (move) selected items half it's height upwards
+    bpy.ops.transform.translate(value=(0,0,zDim/2.0))
 
-    # calculate camera target in the z axis
-    camTargetPos = (0,0,zDim/3.0)
-    print('Camera target: ', camTargetPos)
+    # UV unwrap
+    bpy.ops.object.editmode_toggle()
+    bpy.ops.mesh.tris_convert_to_quads() # straigthens up when using a texture
+    bpy.ops.uv.smart_project()
+    bpy.ops.object.editmode_toggle()
 	
     # assign material
     selObj.material_slots.data.active_material = bpy.data.materials[mat]
 
-def place_camera():
-    global camTargetPos
-	
-    # place the camera, first get the object dimensions
-    d = selObj.dimensions
-    x = d[0]
-    y = d[1]
-    z = d[2]
-	
-    # scale z and y down with 25%
-    max_dim = max(x * 0.75, y * 0.75, z)
-    print('Max dimensions: ', max_dim)
-	
-    # place camera at the target calculated in the load_stl method
-    # this require a special 'empty - target - sphere' element
-    bpy.data.objects['target'].location = camTargetPos
-    cam = bpy.data.objects['Camera'].location.x = max_dim * 2.4
 
 def render_image(image):
     # render image
@@ -80,5 +66,4 @@ print('image: ', image)
 
 # run the methods
 load_stl(stl)
-#place_camera()
 render_image(image)

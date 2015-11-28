@@ -33,16 +33,24 @@ $fs=1.5; // default minimum facet size
 // 8mm hole = 8,02 (17 mm depth)
 // 5mm hole = 5,05
 
-module GT2TimingPulley() {          
-    motor(Nema17, NemaMedium, [0,0,0], [180,0,0]);
-	//translate ([0, 0, 22-16.2]) GT2Pulley();
+module Nema17AndPulley() {          
+    motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
+	translate ([0, 0, 22-16.2]) GT2Pulley();
+	
+	// nema 17 inclusive pulley is 65 mm tall
+	//translate([0,0,-43]) cylinder(h=65, r=6); // check height
+}
+
+module Nema17AndCoupling() {          
+    motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
 	translate ([0, 0, 15]) FlexibleCoupling();
 	
+	// nema 17 inclusive coupling is 83 mm tall
 	//translate([0,0,-43]) cylinder(h=83, r=6); // check height
 }
 
-GT2TimingPulley();
-//FlexibleCoupling();
+Nema17AndCoupling();
+//Nema17AndPulley();
 
 //bearing(model=608);
 //linearBearing(model="LM8UU");

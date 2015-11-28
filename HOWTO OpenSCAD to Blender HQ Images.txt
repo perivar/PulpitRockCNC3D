@@ -13,3 +13,7 @@ blender -b render.blend -P viz.py -- GT2_20tooth.stl GT2_20tooth.png
 or
 
 blender -b render.blend -P viz.py -- flexible_coupling.stl flexible_coupling.png
+
+
+2. NEW IMPROVED RENDERING
+blender -b  utils/Plane_mesh_studio_model.blend -P utils/viz2.py -- MotorAndCoupling.stl MotorAndCoupling.png
