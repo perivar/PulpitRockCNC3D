@@ -49,7 +49,13 @@ module Nema17AndCoupling() {
 	//translate([0,0,-43]) cylinder(h=83, r=6); // check height
 }
 
-Nema17AndCoupling();
+// 23 x 48 mm wood
+woodDepth = 23*mm;
+woodWidth = 48*mm;
+woodHeight = 500*mm;
+
+
+//Nema17AndCoupling();
 //Nema17AndPulley();
 
 //bearing(model=608);
@@ -62,21 +68,22 @@ Nema17AndCoupling();
 //cylinder_chamfer(8,2);
 //chamfer(15,4);
 
+// Normal Views
+Assembled();
 //Exploded();
-//Assembled();
 //Parts();
 
 // full model view
 module Assembled() {
     Front();
     Back();
-    SideLeft();
-    SideRight();
+    //SideLeft();
+    //SideRight();
 }
 
 // exploded view
 module Exploded() {
-    expanded = 30;  
+    expanded = 50;  
     translate([0, -expanded, 0]) Front();
     translate([0, expanded, 0]) Back();
     translate([-expanded, 0, 0]) SideLeft();
@@ -85,26 +92,69 @@ module Exploded() {
 
 // stacked for laser cutting and to make dxfs
 module Parts() {
-    margin = 5;
+    margin = 10;
     projection() rotate([90, 0, 0]) translate([0,0,margin]) Front();
     projection() rotate([-90, 0, 0]) translate([0,0,margin]) Back();
     projection() rotate([0, -90, 0]) translate([0,margin,margin]) SideLeft();
     projection() rotate([0,90,0]) translate([-100,margin,100+margin]) SideRight();    
 }
 
+module WoodElement(height, depth, width) {
+	//color(Pine)
+	{
+		difference() {
+			cube([height,depth,width]);
+			
+			union() {
+				// first corner
+				rotate([0, 0, 45]) translate([0,0,-1]) cube([width*2, width, width+2]);
+
+				// second corner
+				translate([height,0,0]) rotate([0, 0, 45]) translate([0,0,-1]) cube([width, width*2, width+2]);
+			}
+		}
+	}
+}
+
 module Front() {
-    color("blue")
+    color(Pine)
     {
-        cube([100,10,100]);
-        rotate([90, 0, 0]) translate([50,50,0]) cylinder(r=20,h=20);
+		difference() {
+			WoodElement(woodHeight,woodDepth,woodWidth);
+			
+			union() {				
+				// first hole
+				rotate([90, 0, 0]) translate([woodHeight*1/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+
+				// second hole
+				rotate([90, 0, 0]) translate([woodHeight*2/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+
+				// middle hole
+				//rotate([90, 0, 0]) translate([woodHeight*1/2,woodWidth/2,-woodDepth-1]) cylinder(r=14,h=woodDepth+2);
+			}
+		}
     }
 }
 
 module Back() {
-    color("green")
+    color(Pine)
     {
-        translate([0,100,0]) cube([100,10,100]);
-        translate([50,100+20+10,50]) rotate([90, 0, 0]) cylinder(r=20,h=20);
+		translate([0,woodDepth+500,woodWidth]) rotate([180,0,0]) {
+			difference() {
+				WoodElement(woodHeight,woodDepth,woodWidth);
+
+				union() {				
+					// first hole
+					rotate([90, 0, 0]) translate([woodHeight*1/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+
+					// second hole
+					rotate([90, 0, 0]) translate([woodHeight*2/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+
+					// middle hole
+					rotate([90, 0, 0]) translate([woodHeight*1/2,woodWidth/2,-woodDepth-1]) cylinder(r=14,h=woodDepth+2);
+				}					
+			}
+		}
     }
 }
 
