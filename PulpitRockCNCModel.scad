@@ -84,7 +84,7 @@ module Assembled() {
 	Front();
     Back();
     SideLeft();
-    //SideRight();
+    SideRight();
 	
 	SmoothRods();
 	ThreadedRods();
@@ -144,8 +144,8 @@ module Front() {
     color(Pine)
     {	
 		difference() {
-			//SideChamfered(mdfLength,mdfDepth,mdfWidth);
 			cube(size=[mdfLength,mdfDepth,mdfWidth]);
+			echo("Front dimensions in mm: ", mdfLength, mdfDepth, mdfWidth);
 			
 			union() {				
 				// first hole
@@ -155,7 +155,7 @@ module Front() {
 				rotate([90, 0, 0]) translate([mdfLength*2/3,mdfWidth/2,-mdfDepth-1]) cylinder(r=8,h=mdfDepth+2);
 
 				// middle hole
-				//rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-mdfDepth-1]) cylinder(r=14,h=mdfDepth+2);
+				rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-mdfDepth-1]) cylinder(r=20,h=mdfDepth+2);
 			}
 		}
     }
@@ -164,10 +164,10 @@ module Front() {
 module Back() {
     color(Pine)
     {
-		translate([0,500,mdfWidth]) rotate([180,0,0]) {
+		translate([0,mdfLength-mdfDepth,0]) {
 			difference() {
-				//SideChamfered(mdfLength,mdfDepth,mdfWidth);
-				cube(size=[mdfLength,mdfDepth,mdfWidth]);
+				cube(size=[mdfLength,mdfDepth,mdfHeight]);
+				echo("Back dimensions in mm: ", mdfLength, mdfDepth, mdfHeight);
 
 				union() {				
 					// first hole
@@ -178,6 +178,9 @@ module Back() {
 
 					// middle hole
 					rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-mdfDepth-1]) cylinder(r=14,h=mdfDepth+2);
+					
+					// window
+					rotate([90, 0, 0]) translate([150,300,-mdfDepth-1]) cube([200,100,mdfDepth+2]);
 				}					
 			}
 		}
@@ -185,42 +188,35 @@ module Back() {
 }
 
 module SideLeft() {
-    color(Pine)
+    color(Oak)
 	{
 		// mdf side
-		rotate([0,0,-90]) translate([-mdfLength,0,0]) 
+		rotate([0,0,-90]) translate([-mdfLength+mdfDepth,0,0]) 
 		{
 			difference() {
-				cube(size=[mdfHeight,mdfDepth,mdfLength]);
+				cube(size=[mdfLength-(mdfDepth*2),mdfDepth,mdfHeight]);
+				echo("Left Side dimensions in mm: ", mdfLength-(mdfDepth*2), mdfDepth, mdfHeight, mdfWidth);
 				
 				union() {
 					// cut out a rounded cube
 					translate([mdfHighSideLength,mdfDepth+1,mdfWidth]) rotate([90,0,0]) rbox(size=[mdfHeight, mdfLength, mdfDepth+2], radius=50, fn=30); 
 					
-					// cut out the low side
-					translate([mdfLength-mdfDepth,-1,-1]) cube(size=[mdfDepth+2,mdfDepth+2,mdfHeight+2]);
 					
-					// cut out the high side
-					translate([-1,-1,-1]) cube(size=[mdfDepth+1,mdfDepth+2,mdfHeight+2]);					
 				}
 			}
 		}
-		
-		// chamfered side
-		//rotate([180,0,90]) translate([0,0,-mdfWidth]) {
-		//	SideChamfered(mdfLength,mdfDepth,mdfWidth);
-		//}
 	}
 }
 
 module SideRight() {
-    color(Pine)
+    color(Oak)
 	{	
 		// mdf side
-		rotate([0,0,-90]) translate([-mdfLength,mdfLength-mdfDepth,0]) 
+		rotate([0,0,-90]) translate([-mdfLength+mdfDepth,mdfLength-mdfDepth,0]) 
 		{
 			difference() {
-				cube(size=[mdfHeight,mdfDepth,mdfLength]);
+				cube(size=[mdfLength-(2*mdfDepth),mdfDepth,mdfHeight]);
+				echo("Right Side dimensions in mm: ", mdfLength-(mdfDepth*2), mdfDepth, mdfHeight, mdfWidth);
 
 				union() {
 
@@ -229,11 +225,6 @@ module SideRight() {
 				}
 			}
 		}
-
-		// chamfered side
-		//rotate([0,0,90]) translate([0,-mdfLength,0]) {
-		//	SideChamfered(mdfLength,mdfDepth,mdfWidth);
-		//}
 	}   
 }
 
