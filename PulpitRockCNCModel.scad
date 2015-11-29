@@ -1,6 +1,6 @@
 
 include <MCAD/bearing.scad>
-include <MCAD/metric_fastners.scad> // washer
+include <MCAD/metric_fastners.scad> // mdfHighSideLengthasher
 include <MCAD/materials.scad>
 include <stepper.scad>
 
@@ -9,7 +9,7 @@ use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
-// and 0.5 when done
+// and 0.5 mdfHighSideLengthhen done
 $fa=1;   // default minimum facet angle
 $fs=1.5; // default minimum facet size
 
@@ -52,8 +52,14 @@ module Nema17AndCoupling() {
 // 23 x 48 mm wood
 woodDepth = 23*mm;
 woodWidth = 48*mm;
-woodHeight = 500*mm;
+woodLength = 500*mm;
 
+mdfHeight = 500*mm;
+mdfLength = 500*mm;
+mdfDepth = 23*mm;
+mdfWidth = 80*mm;
+mdfHighSideLength = 150*mm;
+//mdf
 
 //Nema17AndCoupling();
 //Nema17AndPulley();
@@ -62,26 +68,29 @@ woodHeight = 500*mm;
 //linearBearing(model="LM8UU");
 
 //csk_bolt(3,14);
-//washer(3);
+//mdfHighSideLengthasher(3);
 //flat_nut(3);
 //bolt(4,14);
 //cylinder_chamfer(8,2);
 //chamfer(15,4);
 
-// Normal Views
+// Normal ViemdfHighSideLengths
 Assembled();
 //Exploded();
 //Parts();
 
-// full model view
+// full model viemdfHighSideLength
 module Assembled() {
     Front();
     Back();
-    //SideLeft();
-    //SideRight();
+    SideLeft();
+    SideRight();
+	
+	SmoothRods();
+	ThreadedRods();
 }
 
-// exploded view
+// exploded viemdfHighSideLength
 module Exploded() {
     expanded = 50;  
     translate([0, -expanded, 0]) Front();
@@ -92,45 +101,60 @@ module Exploded() {
 
 // stacked for laser cutting and to make dxfs
 module Parts() {
-    margin = 10;
+    margin = 50;
     projection() rotate([90, 0, 0]) translate([0,0,margin]) Front();
     projection() rotate([-90, 0, 0]) translate([0,0,margin]) Back();
     projection() rotate([0, -90, 0]) translate([0,margin,margin]) SideLeft();
-    projection() rotate([0,90,0]) translate([-100,margin,100+margin]) SideRight();    
+    projection() rotate([0,90,0]) translate([0,margin,500+margin]) SideRight();    
 }
 
-module WoodElement(height, depth, width) {
-	//color(Pine)
-	{
-		difference() {
-			cube([height,depth,width]);
-			
-			union() {
-				// first corner
-				rotate([0, 0, 45]) translate([0,0,-1]) cube([width*2, width, width+2]);
+module SmoothRods() {
+	color(Steel) {
+	
+		// first bottom rod
+		rotate([90, 0, 0]) translate([woodLength*1/3,woodWidth/2,-500]) cylinder(r=8,h=500);
+		
+		// second bottom rod
+		rotate([90, 0, 0]) translate([woodLength*2/3,woodWidth/2,-500]) cylinder(r=8,h=500);
+	}
+}
 
-				// second corner
-				translate([height,0,0]) rotate([0, 0, 45]) translate([0,0,-1]) cube([width, width*2, width+2]);
-			}
+module ThreadedRods() {
+	color(Stainless) {
+		// bottom rod
+		rotate([90, 0, 0]) translate([woodLength*1/2,woodWidth/2,-500]) cylinder(r=8,h=500);	
+	}
+}
+
+module SideChamfered(height, depth, mdfHighSideLengthidth) {
+	difference() {
+		cube([height,depth,mdfHighSideLengthidth]);
+		
+		union() {
+			// first corner
+			rotate([0, 0, 45]) translate([0,0,-1]) cube([mdfHighSideLengthidth*2, mdfHighSideLengthidth, mdfHighSideLengthidth+2]);
+
+			// second corner
+			translate([height,0,0]) rotate([0, 0, 45]) translate([0,0,-1]) cube([mdfHighSideLengthidth, mdfHighSideLengthidth*2, mdfHighSideLengthidth+2]);
 		}
 	}
 }
 
 module Front() {
     color(Pine)
-    {
+    {	
 		difference() {
-			WoodElement(woodHeight,woodDepth,woodWidth);
+			SideChamfered(woodLength,woodDepth,woodWidth);
 			
 			union() {				
 				// first hole
-				rotate([90, 0, 0]) translate([woodHeight*1/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+				rotate([90, 0, 0]) translate([woodLength*1/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
 
 				// second hole
-				rotate([90, 0, 0]) translate([woodHeight*2/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+				rotate([90, 0, 0]) translate([woodLength*2/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
 
 				// middle hole
-				//rotate([90, 0, 0]) translate([woodHeight*1/2,woodWidth/2,-woodDepth-1]) cylinder(r=14,h=woodDepth+2);
+				//rotate([90, 0, 0]) translate([woodLength*1/2,woodWidth/2,-woodDepth-1]) cylinder(r=14,h=woodDepth+2);
 			}
 		}
     }
@@ -139,19 +163,19 @@ module Front() {
 module Back() {
     color(Pine)
     {
-		translate([0,woodDepth+500,woodWidth]) rotate([180,0,0]) {
+		translate([0,500,woodWidth]) rotate([180,0,0]) {
 			difference() {
-				WoodElement(woodHeight,woodDepth,woodWidth);
+				SideChamfered(woodLength,woodDepth,woodWidth);
 
 				union() {				
 					// first hole
-					rotate([90, 0, 0]) translate([woodHeight*1/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+					rotate([90, 0, 0]) translate([woodLength*1/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
 
 					// second hole
-					rotate([90, 0, 0]) translate([woodHeight*2/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
+					rotate([90, 0, 0]) translate([woodLength*2/3,woodWidth/2,-woodDepth-1]) cylinder(r=8,h=woodDepth+2);
 
 					// middle hole
-					rotate([90, 0, 0]) translate([woodHeight*1/2,woodWidth/2,-woodDepth-1]) cylinder(r=14,h=woodDepth+2);
+					rotate([90, 0, 0]) translate([woodLength*1/2,woodWidth/2,-woodDepth-1]) cylinder(r=14,h=woodDepth+2);
 				}					
 			}
 		}
@@ -159,16 +183,44 @@ module Back() {
 }
 
 module SideLeft() {
-    color("grey") { 
-        difference() {
-            translate([-10,0,0]) cube([10,110,100]);
-            translate([-11,50,50]) cube([20,10,10]);
-        }
-    }
+    color(Pine)
+	{
+		// mdf side
+		rotate([0,0,-90]) translate([-mdfLength,0,0]) 
+		{
+			difference() {
+				cube(size=[mdfHeight,mdfDepth,mdfLength]);
+				
+				// cut out a rounded cube
+				translate([mdfHighSideLength,mdfDepth+1,mdfWidth]) rotate([90,0,0]) rbox(size=[mdfHeight, mdfLength, mdfDepth+2], radius=50, fn=30); 
+			}
+		}
+		
+		// chamfered side
+		//rotate([180,0,90]) translate([0,0,-woodWidth]) {
+		//	SideChamfered(woodLength,woodDepth,woodWidth);
+		//}
+	}
 }
 
 module SideRight() {
-    color("pink") translate([100,0,0]) cube([10,110,100]);
-    
+    color(Pine)
+	{	
+		// mdf side
+		rotate([0,0,-90]) translate([-mdfLength,mdfLength-mdfDepth,0]) 
+		{
+			difference() {
+				cube(size=[mdfHeight,mdfDepth,mdfLength]);
+				
+				// cut out a rounded cube
+				translate([mdfHighSideLength,mdfDepth+1,mdfWidth]) rotate([90,0,0]) rbox(size=[mdfHeight, mdfLength, mdfDepth+2], radius=50, fn=30); 
+			}
+		}
+
+		// chamfered side
+		//rotate([0,0,90]) translate([0,-woodLength,0]) {
+		//	SideChamfered(woodLength,woodDepth,woodWidth);
+		//}
+	}   
 }
 
