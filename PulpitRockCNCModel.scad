@@ -60,8 +60,8 @@ mdfHighSideLength = 150*mm;
 //chamfer(15,4);
 
 // Normal ViemdfHighSideLengths
-//Assembled();
-Exploded();
+Assembled();
+//Exploded();
 //Parts();
 
 // full model viemdfHighSideLength
@@ -74,6 +74,9 @@ module Assembled() {
 	
 	SmoothRods();
 	ThreadedRods();
+	
+	StepperMotors();
+	Bearings();
 }
 
 // exploded viemdfHighSideLength
@@ -84,6 +87,9 @@ module Exploded() {
     translate([-expanded, 0, 0]) SideLeft();
     translate([expanded, 0, 0]) SideRight();   
 	translate([0, 0, -expanded]) Bottom();	
+
+	SmoothRods();
+	ThreadedRods();
 }
 
 // stacked for laser cutting and to make dxfs
@@ -125,18 +131,30 @@ module Nema17AndCoupling() {
 module SmoothRods() {
 	color(Steel) {
 	
-		// first bottom rod
+		// first bottom X rod
 		rotate([90, 0, 0]) translate([mdfLength*1/3,mdfWidth/2,-500]) cylinder(r=8/2,h=500);
 		
-		// second bottom rod
+		// second bottom X rod
 		rotate([90, 0, 0]) translate([mdfLength*2/3,mdfWidth/2,-500]) cylinder(r=8/2,h=500);
+				
+		// low Y rod
+		translate([0,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0, 90, 0]) cylinder(r=8/2,h=500);
+		
+		// high Y rod
+		translate([0,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0, 90, 0]) cylinder(r=8/2,h=500);
+		
 	}
 }
 
 module ThreadedRods() {
 	color(Stainless) {
-		// bottom rod
+	
+		// X rod
 		rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-500]) cylinder(r=8/2,h=500);	
+
+		// Y rod
+		translate([0,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0, 90, 0]) cylinder(r=8/2,h=500);
+
 	}
 }
 
@@ -152,6 +170,28 @@ module SideChamfered(height, depth, mdfHighSideLengthidth) {
 			translate([height,0,0]) rotate([0, 0, 45]) translate([0,0,-1]) cube([mdfHighSideLengthidth, mdfHighSideLengthidth*2, mdfHighSideLengthidth+2]);
 		}
 	}
+}
+
+module StepperMotors() {
+
+	// X axis
+	translate([mdfLength/2,mdfLength-23-2,mdfWidth/2]) rotate([90,90,0]) Nema17AndCoupling();	
+	// check that the base is 41 mm heigh
+	//translate([mdfLength/2,500+41,mdfWidth/2]) rotate([90,90,0]) cylinder(r=10, h=41);
+	
+	// Y axis
+	translate([23+2,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) Nema17AndCoupling();	
+}
+
+module Bearings() {
+	color (Aluminum) {
+		
+		// 608 bearing X axis
+		translate([mdfLength*1/2,mdfDepth/2,mdfWidth/2]) rotate([90,0,0]) bearing(model=608);
+		
+		// 608 bearing Y axis
+		translate([500-(mdfDepth/2),500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) bearing(model=608);
+	}	
 }
 
 module Front() {
@@ -172,12 +212,7 @@ module Front() {
 				rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-mdfDepth-1]) cylinder(r=22/2,h=mdfDepth+2);				
 			}
 		}
-    }
-	
-	color (Aluminum) {
-		// 608 bearing
-		translate([mdfLength*1/2,mdfDepth/2,mdfWidth/2]) rotate([90,0,0]) bearing(model=608);
-	}
+    }	
 }
 
 module Back() {
@@ -204,11 +239,6 @@ module Back() {
 			}
 		}
     }
-	
-	translate([mdfLength/2,mdfLength-23-2,mdfWidth/2]) rotate([90,90,0]) Nema17AndCoupling();
-	
-	// check that the base is 41 mm heigh
-	//translate([mdfLength/2,500+41,mdfWidth/2]) rotate([90,90,0]) cylinder(r=10, h=41);
 }
 
 module SideLeft() {
@@ -224,7 +254,16 @@ module SideLeft() {
 				union() {
 					// cut out a rounded cube
 					translate([mdfHighSideLength,mdfDepth+1,mdfWidth]) rotate([90,0,0]) rbox(size=[mdfHeight, mdfLength, mdfDepth+2], radius=50, fn=30); 
-										
+					
+					// first hole
+					rotate([90, 0, 0]) translate([mdfHighSideLength/2,300,-mdfDepth-1])  cylinder(r=8/2,h=mdfDepth+2);
+
+					// second hole
+					rotate([90, 0, 0]) translate([mdfHighSideLength/2,400,-mdfDepth-1])  cylinder(r=8/2,h=mdfDepth+2);
+
+					// middle hole
+					rotate([90, 0, 0]) translate([mdfHighSideLength/2,350,-mdfDepth-1]) 
+					cylinder(r=24/2,h=mdfDepth+2);										
 				}
 			}
 		}
@@ -242,9 +281,18 @@ module SideRight() {
 				echo("Right Side dimensions in mm: ", mdfLength-(mdfDepth*2), mdfDepth, mdfHeight, mdfWidth);
 
 				union() {
-
 					// cut out a rounded cube
 					translate([mdfHighSideLength,mdfDepth+1,mdfWidth]) rotate([90,0,0]) rbox(size=[mdfHeight, mdfLength, mdfDepth+2], radius=50, fn=30); 
+					
+					// first hole
+					rotate([90, 0, 0]) translate([mdfHighSideLength/2,300,-mdfDepth-1])  cylinder(r=8/2,h=mdfDepth+2);
+
+					// second hole
+					rotate([90, 0, 0]) translate([mdfHighSideLength/2,400,-mdfDepth-1])  cylinder(r=8/2,h=mdfDepth+2);
+
+					// middle hole
+					rotate([90, 0, 0]) translate([mdfHighSideLength/2,350,-mdfDepth-1]) 
+					cylinder(r=22/2,h=mdfDepth+2);										
 				}
 			}
 		}
