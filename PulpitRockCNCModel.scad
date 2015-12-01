@@ -13,29 +13,11 @@ use <20-GT2-6 Timing Pulley.scad>
 $fa=1;   // default minimum facet angle
 $fs=1.5; // default minimum facet size
 
-// Bearing 624zz
-// diameter: 13,05 
-// hole = 4 mm
-
 // Linear Bearing LM8UU
-// 24x15cm, Inside diameter: 8mm
-
-// GT2 timing pulley
-// hole = 5 mm
-// height = 16.2 mm
-// diameter = 16 mm
-// height of track = 7.2 mm
-// height if base = 7.7 mm
-// height of top = 1.5 mm
-// 20 teeth
-// Arc Teeth Pitch = 2mm
-
-// Flexible Coupling
-// height = 249
-// diameter = 189
-// 8mm hole = 8,02 (17 mm depth)
-// 5mm hole = 5,05
-
+// 24x15mm, Inside diameter: 8mm
+lm8uuLength = 24*mm;
+lm8uuOutDia = 15*mm;
+lm8uuInDia = 8*mm;
 
 // 23 x 48 mm mdf
 mdfDepth = 23*mm;
@@ -74,7 +56,9 @@ module Assembled() {
     SideLeft();
     SideRight();
 	Bottom();
+	
 	XPlate();
+	YModule();
 
 	SmoothRods();
 	ThreadedRods();
@@ -85,12 +69,14 @@ module Assembled() {
 
 // exploded viemdfHighSideLength
 module Exploded() {
-    expanded = 50;  
+    expanded = 100;  
     translate([0, -expanded, 0]) Front();
     translate([0, expanded, 0]) Back();
     translate([-expanded, 0, 0]) SideLeft();
     translate([expanded, 0, 0]) SideRight();   
 	translate([0, 0, -expanded]) Bottom();	
+	
+	translate([0, 0, expanded]) XPlate();
 	
 	SmoothRods();
 	ThreadedRods();
@@ -135,10 +121,10 @@ module Nema17AndCoupling() {
 module SmoothRods() {
 	color(Steel) {
 	
-		// first bottom X rod
+		// left bottom X rod
 		rotate([90, 0, 0]) translate([mdfLength*1/3,mdfWidth/2,-500]) cylinder(r=8/2,h=smoothRodLength);
 		
-		// second bottom X rod
+		// right bottom X rod
 		rotate([90, 0, 0]) translate([mdfLength*2/3,mdfWidth/2,-500]) cylinder(r=8/2,h=smoothRodLength);
 				
 		// low Y rod
@@ -147,6 +133,12 @@ module SmoothRods() {
 		// high Y rod
 		translate([0,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0, 90, 0]) cylinder(r=8/2,h=smoothRodLength);
 		
+		posAdd = 10;
+		// left Z rod
+		translate([200+posAdd,350,250]) cylinder(r=8/2,h=smoothRodLength);
+		
+		// right Z rod
+		translate([300-posAdd,350,250]) cylinder(r=8/2,h=smoothRodLength);
 	}
 }
 
@@ -154,11 +146,16 @@ module ThreadedRods() {
 	color(Stainless) {
 	
 		// X rod
-		rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-500]) cylinder(r=8/2,h=threadRodLength);	
+		rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-500]) 
+		cylinder(r=8/2,h=threadRodLength);	
 
 		// Y rod
-		translate([0,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0, 90, 0]) cylinder(r=8/2,h=threadRodLength);
+		translate([0,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0, 90, 0]) 
+		cylinder(r=8/2,h=threadRodLength);
 
+		// Z rod
+		translate([250,350,250]) 
+		cylinder(r=8/2,h=threadRodLength);
 	}
 }
 
@@ -171,20 +168,21 @@ module Bearings() {
 		// 608 bearing Y axis
 		translate([mdfLength-(mdfDepth/2),mdfLength-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) bearing(model=608);
 		
-		// lm8uu X axis (second parameter is position on the rod)
+		// LM8UU X axis (second parameter is position on the rod)
 		translate([mdfLength*1/3,200,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3,200,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*1/3,300,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3,300,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 
-		// lm8uu Y axis (first parameter is position on the rod, last parameter is height)
-		translate([200,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([200,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([300,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([300,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		// LM8UU Y axis (first parameter is position on the rod, last parameter is height)
+		posAdd = 40;
+		translate([mdfLength*1/3-lm8uuLength/2+posAdd,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*1/3-lm8uuLength/2+posAdd,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*2/3-lm8uuLength/2-posAdd,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*2/3-lm8uuLength/2-posAdd,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
 
 		// hexagon bolt X axis
-		translate([mdfLength/2,250,mdfWidth/2]) rotate([90,0,0]) flat_nut(8);
+		translate([mdfLength/2,250,mdfWidth/2]) rotate([90,90,0]) flat_nut(8);
 
 		// hexagon bolt Y axis
 		translate([mdfLength/2,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) flat_nut(8);
@@ -334,6 +332,23 @@ module XPlate() {
 	{	
 		// linear bearing 24x15cm, Inside diameter: 8mm
 		margin = 20;
-		//translate([mdfDepth+margin,mdfDepth+100,(mdfWidth/2)+(15/2*mm)]) cube(size=[500-2*mdfDepth-2*margin,200,10]);
+		width = 500-2*mdfDepth-2*margin;
+		height = 200;
+
+		translate([mdfDepth+margin,mdfDepth+100,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) cube(size=[width,height,mdfDepth]);
+		echo("XPlate dimensions in mm: ", width, height, mdfDepth);
+	}
+}
+
+module YModule() {
+	color(Oak) 
+	{	
+		// linear bearing 24x15mm, Inside diameter: 8mm
+		width = 150;
+		height = 250;
+		translate([(mdfLength-width)/2,500-(mdfHighSideLength/2)-mdfDepth-lm8uuOutDia/2*mm,250]) rotate([90,0,0]) cube(size=[width,height,mdfDepth]);
+		echo("YModule backplate dimensions in mm: ", width, height, mdfDepth);
+		
+		translate([(mdfLength-width)/2,500-(mdfHighSideLength/2)-100,250]) cube(size=[width,50,mdfDepth]);
 	}
 }
