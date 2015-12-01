@@ -191,6 +191,19 @@ module Bearings() {
 		
 		// 608 bearing Y axis
 		translate([500-(mdfDepth/2),500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) bearing(model=608);
+		
+		// lm8uu X axis
+		translate([mdfLength*1/3,200,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*2/3,200,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*1/3,300,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*2/3,300,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+
+		// lm8uu Y axis
+		translate([200,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([300,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([200,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([300,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
+
 	}	
 }
 
