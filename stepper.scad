@@ -192,16 +192,17 @@ function motorLength(model=Nema23, size=NemaMedium) = lookup(size, model);
 
 module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orientation = [0,0,0]) {
 
+	// lookup variables based on size and model
 	length = lookup(size, model);
-
 	echo(str("Motor: Nema",lookup(NemaModel, model),", length= ",length," mm, dual axis=",dualAxis));
 
+	// colors
 	stepperBlack    = BlackPaint;
 	stepperAluminum = Aluminum;
 
+	// side width
 	side = lookup(NemaSideSize, model);
-
-	echo(str("Side: ",side, " mm"));
+	echo(str("Side width: ",side, " mm"));
 	
 	cutR = lookup(NemaMountingHoleCutoutRadius, model);
 	lip = lookup(NemaMountingHoleLip, model);
@@ -212,39 +213,42 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 	axleFlatDepth = lookup(NemaAxleFlatDepth, model);
 	axleFlatLengthFront = lookup(NemaAxleFlatLengthFront, model);
 	axleFlatLengthBack = lookup(NemaAxleFlatLengthBack, model);
-
 	echo(str("Axle (shaft) length incl. base: ",axleLengthFront," mm"));
 	
 	// base
 	extrSize = lookup(NemaRoundExtrusionHeight, model);
 	extrRad = lookup(NemaRoundExtrusionDiameter, model) * 0.5;
-
-	echo(str("Base height: ",extrSize," mm"));
+	echo(str("Height incl. base: ", length+extrSize, " mm"));	
 	
 	holeDepth = lookup(NemaMountingHoleDepth, model);
 	holeDist = lookup(NemaDistanceBetweenMountingHoles, model) * 0.5;
 	holeRadius = lookup(NemaMountingHoleDiameter, model) * 0.5;
-
 	echo(str("Screw diameter: ", holeRadius*2, " mm, distance: ", holeDist*2, " mm, depth= ",holeDepth, " mm"));
 	
 	mid = side / 2;
 
 	roundR = lookup(NemaEdgeRoundingRadius, model);
 	
+	// Hardcoded values for the 17HS4401 Nema model
+	// Base Diameter: 22 mm
+	// Top: 11.85 / 10.2 mm
+	// Bottom: 12.9 / 11 mm
+	// Corner Diameter: 53.7 / 50.2
+	base_dia = 22*mm;
+	top = 10.2*mm;
+	bottom = 11.0*mm;
+	middle = length-top-bottom;
+	chamfer_radius = 5;
+	tape_margin = 1;
+
+	echo(str("Base height: ",extrSize," mm, Base diameter: ", base_dia, " mm"));	
+
 	translate(pos) rotate(orientation) {
+
 		translate([-mid, -mid, 0]) // center at the middle
+				
 		difference() {          
-			// build up the motor part by joining several boxes with chamfered edges
-			
-			// 17HS4401:
-			// Top: 11.85 / 10.2 mm
-			// Bottom: 12.9 / 11 mm
-			// Corner Diameter: 53.7 / 50.2
-			top = 10.2*mm;
-			bottom = 11.0*mm;
-			middle = length-top-bottom;
-			chamfer_radius = 5;
-			tape_margin = 1;
+			// build up the motor part by joining several boxes with chamfered edges			
 			union() {					
 				// bottom steel edge// base
 				color(stepperAluminum) rbox(size=[side, side, extrSize], radius=chamfer_radius); 
@@ -285,13 +289,15 @@ module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orienta
 			}
 			
 			// Grinded flat (i.e. base)
-			// the extra 1mm added to the height is cancelled out?!
 			color(stepperAluminum) {
 				difference() {
+					// make a cube that is 1 mm longer in every direction
 					translate([-1*mm, -1*mm, -extrSize]) 
-					cube(size=[side+2*mm, side+2*mm, extrSize + 1*mm]);
+					cube(size=[side+2*mm, side+2*mm, extrSize + 2*mm]);
+					
+					// and cut away a cylinder with height 3 mm
 					translate([side/2, side/2, -extrSize - 1*mm]) 
-					cylinder(h=4*mm, r=extrRad);
+					cylinder(h=5*mm, r=extrRad);
 				}
 			}
 		}

@@ -15,28 +15,35 @@ $fs=1.5; // default minimum facet size
 
 // Linear Bearing LM8UU
 // 24x15mm, Inside diameter: 8mm
+//linearBearing(model="LM8UU");
 lm8uuLength = 24*mm;
 lm8uuOutDia = 15*mm;
 lm8uuInDia = 8*mm;
 
-// 23 x 48 mm mdf
-mdfDepth = 23*mm;
-mdfWidth = 48*mm;
-mdfLength = 500*mm;
+// 608ZZ Ball Bearing
+//bearing(model=608);
+608InDia = 8*mm;
+608OutDia = 22*mm;
+608Thickness = 7*mm;
 
+// 23 x 48 mm wood
+woodDepth = 23*mm;
+woodWidth = 48*mm;
+woodLength = 500*mm;
+
+// mdf plate
 mdfHeight = 500*mm;
 mdfLength = 500*mm;
 mdfDepth = 20*mm;
 mdfWidth = 80*mm;
 mdfHighSideLength = 150*mm;
+
+// rods
 smoothRodLength = 500*mm;
 threadRodLength = 500*mm;
 
 //Nema17AndCoupling();
 //Nema17AndPulley();
-
-//bearing(model=608);
-//linearBearing(model="LM8UU");
 
 //csk_bolt(3,14);
 //flat_nut(3);
@@ -51,6 +58,7 @@ Assembled();
 
 // full model viemdfHighSideLength
 module Assembled() {
+
 	Front();
     Back();
     SideLeft();
@@ -58,13 +66,14 @@ module Assembled() {
 	Bottom();
 	
 	XPlate();
-	YModule();
 
 	SmoothRods();
 	ThreadedRods();
 	
 	StepperMotors();
 	Bearings();
+
+	ZModule();	
 }
 
 // exploded viemdfHighSideLength
@@ -106,7 +115,8 @@ module Nema17AndPulley() {
 module Nema17AndCoupling() {          
 
 	// set zero at coupling start
-	translate([0,0,-23]) {
+	translate([0,0,-23]) 
+	{
 		motor(Nema17, NemaMedium, false, [0,0,0], [180,0,0]);
 		translate ([0, 0, 15]) FlexibleCoupling();
 				
@@ -131,14 +141,7 @@ module SmoothRods() {
 		translate([0,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0, 90, 0]) cylinder(r=8/2,h=smoothRodLength);
 		
 		// high Y rod
-		translate([0,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0, 90, 0]) cylinder(r=8/2,h=smoothRodLength);
-		
-		posAdd = 10;
-		// left Z rod
-		translate([200+posAdd,350,250]) cylinder(r=8/2,h=smoothRodLength);
-		
-		// right Z rod
-		translate([300-posAdd,350,250]) cylinder(r=8/2,h=smoothRodLength);
+		translate([0,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0, 90, 0]) cylinder(r=8/2,h=smoothRodLength);		
 	}
 }
 
@@ -151,10 +154,6 @@ module ThreadedRods() {
 
 		// Y rod
 		translate([0,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0, 90, 0]) 
-		cylinder(r=8/2,h=threadRodLength);
-
-		// Z rod
-		translate([250,350,250]) 
 		cylinder(r=8/2,h=threadRodLength);
 	}
 }
@@ -175,7 +174,7 @@ module Bearings() {
 		translate([mdfLength*2/3,300,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 
 		// LM8UU Y axis (first parameter is position on the rod, last parameter is height)
-		posAdd = 40;
+		posAdd = 50;
 		translate([mdfLength*1/3-lm8uuLength/2+posAdd,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*1/3-lm8uuLength/2+posAdd,500-(mdfHighSideLength/2)-mdfDepth,400]) rotate([0,90,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3-lm8uuLength/2-posAdd,500-(mdfHighSideLength/2)-mdfDepth,300]) rotate([0,90,0]) linearBearing(model="LM8UU");
@@ -206,12 +205,12 @@ module SideChamfered(height, depth, mdfHighSideLengthidth) {
 module StepperMotors() {
 
 	// X axis
-	translate([mdfLength/2,mdfLength-23-2,mdfWidth/2]) rotate([90,90,0]) Nema17AndCoupling();	
+	translate([mdfLength/2,mdfLength-23,mdfWidth/2]) rotate([90,90,0]) Nema17AndCoupling();	
 	// check that the base is 41 mm heigh
 	//translate([mdfLength/2,500+41,mdfWidth/2]) rotate([90,90,0]) cylinder(r=10, h=41);
 	
 	// Y axis
-	translate([23+2,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) Nema17AndCoupling();	
+	translate([23,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) Nema17AndCoupling();	
 }
 
 module Front() {
@@ -340,15 +339,73 @@ module XPlate() {
 	}
 }
 
-module YModule() {
-	color(Oak) 
-	{	
-		// linear bearing 24x15mm, Inside diameter: 8mm
-		width = 150;
-		height = 250;
-		translate([(mdfLength-width)/2,500-(mdfHighSideLength/2)-mdfDepth-lm8uuOutDia/2*mm,250]) rotate([90,0,0]) cube(size=[width,height,mdfDepth]);
-		echo("YModule backplate dimensions in mm: ", width, height, mdfDepth);
+module ZModule() {
+
+	yHeightPos = 150;
+	yWidth = 100;		// width of the back plate
+	yHeight = 500;		// height of the back plate
+	yShortHeight = 80;	// yHeight of the short end plates
+	rodMargin = 20;		// rodMargin from the sides for the smooth rod holes
+	
+	translate([(mdfLength-yWidth)/2,500-(mdfHighSideLength/2)-mdfDepth-lm8uuOutDia/2*mm,yHeightPos]) 
+	{
+		color(Oak) 
+		{			
+			rotate([90,0,0]) cube(size=[yWidth,yHeight,mdfDepth]);
+			echo("ZModule back plate dimensions in mm: ", yWidth, yHeight, mdfDepth);
+			
+			// top plate
+			translate([0,-(yShortHeight+mdfDepth),yHeight-mdfDepth]) {
+				difference() {			
+					cube(size=[yWidth,yShortHeight,mdfDepth]);
+					echo("ZModule short plate dimensions in mm: ", yWidth, yShortHeight, mdfDepth);								
+					// first hole
+					translate([rodMargin,yShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+					// second hole
+					translate([yWidth-rodMargin,yShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+					// middle hole
+					translate([yWidth/2,yShortHeight/2,-1]) cylinder(r=24/2,h=mdfDepth+2);														
+				}
+			}
+			
+			// bottom plate
+			translate([0,-(yShortHeight+mdfDepth),0]) {
+				difference() {			
+					cube(size=[yWidth,yShortHeight,mdfDepth]);
+					
+					// first hole
+					translate([rodMargin,yShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+					// second hole
+					translate([yWidth-rodMargin,yShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+					// middle hole
+					translate([yWidth/2,yShortHeight/2,-1]) cylinder(r=22/2,h=mdfDepth+2);																			
+				}
+			}
+		}		
+
+		// 608 bearing Z axis
+		translate([yWidth/2,-mdfDepth-(yShortHeight/2),mdfDepth/2-608Thickness/2]) bearing(model=608);
+			
+			
+		// stepper motor
+		translate([yWidth/2,-mdfDepth-(yShortHeight/2),-2+yHeight-23]) rotate([180,0,0]) Nema17AndCoupling();	
+
 		
-		translate([(mdfLength-width)/2,500-(mdfHighSideLength/2)-100,250]) cube(size=[width,50,mdfDepth]);
+		color(Steel) {
+			// left Z rod
+			translate([rodMargin,-mdfDepth-(yShortHeight/2),0]) cylinder(r=8/2,h=smoothRodLength);
+			
+			// right Z rod
+			translate([yWidth-rodMargin,-mdfDepth-(yShortHeight/2),0]) cylinder(r=8/2,h=smoothRodLength);
+		}
+		
+		color(Stainless) {
+			// Z rod
+			translate([yWidth/2,-mdfDepth-(yShortHeight/2),0]) cylinder(r=8/2,h=threadRodLength);
+		}
 	}
 }
