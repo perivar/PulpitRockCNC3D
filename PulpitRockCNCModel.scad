@@ -341,68 +341,69 @@ module XPlate() {
 
 module ZModule() {
 
-	zHeightPos = 150;
-	zWidth = 100;		// width of the back plate
-	zHeight = 250;		// height of the back plate
-	zShortHeight = 50;	// zHeight of the short end plates
-	zRodMargin = 20;	// zRodMargin from the sides for the smooth rod holes
+	zBackPlateHeightPos = 150;	// position of the zmodule compared to the rest of the CNC
+	zBackPlateWidth = 100;		// width of the back plate
+	zBackPlateHeight = 250;		// height of the back plate
+	zShortHeight = 50;			// height of the short end plates
+	zRodMargin = 20;			// margins from the sides for the smooth rod holes
 	
 	// sliding drill holder variables
 	slidingBackPlateLength = 80;
-	slidingBottomPlateLength = 60;
+	slidingBottomPlateLength = 60;			
+	holderHoleDiameter = 30; // hole for the pen or dremmel
 	
-	// Position: min = mdfDepth, max = zHeight-mdfDepth-slidingBackPlateLength
-	slidingPos = mdfDepth;
+	// Position: min = mdfDepth, max = zBackPlateHeight-mdfDepth-slidingBackPlateLength
+	slidingPos = 100;
 			
-	//translate([(mdfLength-zWidth)/2,500-(mdfHighSideLength/2)-mdfDepth-lm8uuOutDia/2*mm,zHeightPos]) 
+	//translate([(mdfLength-zBackPlateWidth)/2,500-(mdfHighSideLength/2)-mdfDepth-lm8uuOutDia/2*mm,zBackPlateHeightPos]) 
 	{
 		color(Oak) 
 		{			
-			rotate([90,0,0]) cube(size=[zWidth,zHeight,mdfDepth]);
-			echo("ZModule back plate dimensions in mm: ", zWidth, zHeight, mdfDepth);
+			rotate([90,0,0]) cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
+			echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
 			
 			// top plate
-			translate([0,-(zShortHeight+mdfDepth),zHeight-mdfDepth]) {
+			translate([0,-(zShortHeight+mdfDepth),zBackPlateHeight-mdfDepth]) {
 				difference() {			
-					cube(size=[zWidth,zShortHeight,mdfDepth]);
-					echo("ZModule short plate dimensions in mm: ", zWidth, zShortHeight, mdfDepth);								
+					cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
+					echo("ZModule short plate dimensions in mm: ", zBackPlateWidth, zShortHeight, mdfDepth);								
 					// first hole
 					translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
 
 					// second hole
-					translate([zWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+					translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
 
 					// middle hole
-					translate([zWidth/2,zShortHeight/2,-1]) cylinder(r=24/2,h=mdfDepth+2);														
+					translate([zBackPlateWidth/2,zShortHeight/2,-1]) cylinder(r=24/2,h=mdfDepth+2);														
 				}
 			}
 			
 			// bottom plate
 			translate([0,-(zShortHeight+mdfDepth),0]) {
 				difference() {			
-					cube(size=[zWidth,zShortHeight,mdfDepth]);
+					cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
 					
 					// first hole
 					translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
 
 					// second hole
-					translate([zWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+					translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
 
 					// middle hole
-					translate([zWidth/2,zShortHeight/2,-1]) cylinder(r=22/2,h=mdfDepth+2);																			
+					translate([zBackPlateWidth/2,zShortHeight/2,-1]) cylinder(r=22/2,h=mdfDepth+2);																			
 				}
 			}
 		}		
 						
 		// sliding drill holder
 		color (Pine) { 			
-			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2),slidingPos]) rotate([90,0,0]) cube(size=[zWidth,slidingBackPlateLength,mdfDepth]);
+			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2),slidingPos]) rotate([90,0,0]) cube(size=[zBackPlateWidth,slidingBackPlateLength,mdfDepth]);
 			difference() {
 				// bottom plate
-				translate([0,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-slidingBottomPlateLength,slidingPos]) cube(size=[zWidth,slidingBottomPlateLength,mdfDepth]);
+				translate([0,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-slidingBottomPlateLength,slidingPos]) cube(size=[zBackPlateWidth,slidingBottomPlateLength,mdfDepth]);
 				
 				// hole for the pen or dremmel
-				translate([zWidth/2,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-(slidingBottomPlateLength/2),slidingPos-1]) cylinder(r=20/2,h=mdfDepth+2);				
+				translate([zBackPlateWidth/2,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-(slidingBottomPlateLength/2),slidingPos-1]) cylinder(r=holderHoleDiameter/2,h=mdfDepth+2);				
 			}
 		}
 		
@@ -412,23 +413,23 @@ module ZModule() {
 			translate([zRodMargin,-mdfDepth-(zShortHeight/2),0]) cylinder(r=8/2,h=smoothRodLength);
 			
 			// right Z rod
-			translate([zWidth-zRodMargin,-mdfDepth-(zShortHeight/2),0]) cylinder(r=8/2,h=smoothRodLength);
+			translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),0]) cylinder(r=8/2,h=smoothRodLength);
 		}
 		
 		color(Stainless) {
 			// Z rod
-			translate([zWidth/2,-mdfDepth-(zShortHeight/2),0]) cylinder(r=8/2,h=threadRodLength);
+			translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),0]) cylinder(r=8/2,h=threadRodLength);
 		}
 
 		// 608 bearing Z axis
-		translate([zWidth/2,-mdfDepth-(zShortHeight/2),mdfDepth/2-608Thickness/2]) bearing(model=608);
+		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),mdfDepth/2-608Thickness/2]) bearing(model=608);
 						
 		// stepper motor at the top with coupling
-		translate([zWidth/2,-mdfDepth-(zShortHeight/2),-2+zHeight-23]) rotate([180,0,0]) Nema17AndCoupling();	
+		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),-2+zBackPlateHeight-23]) rotate([180,0,0]) Nema17AndCoupling();	
 
 		// LM8UU rods
 		// From min: mdfDepth 
-		// To max: 	 zHeight-mdfDepth-lm8uuLength
+		// To max: 	 zBackPlateHeight-mdfDepth-lm8uuLength
 		slidingBearingMargin = 5;
 		slidingBearingLowPos = slidingPos+slidingBearingMargin;
 		slidingBearingHighPos = slidingBearingLowPos + slidingBackPlateLength - lm8uuLength - 2 *slidingBearingMargin;
@@ -438,10 +439,10 @@ module ZModule() {
 		translate([zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");
 
 		// LM8UU right rod (third parameter is position on the rod)
-		translate([zWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingLowPos]) linearBearing(model="LM8UU");
-		translate([zWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
+		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingLowPos]) linearBearing(model="LM8UU");
+		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
 		
 		// hexagon bolt X axis
-		color (Aluminum) translate([zWidth/2,-mdfDepth-(zShortHeight/2),slidingPos+(slidingBackPlateLength/2)]) flat_nut(8);
+		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),slidingPos+(slidingBackPlateLength/2)]) flat_nut(8);
 	}
 }
