@@ -42,12 +42,17 @@ mdfHighSideLength = 150*mm;
 smoothRodLength = 500*mm;
 threadRodLength = 500*mm;
 
-// x plate dimensions
+// X plate dimensions
 xPlateMargin = 20;	// margin on the left and right side of the plate
 xPlateWidth = mdfLength-2*mdfDepth-2*xPlateMargin;
 xPlateHeight = (mdfLength-(2*mdfDepth))/2; // the height of the xPlate (width in Y direction)
 xPlatePos = mdfLength-mdfDepth-xPlateHeight; // from mdfDepth to mdfLength-mdfDepth-xPlateHeight
 
+// LM8UU bearings
+xPlateBearingMargin = 10;
+xPlateBearingInset = -lm8uuOutDia/2;//-5;
+xPlateBearingLowPos = xPlatePos+ lm8uuLength + xPlateBearingMargin;
+xPlateBearingHighPos = xPlatePos + xPlateHeight - xPlateBearingMargin;
 
 //Nema17AndCoupling();
 //Nema17AndPulley();
@@ -182,6 +187,17 @@ module Bearings() {
 				
 		// hexagon bolt Y axis
 		translate([mdfLength/2,500-(mdfHighSideLength/2)-mdfDepth,350]) rotate([0,90,0]) flat_nut(8);
+		
+		
+		// LM8UU X axis (second parameter is position on the rod)
+		translate([mdfLength*1/3,xPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*2/3,xPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*1/3,xPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		translate([mdfLength*2/3,xPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
+		
+		// hexagon bolt X axis
+		translate([mdfLength/2,xPlatePos+(xPlateHeight/2),mdfWidth/2]) rotate([90,90,0]) flat_nut(8);
+		
 	}	
 }
 
@@ -327,7 +343,7 @@ module XPlate() {
 
 	xPlateCutOutBearingHeight = 30;
 	xPlateCutOutBearingWidth = 40;
-
+		
 	translate([mdfDepth+xPlateMargin,xPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
 	{ 
 		// plate
@@ -342,10 +358,11 @@ module XPlate() {
 					cube(size=[xPlateCutOutBearingWidth,xPlateCutOutBearingHeight+2,mdfDepth+2]);
 				
 					// and cut out room for the bearings
+					bearingInsetFixPos = 11.2;
 					bearingInsetWidth = 10;
 					bearingInsetHeight = lm8uuLength;
-					bearingInsetLeftPos = xPlateWidth*1/3-bearingInsetWidth/2;
-					bearingInsetRightPos = xPlateWidth*2/3-bearingInsetWidth/2;
+					bearingInsetLeftPos = xPlateWidth*1/3-bearingInsetWidth/2-bearingInsetFixPos;
+					bearingInsetRightPos = xPlateWidth*2/3-bearingInsetWidth/2+bearingInsetFixPos;
 					
 					translate([bearingInsetLeftPos,xPlateBearingMargin,-1])
 					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
@@ -353,10 +370,10 @@ module XPlate() {
 					translate([bearingInsetRightPos,xPlateBearingMargin,-1])
 					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
 
-					translate([bearingInsetLeftPos,xPlateBearingHighPos-lm8uuLength,-1])
+					translate([bearingInsetLeftPos,xPlateHeight-bearingInsetHeight-xPlateBearingMargin,-1])
 					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
 					
-					translate([bearingInsetRightPos,xPlateBearingHighPos-lm8uuLength,-1])
+					translate([bearingInsetRightPos,xPlateHeight-bearingInsetHeight-xPlateBearingMargin,-1])
 					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
 					
 					// and cut room for the zip-ties
@@ -379,22 +396,7 @@ module XPlate() {
 				}
 			}
 		}
-		
-		// LM8UU bearings
-		xPlateBearingMargin = 10;
-		xPlateBearingInset = -lm8uuOutDia/2;//-5;
-		xPlateBearingLowPos = lm8uuLength + xPlateBearingMargin;
-		xPlateBearingHighPos = xPlateHeight - xPlateBearingMargin;
-
-		// LM8UU X axis (second parameter is position on the rod)
-		translate([xPlateWidth*1/3,xPlateBearingLowPos,xPlateBearingInset]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		translate([xPlateWidth*2/3,xPlateBearingLowPos,xPlateBearingInset]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		translate([xPlateWidth*1/3,xPlateBearingHighPos,xPlateBearingInset]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		translate([xPlateWidth*2/3,xPlateBearingHighPos,xPlateBearingInset]) rotate([90,0,0]) linearBearing(model="LM8UU");
-
-		// hexagon bolt X axis
-		color (Aluminum) translate([xPlateWidth/2,xPlateHeight/2,-mdfDepth/2]) rotate([90,0,0]) flat_nut(8);				
-		
+				
 	}			
 }
 
