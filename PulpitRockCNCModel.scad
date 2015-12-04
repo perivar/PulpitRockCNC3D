@@ -9,9 +9,9 @@ use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
-// and 0.5 mdfHighSideLengthhen done
-$fa=1;   // default minimum facet angle
-$fs=1.5; // default minimum facet size
+// and 0.5 when done
+$fa=1.0;   	// default minimum facet angle
+$fs=1.5; 	// default minimum facet size
 
 // Linear Bearing LM8UU
 // 24x15mm, Inside diameter: 8mm
@@ -91,52 +91,57 @@ cutoutCouplingWidth = 40;
 //cylinder_chamfer(8,2);
 //chamfer(15,4);
 
-// Normal ViemdfHighSideLengths
-Assembled();
+// Normal view
+//Assembled();
 //Exploded();
-//Parts();
+Parts();
 
-// full model viemdfHighSideLength
+// full model view
 module Assembled() {
 	Front();
     Back();
     SideLeft();
     SideRight();
 	Bottom();
-	
 	XPlate();
 
 	SmoothRods();
 	ThreadedRods();
-	
 	StepperMotors();
 	Bearings();
 
 	ZModule();	
 }
 
-// exploded viemdfHighSideLength
+// exploded view
 module Exploded() {
     expanded = 100;  
     translate([0, -expanded, 0]) Front();
     translate([0, expanded, 0]) Back();
     translate([-expanded, 0, 0]) SideLeft();
     translate([expanded, 0, 0]) SideRight();   
-	translate([0, 0, -expanded]) Bottom();	
-	
+	translate([0, 0, -expanded]) Bottom();		
 	translate([0, 0, expanded]) XPlate();
 	
 	SmoothRods();
 	ThreadedRods();
+	Bearings();
+	
+	ZModule(exploded = expanded);
 }
 
 // stacked for laser cutting and to make dxfs
 module Parts() {
     margin = 50;
+	
     projection() rotate([90, 0, 0]) translate([0,0,margin]) Front();
     projection() rotate([-90, 0, 0]) translate([0,0,margin]) Back();
     projection() rotate([0, -90, 0]) translate([0,margin,margin]) SideLeft();
-    projection() rotate([0,90,0]) translate([0,margin,500+margin]) SideRight();    
+    projection() rotate([0,90,0]) translate([0,margin,500+margin]) SideRight();  
+	projection() rotate([0,0,0]) translate([0,500+margin*2,margin]) Bottom();	
+	projection() rotate([0,0,0]) translate([0,-700+margin,margin]) XPlate();
+	
+	//projection() ZModule();
 }
 
 module Nema17AndPulley() {   
@@ -376,7 +381,7 @@ module XPlate() {
 	translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
 	{ 
 		// debug pointer to find middle position on Y plate
-		#translate([xAxisPos+8, 0, 0]) cylinder(r=10, h=300); // mid position
+		//translate([xAxisPos+8, 0, 0]) cylinder(r=10, h=300); // mid position
 	
 		// plate
 		color(Pine) {
@@ -429,9 +434,9 @@ module XPlate() {
 	}			
 }
 
-module ZModule() {
+module ZModule(exploded = 0) {
 					
-	translate([xAxisPos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm,zBackPlateHeightPos]) 
+	translate([xAxisPos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
 	{
 		color(Oak) 
 		{			
@@ -448,7 +453,7 @@ module ZModule() {
 			}
 			
 			// top plate with motor fastener
-			translate([0,-(zShortHeight+mdfDepth),zBackPlateHeight-mdfDepth]) {
+			translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) {
 				difference() {			
 					cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
 					echo("ZModule short plate dimensions in mm: ", zBackPlateWidth, zShortHeight, mdfDepth);								
@@ -467,7 +472,7 @@ module ZModule() {
 			}
 			
 			// bottom plate
-			translate([0,-(zShortHeight+mdfDepth),0]) {
+			translate([0,-(zShortHeight+mdfDepth)-exploded,0]) {
 				difference() {			
 					cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
 					
@@ -487,12 +492,12 @@ module ZModule() {
 		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),mdfDepth/2-608Thickness/2]) bearing(model=608);
 						
 		// stepper motor at the top with coupling
-		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),-2+zBackPlateHeight-23]) rotate([180,0,0]) Nema17AndCoupling();	
+		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-exploded,-2+zBackPlateHeight-23+exploded]) rotate([180,0,0]) Nema17AndCoupling();	
 			
 		// sliding drill holder
 		color (Pine) { 			
 			// back plate
-			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2),zPos]) rotate([90,0,0]) {
+			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-exploded,zPos+exploded]) rotate([90,0,0]) {
 			
 				difference() {
 					cube(size=[zBackPlateWidth,slidingBackPlateLength,mdfDepth]);
@@ -505,7 +510,7 @@ module ZModule() {
 			
 			difference() {
 				// bottom plate
-				translate([0,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-slidingBottomPlateLength,zPos]) cube(size=[zBackPlateWidth,slidingBottomPlateLength,mdfDepth]);
+				translate([0,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-slidingBottomPlateLength-exploded*2,zPos+exploded]) cube(size=[zBackPlateWidth,slidingBottomPlateLength,mdfDepth]);
 				
 				// hole for the pen or dremmel
 				translate([zBackPlateWidth/2,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-(slidingBottomPlateLength/2),zPos-1]) cylinder(r=holderHoleDiameter/2,h=mdfDepth+2);				
