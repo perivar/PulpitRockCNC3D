@@ -81,23 +81,21 @@ xRodMidPos = xRodLowPos + (xRodHighPos-xRodLowPos)/2;
 cutoutCouplingHeight = 30;
 cutoutCouplingWidth = 40;
 
-
-//Nema17AndCoupling();
-//Nema17AndPulley();
-
-//csk_bolt(3,14);
-//flat_nut(3);
-//bolt(4,14);
-//cylinder_chamfer(8,2);
-//chamfer(15,4);
+// Nema17 "Screw diameter: 3 mm, distance: 31 mm, depth= 4.5 mm"
+nema17HoleDist = 31.00*mm * 0.5;	// standard spec length = 31 +/- 0.1 mm  
+nema17HoleRadius = 3*mm * 0.5;		// M3 screws
+nema17HoleDepth = mdfDepth+1; 		// M3 screw depth
+nema17Side = 42.30*mm;				// max length = 42.3 mm
+nema17Mid = (nema17Side / 2);
 
 // Normal view
-//Assembled();
+Assembled();
 //Exploded();
-Parts();
+//Parts();
 
 // full model view
 module Assembled() {
+
 	Front();
     Back();
     SideLeft();
@@ -110,7 +108,7 @@ module Assembled() {
 	StepperMotors();
 	Bearings();
 
-	ZModule();	
+	ZModule();		
 }
 
 // exploded view
@@ -127,6 +125,8 @@ module Exploded() {
 	ThreadedRods();
 	Bearings();
 	
+	StepperMotors(exploded = expanded);
+	
 	ZModule(exploded = expanded);
 }
 
@@ -141,7 +141,11 @@ module Parts() {
 	projection() rotate([0,0,0]) translate([0,500+margin*2,margin]) Bottom();	
 	projection() rotate([0,0,0]) translate([0,-700+margin,margin]) XPlate();
 	
-	//projection() ZModule();
+	projection() translate([-150,600,0]) ZModuleTop();
+	projection() translate([-150,700,0]) ZModuleBack();
+	projection() translate([-150,1000,0]) ZModuleBottom();	
+	projection() translate([-300,700,0]) ZModuleSlidingBack();			
+	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
 }
 
 module Nema17AndPulley() {   
@@ -248,15 +252,15 @@ module SideChamfered(height, depth, mdfHighSideLengthidth) {
 	}
 }
 
-module StepperMotors() {
+module StepperMotors(exploded = 0) {
 
 	// Y axis
-	translate([mdfLength/2,mdfLength-23,mdfWidth/2]) rotate([90,90,0]) Nema17AndCoupling();	
+	translate([mdfLength/2,mdfLength-23+exploded*2,mdfWidth/2]) rotate([90,90,0]) Nema17AndCoupling();	
 	// check that the base is 41 mm heigh
 	//translate([mdfLength/2,500+41,mdfWidth/2]) rotate([90,90,0]) cylinder(r=10, h=41);
 	
 	// X axis
-	translate([23,500-(mdfHighSideRodPos)-mdfDepth,xRodMidPos]) rotate([0,90,0]) Nema17AndCoupling();	
+	translate([23-exploded*2,500-(mdfHighSideRodPos)-mdfDepth,xRodMidPos]) rotate([0,90,0]) Nema17AndCoupling();	
 }
 
 module Front() {
@@ -298,6 +302,9 @@ module Back() {
 					// middle hole
 					rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2,-mdfDepth-1]) cylinder(r=24/2,h=mdfDepth+2);
 					
+					// screw holes
+					translate([mdfLength/2-nema17Mid,mdfDepth,mdfWidth/2-nema17Mid]) rotate([90,0,0]) Nema17ScrewHoles(); 		
+										
 					// window
 					rotate([90, 0, 0]) translate([150,250,-mdfDepth-1]) cube([200,150,mdfDepth+2]);
 				}					
@@ -328,7 +335,11 @@ module SideLeft() {
 
 					// middle hole
 					rotate([90, 0, 0]) translate([mdfHighSideRodPos,xRodMidPos,-mdfDepth-1]) 
-					cylinder(r=24/2,h=mdfDepth+2);										
+					cylinder(r=24/2,h=mdfDepth+2);			
+
+					// screw holes
+					translate([mdfHighSideRodPos-nema17Mid,mdfDepth,xRodMidPos-nema17Mid]) rotate([90,0,0]) Nema17ScrewHoles(); 		
+
 				}
 			}
 		}
@@ -434,58 +445,96 @@ module XPlate() {
 	}			
 }
 
+module ZModuleBack() {
+
+	difference() {	
+		// back plate
+		cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
+		echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
+		
+		// cut out place for the flexible coupling
+		translate([-1,xRodMidPos-zBackPlateHeightPos-lm8uuOutDia,-1]) 
+		cube(size=[cutoutCouplingWidth-9,cutoutCouplingHeight,mdfDepth+2]);					
+	}
+}
+
+// top plate with motor fastener
+module ZModuleTop() {
+	difference() {			
+		cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
+		echo("ZModule short plate dimensions in mm: ", zBackPlateWidth, zShortHeight, mdfDepth);								
+		// first hole
+		translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+		// second hole
+		translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+		// middle hole
+		translate([zBackPlateWidth/2,zShortHeight/2,-1]) cylinder(r=24/2,h=mdfDepth+2);
+
+		// screw holes
+		translate([zBackPlateWidth/2-nema17Mid,zShortHeight/2-nema17Mid,0]) Nema17ScrewHoles(); 		
+	}
+}
+
+module Nema17ScrewHoles() {
+	translate([nema17Mid+nema17HoleDist,nema17Mid+nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+	translate([nema17Mid-nema17HoleDist,nema17Mid+nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+	translate([nema17Mid+nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+	translate([nema17Mid-nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+}
+
+module ZModuleBottom() {
+	difference() {			
+		cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
+		
+		// first hole
+		translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+		// second hole
+		translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
+
+		// middle hole
+		translate([zBackPlateWidth/2,zShortHeight/2,-1]) cylinder(r=22/2,h=mdfDepth+2);																			
+	}
+}
+
+// sliding back plate
+module ZModuleSlidingBack() {
+	difference() {
+		cube(size=[zBackPlateWidth,slidingBackPlateLength,mdfDepth]);
+		
+		// cut out place for the flexible coupling
+		translate([36,slidingBackPlateLength-cutoutCouplingHeight,-1]) 
+		cube(size=[cutoutCouplingHeight,cutoutCouplingWidth+2,mdfDepth+2]);					
+	}
+}
+
+module ZModuleSlidingBottom() {
+	difference() {					
+		// bottom plate
+		translate([0,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-slidingBottomPlateLength,zPos]) 
+		cube(size=[zBackPlateWidth,slidingBottomPlateLength,mdfDepth]);
+		
+		// hole for the pen or dremmel
+		translate([zBackPlateWidth/2,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-(slidingBottomPlateLength/2),zPos-1]) cylinder(r=holderHoleDiameter/2,h=mdfDepth+2);
+	}
+}
+
 module ZModule(exploded = 0) {
 					
 	translate([xAxisPos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
 	{
 		color(Oak) 
 		{			
-			rotate([90,0,0]) {
-				difference() {	
-					// back plate
-					cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
-					echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
-					
-					// cut out place for the flexible coupling
-					translate([-1,xRodMidPos-zBackPlateHeightPos-lm8uuOutDia,-1]) 
-					cube(size=[cutoutCouplingWidth-9,cutoutCouplingHeight,mdfDepth+2]);					
-				}
-			}
+			// back plate
+			rotate([90,0,0]) ZModuleBack();
 			
 			// top plate with motor fastener
-			translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) {
-				difference() {			
-					cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
-					echo("ZModule short plate dimensions in mm: ", zBackPlateWidth, zShortHeight, mdfDepth);								
-					// first hole
-					translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
-
-					// second hole
-					translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
-
-					// middle hole
-					translate([zBackPlateWidth/2,zShortHeight/2,-1]) cylinder(r=24/2,h=mdfDepth+2);
-
-					// screw holes
-					// "Screw diameter: 3 mm, distance: 31 mm, depth= 4.5 mm"
-				}
-			}
+			translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) ZModuleTop();
 			
 			// bottom plate
-			translate([0,-(zShortHeight+mdfDepth)-exploded,0]) {
-				difference() {			
-					cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
-					
-					// first hole
-					translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
-
-					// second hole
-					translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=8/2,h=mdfDepth+2);
-
-					// middle hole
-					translate([zBackPlateWidth/2,zShortHeight/2,-1]) cylinder(r=22/2,h=mdfDepth+2);																			
-				}
-			}
+			translate([0,-(zShortHeight+mdfDepth)-exploded,0]) ZModuleBottom();
 		}		
 			
 		// 608 bearing Z axis
@@ -497,24 +546,11 @@ module ZModule(exploded = 0) {
 		// sliding drill holder
 		color (Pine) { 			
 			// back plate
-			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-exploded,zPos+exploded]) rotate([90,0,0]) {
+			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-exploded*2,zPos+exploded]) 
+			rotate([90,0,0]) 
+			ZModuleSlidingBack();
 			
-				difference() {
-					cube(size=[zBackPlateWidth,slidingBackPlateLength,mdfDepth]);
-					
-					// cut out place for the flexible coupling
-					translate([36,slidingBackPlateLength-cutoutCouplingHeight,-1]) 
-					cube(size=[cutoutCouplingHeight,cutoutCouplingWidth+2,mdfDepth+2]);					
-				}
-			}
-			
-			difference() {
-				// bottom plate
-				translate([0,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-slidingBottomPlateLength-exploded*2,zPos+exploded]) cube(size=[zBackPlateWidth,slidingBottomPlateLength,mdfDepth]);
-				
-				// hole for the pen or dremmel
-				translate([zBackPlateWidth/2,-2*mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-(slidingBottomPlateLength/2),zPos-1]) cylinder(r=holderHoleDiameter/2,h=mdfDepth+2);				
-			}
+			translate([0,-exploded*2,0]) ZModuleSlidingBottom();
 		}
 		
 		// Rods
