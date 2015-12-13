@@ -1,6 +1,5 @@
 
 include <MCAD/bearing.scad>
-include <MCAD/metric_fastners.scad> // mdfHighSideLengthasher
 include <MCAD/materials.scad>
 include <stepper.scad>
 
@@ -53,7 +52,7 @@ yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDe
 
 // LM8UU bearings
 yPlateBearingMargin = 10*mm;
-yPlateBearingInset = -lm8uuOutDia/2;//-5;
+yPlateBearingInset = -lm8uuOutDia/2;
 yPlateBearingLowPos = yPlatePos+ lm8uuLength + yPlateBearingMargin;
 yPlateBearingHighPos = yPlatePos + yPlateHeight - yPlateBearingMargin;
 
@@ -89,10 +88,13 @@ nema17HoleRadius = 3*mm * 0.5;		// M3 screws
 nema17HoleDepth = mdfDepth+1; 		// M3 screw depth
 nema17Side = 42.30*mm;				// max length = 42.3 mm
 nema17Mid = (nema17Side / 2);
-nema17BaseHoleDia = 24*mm;			// hole big enough for nema 17 base diameter (22 mm)
+nema17BaseHoleDia = 22*mm;			// hole big enough for nema 17 base diameter (22 mm)
 
 stepperExtraMargin = 5*mm; 			// an additional margin to allow place for the flexible coupling
 
+// zip-tie
+zipTieHoleRadius = 3*mm * 0.5;	// M3 is enough for the zip-tie hole
+zipTieHoleDepth = mdfDepth+1;	// M3 screw depth
 
 // --------------------------------
 // Choose view
@@ -108,7 +110,7 @@ module Assembled() {
     Back();
     SideLeft();
     SideRight();
-	Bottom();
+	//Bottom();
 	YPlate();
 
 	SmoothRods();
@@ -154,6 +156,31 @@ module Parts() {
 	projection() translate([-150,1000,0]) ZModuleBottom();	
 	projection() translate([-300,700,0]) ZModuleSlidingBack();			
 	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
+}
+
+// originally from metric_fastners.scad
+// modified the flat_nut module to make it right length
+// M8 * 35 mm (13mm dia)
+module CouplingNut(dia=8, width=13, height=35) {
+	
+	// When you make a hexagon, the radius is the distance from the center to the corners. 
+	// To get a hexagon with a specified dimension from the center to the flats (called the apothem),
+	// divide your radius by cos(180/6). 
+	// This works for other polygons too if you change the 6 to whatever $fn value you're using. 
+	Num_Sides = 6;		// Hexagon = 6
+	Nut_Flats = width; 	// Measure across the flats
+	Flats_Rad = Nut_Flats/2;
+	Nut_Rad = Flats_Rad / cos(180/Num_Sides);
+	center = true;	
+		
+	// center 
+	//translate([Nut_Flats/2,0,0]) // measure that the nut radius was correct
+	rotate([0,0,180/Num_Sides]) 
+	difference()
+		{
+			cylinder(r=Nut_Rad,h=height,$fn=Num_Sides,center=center);
+			translate([0,0,-1])cylinder(r=dia/2,h=height+2,center=center);
+		}
 }
 
 module Nema17AndPulley() {   
@@ -231,7 +258,7 @@ module Bearings() {
 		translate([mdfLength*2/3-lm8uuLength/2-posAdd,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
 				
 		// hexagon bolt X axis
-		translate([mdfLength/2,500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) flat_nut(8);
+		translate([mdfLength/2,500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) CouplingNut();
 		
 		
 		// LM8UU Y axis (second parameter is position on the rod)
@@ -241,7 +268,7 @@ module Bearings() {
 		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		
 		// hexagon bolt Y axis
-		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) flat_nut(8);
+		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) CouplingNut();
 		
 	}	
 }
@@ -393,10 +420,6 @@ module Bottom() {
 
 module YPlate() {
 		
-	bearingInsetFixPos = 11.2;
-	bearingInsetWidth = 10;
-	bearingInsetHeight = lm8uuLength;
-
 	translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
 	{ 
 		// debug pointer to find middle position on Y plate
@@ -408,44 +431,24 @@ module YPlate() {
 				cube(size=[yPlateWidth,yPlateHeight,mdfDepth]);
 				echo("YPlate dimensions in mm: ", yPlateWidth, yPlateHeight, mdfDepth);					
 				
-				union() {
-					// cut out place for the flexible coupling
-					//translate([yPlateWidth/2-cutoutCouplingWidth/2,yPlateHeight-cutoutCouplingHeight,-1]) 
-					//cube(size=[cutoutCouplingWidth,cutoutCouplingHeight+2,mdfDepth+2]);
-				
-					// and cut out room for the bearings
-					bearingInsetLeftPos = yPlateWidth*1/3-bearingInsetWidth/2-bearingInsetFixPos;
-					bearingInsetRightPos = yPlateWidth*2/3-bearingInsetWidth/2+bearingInsetFixPos;
+				union() {				
+					// bearing positions
+					bearingLeftPos = (mdfLength)*1/3-(mdfDepth+yPlateMargin)
+					-( lm8uuOutDia / 2);
+					bearingRightPos = (mdfLength)*2/3-(mdfDepth+yPlateMargin)
+					-( lm8uuOutDia / 2);				
+									
+					// cut out room for the zip-ties
+					// top bearings zip-tie holes
+					translate([bearingLeftPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
 					
-					translate([bearingInsetLeftPos,yPlateBearingMargin,-1])
-					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
+					translate([bearingRightPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
 
-					translate([bearingInsetRightPos,yPlateBearingMargin,-1])
-					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
-
-					translate([bearingInsetLeftPos,yPlateHeight-bearingInsetHeight-yPlateBearingMargin,-1])
-					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
+					// bottom bearings zip-tie holes
+					translate([bearingLeftPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
 					
-					translate([bearingInsetRightPos,yPlateHeight-bearingInsetHeight-yPlateBearingMargin,-1])
-					cube(size=[bearingInsetWidth,bearingInsetHeight,mdfDepth+2]);
+					translate([bearingRightPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
 					
-					// and cut room for the zip-ties
-					zipTieInsetWidth = 2;
-					zipTieInsetHeight = 4;
-					zipTieInsetMargin = 5;
-					
-					/*
-					translate([bearingInsetLeftPos+bearingInsetWidth+zipTieInsetMargin,yPlateBearingMargin+zipTieInsetMargin,-1])
-					cube(size=[zipTieInsetWidth,zipTieInsetHeight,mdfDepth+2]);
-
-					translate([bearingInsetLeftPos+bearingInsetWidth+zipTieInsetMargin,
-					bearingInsetHeight,-1])
-					cube(size=[zipTieInsetWidth,zipTieInsetHeight,mdfDepth+2]);
-
-					for(pos1 = [], pos2 = []) {
-					
-					}
-					*/
 				}
 			}
 		}
@@ -460,9 +463,8 @@ module ZModuleBack() {
 		cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
 		echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
 		
-		// cut out place for the flexible coupling
-		//translate([-1,xRodMidPos-zBackPlateHeightPos-lm8uuOutDia,-1]) 
-		//cube(size=[cutoutCouplingWidth-9,cutoutCouplingHeight,mdfDepth+2]);					
+		// TODO cut out holes for the zip-ties that will hold the bearings
+		//#ZipTieBearingHoles();
 	}
 }
 
@@ -492,6 +494,19 @@ module Nema17ScrewHoles() {
 	translate([nema17Mid-nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
 }
 
+module ZipTieBearingHoles() {
+	zipTieMarginSide = zipTieHoleRadius;		// margin in the bearing width direction (diameter)
+	zipTieMarginLength = zipTieHoleRadius+2;	// margin in the bearing length direction
+
+	translate([-zipTieMarginSide,zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+	
+	translate([lm8uuOutDia+zipTieMarginSide,zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+	
+	translate([-zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+
+	translate([lm8uuOutDia+zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+}
+
 module ZModuleBottom() {
 	difference() {			
 		cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
@@ -512,9 +527,8 @@ module ZModuleSlidingBack() {
 	difference() {
 		cube(size=[zBackPlateWidth,slidingBackPlateLength,mdfDepth]);
 		
-		// cut out place for the flexible coupling
-		//translate([36,slidingBackPlateLength-cutoutCouplingHeight,-1]) 
-		//cube(size=[cutoutCouplingHeight,cutoutCouplingWidth+2,mdfDepth+2]);					
+		// TODO cut out holes for the zip-ties that will hold the bearings
+		// #ZipTieBearingHoles();
 	}
 }
 
@@ -592,6 +606,6 @@ module ZModule(exploded = 0) {
 		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
 		
 		// hexagon bolt Y axis
-		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) flat_nut(8);
+		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) CouplingNut();
 	}
 }
