@@ -51,7 +51,7 @@ yPlateHeight = (mdfLength-(2*mdfDepth))/2; // the height of the yPlate (width in
 yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDepth-yPlateHeight
 
 // LM8UU bearings
-yPlateBearingMargin = 10*mm;
+yPlateBearingMargin = 10*mm;	// margin from end of plate in to bearing
 yPlateBearingInset = -lm8uuOutDia/2;
 yPlateBearingLowPos = yPlatePos+ lm8uuLength + yPlateBearingMargin;
 yPlateBearingHighPos = yPlatePos + yPlateHeight - yPlateBearingMargin;
@@ -78,9 +78,6 @@ xRodLowPos = 250*mm;
 xRodHighPos = 400*mm;
 xRodMidPos = xRodLowPos + (xRodHighPos-xRodLowPos)/2;
 
-// cut out for the flexible coupling
-cutoutCouplingHeight = 30;
-cutoutCouplingWidth = 40;
 
 // Nema17 "Screw diameter: 3 mm, distance: 31 mm, depth= 4.5 mm"
 nema17HoleDist = 31.00*mm * 0.5;	// standard spec length = 31 +/- 0.1 mm  
@@ -110,7 +107,7 @@ Assembled();
 module Assembled() {
 
 	Front();
-    Back();
+    //Back();
     SideLeft();
     SideRight();
 	//Bottom();
@@ -254,14 +251,13 @@ module Bearings() {
 		translate([mdfLength-(mdfDepth/2),mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
 		
 		// LM8UU X axis (first parameter is position on the rod, last parameter is height)
-		posAdd = 50;
-		translate([mdfLength*1/3-lm8uuLength/2+posAdd,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([mdfLength*1/3-lm8uuLength/2+posAdd,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([mdfLength*2/3-lm8uuLength/2-posAdd,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([mdfLength*2/3-lm8uuLength/2-posAdd,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
 				
 		// hexagon bolt X axis
-		translate([mdfLength/2,500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) CouplingNut();
+		translate([xAxisPos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) CouplingNut();
 		
 		
 		// LM8UU Y axis (second parameter is position on the rod)
@@ -299,6 +295,37 @@ module StepperMotors(exploded = 0) {
 	
 	// X axis
 	translate([23-exploded*2,500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) Nema17AndCoupling();	
+}
+
+module Nema17ScrewHoles() {
+	translate([nema17Mid+nema17HoleDist,nema17Mid+nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+	translate([nema17Mid-nema17HoleDist,nema17Mid+nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+	translate([nema17Mid+nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+	translate([nema17Mid-nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
+}
+
+module ZipTieBearingHoles() {
+	zipTieMarginSide = zipTieHoleRadius;		// margin in the bearing width direction (diameter)
+	zipTieMarginLength = zipTieHoleRadius+2;	// margin in the bearing length direction
+
+	translate([-zipTieMarginSide,zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+	
+	translate([lm8uuOutDia+zipTieMarginSide,zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+	
+	translate([-zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+
+	translate([lm8uuOutDia+zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+}
+
+module CouplingNutFastenerHoles() {
+
+	// left
+	translate([-13/2-couplingNutFastenerHoleRadius,0,-1]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+	
+	// right
+	translate([13/2+couplingNutFastenerHoleRadius,0,-1]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
 }
 
 module Front() {
@@ -453,8 +480,7 @@ module YPlate() {
 					translate([bearingLeftPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
 					
 					translate([bearingRightPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
-
-					
+			
 					// cut out room for the Coupling Nut fastener screw
 					translate([threadedRodMidPos,yPlateHeight/2, 0]) CouplingNutFastenerHoles();
 				}
@@ -471,8 +497,19 @@ module ZModuleBack() {
 		cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
 		echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
 		
-		// TODO cut out holes for the zip-ties that will hold the bearings
-		//#ZipTieBearingHoles();
+		// cut out room for the zip-ties
+		// top bearings zip-tie holes
+		translate([yPlateBearingMargin+lm8uuLength,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+	
+		translate([yPlateBearingMargin+lm8uuLength,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+
+		// bottom bearings zip-tie holes
+		translate([zBackPlateWidth-yPlateBearingMargin,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+		
+		translate([zBackPlateWidth-yPlateBearingMargin,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+
+		// cut out room for the Coupling Nut fastener screw
+		translate([zBackPlateWidth/2,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerHoles();
 	}
 }
 
@@ -494,46 +531,6 @@ module ZModuleTop() {
 		translate([zBackPlateWidth/2-nema17Mid,zShortHeight/2-nema17Mid+stepperExtraMargin,0]) Nema17ScrewHoles(); 		
 	}
 }
-
-module Nema17ScrewHoles() {
-	translate([nema17Mid+nema17HoleDist,nema17Mid+nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
-	translate([nema17Mid-nema17HoleDist,nema17Mid+nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
-	translate([nema17Mid+nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
-	translate([nema17Mid-nema17HoleDist,nema17Mid-nema17HoleDist,-1*mm]) cylinder(h=nema17HoleDepth+1*mm, r=nema17HoleRadius);
-}
-
-module ZipTieBearingHoles() {
-	zipTieMarginSide = zipTieHoleRadius;		// margin in the bearing width direction (diameter)
-	zipTieMarginLength = zipTieHoleRadius+2;	// margin in the bearing length direction
-
-	translate([-zipTieMarginSide,zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
-	
-	translate([lm8uuOutDia+zipTieMarginSide,zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
-	
-	translate([-zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
-
-	translate([lm8uuOutDia+zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
-}
-
-module CouplingNutFastenerHoles() {
-
-	// top left
-	translate([-13/2,-35/2,-1]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-	
-	// top right
-	translate([13/2,-35/2,-1]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-	
-	// bottom left
-	translate([-13/2,35/2,-1]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-	
-	// bottom right
-	translate([13/2,35/2,-1]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-}
-
 
 module ZModuleBottom() {
 	difference() {			
