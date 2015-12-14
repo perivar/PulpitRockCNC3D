@@ -50,12 +50,6 @@ yPlateWidth = mdfLength-2*mdfDepth-2*yPlateMargin;
 yPlateHeight = (mdfLength-(2*mdfDepth))/2; // the height of the yPlate (width in Y direction)
 yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDepth-yPlateHeight
 
-// LM8UU bearings
-yPlateBearingMargin = 10*mm;	// margin from end of plate in to bearing
-yPlateBearingInset = -lm8uuOutDia/2;
-yPlateBearingLowPos = yPlatePos+ lm8uuLength + yPlateBearingMargin;
-yPlateBearingHighPos = yPlatePos + yPlateHeight - yPlateBearingMargin;
-
 // sliding drill holder variables
 slidingBackPlateLength = 80*mm;
 slidingBottomPlateLength = 60*mm;			
@@ -78,6 +72,18 @@ xRodLowPos = 250*mm;
 xRodHighPos = 400*mm;
 xRodMidPos = xRodLowPos + (xRodHighPos-xRodLowPos)/2;
 
+// LM8UU bearings
+yPlateBearingMargin = 10*mm;	// margin from end of plate in to bearing
+yPlateBearingInset = -lm8uuOutDia/2;
+yPlateBearingLowPos = yPlatePos+ lm8uuLength + yPlateBearingMargin;
+yPlateBearingHighPos = yPlatePos + yPlateHeight - yPlateBearingMargin;
+
+// LM8UU bearing parameters for the small sliding plate
+slidingBearingMargin = 10*mm;	// smaller margins than yPlateBearingMargin 
+								// since the sliding plate is smaller
+slidingBearingLowPos = zPos+slidingBearingMargin;
+slidingBearingHighPos = slidingBearingLowPos + slidingBackPlateLength - lm8uuLength - 2 *slidingBearingMargin;
+
 
 // Nema17 "Screw diameter: 3 mm, distance: 31 mm, depth= 4.5 mm"
 nema17HoleDist = 31.00*mm * 0.5;	// standard spec length = 31 +/- 0.1 mm  
@@ -89,10 +95,11 @@ nema17BaseHoleDia = 22*mm;			// hole big enough for nema 17 base diameter (22 mm
 
 stepperExtraMargin = 5*mm; 			// an additional margin to allow place for the flexible coupling
 
-// zip-tie
+// zip-tie holes
 zipTieHoleRadius = 3*mm * 0.5;	// M3 is enough for the zip-tie hole
 zipTieHoleDepth = mdfDepth+1;	// M3 screw depth
 
+// coupling nut fastener holes
 couplingNutFastenerHoleRadius = 4*mm * 0.5;	// M4 is enough for the zip-tie hole
 couplingNutFastenerHoleDepth = mdfDepth+1;	// M4 screw depth
 
@@ -107,7 +114,7 @@ Assembled();
 module Assembled() {
 
 	Front();
-    //Back();
+    Back();
     SideLeft();
     SideRight();
 	//Bottom();
@@ -552,8 +559,19 @@ module ZModuleSlidingBack() {
 	difference() {
 		cube(size=[zBackPlateWidth,slidingBackPlateLength,mdfDepth]);
 		
-		// TODO cut out holes for the zip-ties that will hold the bearings
-		// #ZipTieBearingHoles();
+		// cut out room for the zip-ties
+		// top bearings zip-tie holes
+		translate([zRodMargin-lm8uuOutDia/2,slidingBackPlateLength-lm8uuLength-slidingBearingMargin,0]) ZipTieBearingHoles();
+	
+		translate([zBackPlateWidth-zRodMargin-lm8uuOutDia/2,slidingBackPlateLength-lm8uuLength-slidingBearingMargin,0]) ZipTieBearingHoles();
+
+		// bottom bearings zip-tie holes
+		translate([zRodMargin-lm8uuOutDia/2,slidingBearingMargin,0]) ZipTieBearingHoles();
+	
+		translate([zBackPlateWidth-zRodMargin-lm8uuOutDia/2,slidingBearingMargin,0]) ZipTieBearingHoles();
+
+		// cut out room for the Coupling Nut fastener screw
+		translate([zBackPlateWidth/2,slidingBackPlateLength/2,0]) CouplingNutFastenerHoles();
 	}
 }
 
@@ -618,9 +636,6 @@ module ZModule(exploded = 0) {
 		// LM8UU bearings
 		// From min: mdfDepth 
 		// To max: 	 zBackPlateHeight-mdfDepth-lm8uuLength
-		slidingBearingMargin = 5;
-		slidingBearingLowPos = zPos+slidingBearingMargin;
-		slidingBearingHighPos = slidingBearingLowPos + slidingBackPlateLength - lm8uuLength - 2 *slidingBearingMargin;
 		
 		// LM8UU on left rod (third parameter is position on the rod)
 		translate([zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingLowPos]) linearBearing(model="LM8UU");
