@@ -117,7 +117,7 @@ module Assembled() {
     Back();
     SideLeft();
     SideRight();
-	//Bottom();
+	Bottom();
 	YPlate();
 
 	SmoothRods();
