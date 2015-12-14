@@ -96,6 +96,9 @@ stepperExtraMargin = 5*mm; 			// an additional margin to allow place for the fle
 zipTieHoleRadius = 3*mm * 0.5;	// M3 is enough for the zip-tie hole
 zipTieHoleDepth = mdfDepth+1;	// M3 screw depth
 
+couplingNutFastenerHoleRadius = 4*mm * 0.5;	// M4 is enough for the zip-tie hole
+couplingNutFastenerHoleDepth = mdfDepth+1;	// M4 screw depth
+
 // --------------------------------
 // Choose view
 // --------------------------------
@@ -433,10 +436,12 @@ module YPlate() {
 				
 				union() {				
 					// bearing positions
-					bearingLeftPos = (mdfLength)*1/3-(mdfDepth+yPlateMargin)
+					bearingLeftPos = (mdfLength*1/3)-(mdfDepth+yPlateMargin)
 					-( lm8uuOutDia / 2);
-					bearingRightPos = (mdfLength)*2/3-(mdfDepth+yPlateMargin)
+					bearingRightPos = (mdfLength*2/3)-(mdfDepth+yPlateMargin)
 					-( lm8uuOutDia / 2);				
+					
+					threadedRodMidPos = (mdfLength*1/2)-(mdfDepth+yPlateMargin);
 									
 					// cut out room for the zip-ties
 					// top bearings zip-tie holes
@@ -448,7 +453,10 @@ module YPlate() {
 					translate([bearingLeftPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
 					
 					translate([bearingRightPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
+
 					
+					// cut out room for the Coupling Nut fastener screw
+					translate([threadedRodMidPos,yPlateHeight/2, 0]) CouplingNutFastenerHoles();
 				}
 			}
 		}
@@ -506,6 +514,26 @@ module ZipTieBearingHoles() {
 
 	translate([lm8uuOutDia+zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
 }
+
+module CouplingNutFastenerHoles() {
+
+	// top left
+	translate([-13/2,-35/2,-1]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+	
+	// top right
+	translate([13/2,-35/2,-1]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+	
+	// bottom left
+	translate([-13/2,35/2,-1]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+	
+	// bottom right
+	translate([13/2,35/2,-1]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+}
+
 
 module ZModuleBottom() {
 	difference() {			
