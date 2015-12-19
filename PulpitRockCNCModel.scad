@@ -102,6 +102,10 @@ zipTieHoleDepth = mdfDepth+1;	// M3 screw depth
 // coupling nut fastener holes
 couplingNutFastenerHoleRadius = 4*mm * 0.5;	// M4 is enough for the zip-tie hole
 couplingNutFastenerHoleDepth = mdfDepth+1;	// M4 screw depth
+couplingNutWidth = 13*mm;	// distance from flat to flat
+couplingNutLength = 35*mm; 	// length of the coupling nut
+couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
+
 
 // --------------------------------
 // Choose view
@@ -114,10 +118,10 @@ Assembled();
 module Assembled() {
 
 	Front();
-    Back();
+    //Back();
     SideLeft();
     SideRight();
-	Bottom();
+	//Bottom();
 	YPlate();
 
 	SmoothRods();
@@ -168,7 +172,7 @@ module Parts() {
 // originally from metric_fastners.scad
 // modified the flat_nut module to make it right length
 // M8 * 35 mm (13mm dia)
-module CouplingNut(dia=8, width=13, height=35) {
+module CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=couplingNutLength) {
 	
 	// When you make a hexagon, the radius is the distance from the center to the corners. 
 	// To get a hexagon with a specified dimension from the center to the flats (called the apothem),
@@ -326,12 +330,32 @@ module ZipTieBearingHoles() {
 
 module CouplingNutFastenerHoles() {
 
+	couplingNutFastenerMarginSide = couplingNutFastenerHoleRadius;		// margin in the coupler width direction (diameter)
+	couplingNutFastenerMarginLength = couplingNutFastenerHoleRadius+4;	// margin in the coupler length direction
+	
+	// top left
+	translate([couplingNutWidth/2+couplingNutFastenerMarginSide,couplingNutFastenerMarginLength-couplingNutLength/2,-1*mm]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+
+	// top right
+	translate([couplingNutWidth/2+couplingNutFastenerMarginSide,-couplingNutFastenerMarginLength+couplingNutLength/2,-1*mm])
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+	
+	// bottom left
+	translate([-couplingNutWidth/2-couplingNutFastenerMarginSide,couplingNutFastenerMarginLength-couplingNutLength/2,-1*mm]) 
+	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+
+	// bottom right
+	translate([-couplingNutWidth/2-couplingNutFastenerMarginSide,-couplingNutFastenerMarginLength+couplingNutLength/2,-1*mm]) cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+
+
+	// TO BE REMOVED
 	// left
-	translate([-13/2-couplingNutFastenerHoleRadius,0,-1]) 
+	translate([-couplingNutWidth/2-couplingNutFastenerHoleRadius,0,-1]) 
 	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
 	
 	// right
-	translate([13/2+couplingNutFastenerHoleRadius,0,-1]) 
+	translate([couplingNutWidth/2+couplingNutFastenerHoleRadius,0,-1]) 
 	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
 }
 
