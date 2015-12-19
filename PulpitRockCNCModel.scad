@@ -106,6 +106,11 @@ couplingNutWidth = 13*mm;	// distance from flat to flat
 couplingNutLength = 35*mm; 	// length of the coupling nut
 couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
 
+// small coupling nut fastener plate
+couplingNutFastenerPlateDepth = 2*mm;
+couplingNutFastenerPlateHeight = 40*mm;
+couplingNutFastenerPlateWidth = 40*mm;	
+
 
 // --------------------------------
 // Choose view
@@ -118,10 +123,10 @@ Assembled();
 module Assembled() {
 
 	Front();
-    //Back();
+    Back();
     SideLeft();
     SideRight();
-	//Bottom();
+	Bottom();
 	YPlate();
 
 	SmoothRods();
@@ -167,6 +172,10 @@ module Parts() {
 	projection() translate([-150,1000,0]) ZModuleBottom();	
 	projection() translate([-300,700,0]) ZModuleSlidingBack();			
 	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
+	
+	projection() translate([-200,500,0]) CouplingNutFastenerPlate();
+	projection() translate([-250,500,0]) CouplingNutFastenerPlate();
+	projection() translate([-300,500,0]) CouplingNutFastenerPlate();
 }
 
 // originally from metric_fastners.scad
@@ -269,7 +278,7 @@ module Bearings() {
 				
 		// hexagon bolt X axis
 		translate([xAxisPos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) CouplingNut();
-		
+				
 		
 		// LM8UU Y axis (second parameter is position on the rod)
 		translate([mdfLength*1/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
@@ -278,9 +287,13 @@ module Bearings() {
 		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		
 		// hexagon bolt Y axis
-		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) CouplingNut();
-		
+		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) CouplingNut();		
 	}	
+	
+	// small coupling nut fastener plate X axis
+	// TODO: fix the position properly
+	translate([xAxisPos-zBackPlateWidth/2-20+1,500-(mdfHighSideRodPos)-mdfDepth-8,xRodMidPos]) rotate([90,90,0]) CouplingNutFastenerPlate();		
+	
 }
 
 module SideChamfered(height, depth, mdfHighSideLengthidth) {
@@ -347,16 +360,6 @@ module CouplingNutFastenerHoles() {
 
 	// bottom right
 	translate([-couplingNutWidth/2-couplingNutFastenerMarginSide,-couplingNutFastenerMarginLength+couplingNutLength/2,-1*mm]) cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-
-
-	// TO BE REMOVED
-	// left
-	translate([-couplingNutWidth/2-couplingNutFastenerHoleRadius,0,-1]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-	
-	// right
-	translate([couplingNutWidth/2+couplingNutFastenerHoleRadius,0,-1]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
 }
 
 module Front() {
@@ -486,6 +489,9 @@ module YPlate() {
 		// debug pointer to find middle position on Y plate
 		//translate([xAxisPos+8, 0, 0]) cylinder(r=10, h=300); // mid position
 	
+		// store the mid position for the threaded rod
+		threadedRodMidPos = (mdfLength*1/2)-(mdfDepth+yPlateMargin);
+		
 		// plate
 		color(Pine) {
 			difference() {
@@ -498,9 +504,7 @@ module YPlate() {
 					-( lm8uuOutDia / 2);
 					bearingRightPos = (mdfLength*2/3)-(mdfDepth+yPlateMargin)
 					-( lm8uuOutDia / 2);				
-					
-					threadedRodMidPos = (mdfLength*1/2)-(mdfDepth+yPlateMargin);
-									
+														
 					// cut out room for the zip-ties
 					// top bearings zip-tie holes
 					translate([bearingLeftPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
@@ -517,64 +521,93 @@ module YPlate() {
 				}
 			}
 		}
-				
+		
+		// small coupling nut fastener plate
+		translate([threadedRodMidPos,0,0]) CouplingNutFastenerPlate();
 	}			
+}
+
+module CouplingNutFastenerPlate() {
+
+	// small plastic coupling nut fastener plate
+	color("orange") {		
+		difference() {
+			translate([-couplingNutFastenerPlateWidth/2,yPlateHeight/2-couplingNutFastenerPlateHeight/2,-mdfDepth-couplingNutFastenerPlateDepth-8])
+			cube(size=[couplingNutFastenerPlateWidth,couplingNutFastenerPlateHeight,couplingNutFastenerPlateDepth]);
+			
+			// cut out room for the Coupling Nut fastener screw
+			translate([0,yPlateHeight/2, -mdfDepth-couplingNutFastenerPlateDepth-8]) CouplingNutFastenerHoles();
+			
+		}
+	}
 }
 
 module ZModuleBack() {
 
-	difference() {	
-		// back plate
-		cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
-		echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
+	color(Oak) 
+	{
+		difference() {	
+			// back plate
+			cube(size=[zBackPlateWidth,zBackPlateHeight,mdfDepth]);
+			echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
+			
+			// cut out room for the zip-ties
+			// top bearings zip-tie holes
+			translate([yPlateBearingMargin+lm8uuLength,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
 		
-		// cut out room for the zip-ties
-		// top bearings zip-tie holes
-		translate([yPlateBearingMargin+lm8uuLength,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
-	
-		translate([yPlateBearingMargin+lm8uuLength,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+			translate([yPlateBearingMargin+lm8uuLength,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
 
-		// bottom bearings zip-tie holes
-		translate([zBackPlateWidth-yPlateBearingMargin,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
-		
-		translate([zBackPlateWidth-yPlateBearingMargin,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+			// bottom bearings zip-tie holes
+			translate([zBackPlateWidth-yPlateBearingMargin,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+			
+			translate([zBackPlateWidth-yPlateBearingMargin,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
 
-		// cut out room for the Coupling Nut fastener screw
-		translate([zBackPlateWidth/2,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerHoles();
+			// cut out room for the Coupling Nut fastener screw
+			translate([zBackPlateWidth/2,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerHoles();
+		}
 	}
+	
+	// small coupling nut fastener plate
+	//translate([169,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerPlate();
 }
 
 // top plate with motor fastener
 module ZModuleTop() {
-	difference() {			
-		cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
-		echo("ZModule short plate dimensions in mm: ", zBackPlateWidth, zShortHeight, mdfDepth);								
-		// first hole
-		translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
+	color(Oak) 
+	{
+		difference() {			
+			cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
+			echo("ZModule short plate dimensions in mm: ", zBackPlateWidth, zShortHeight, mdfDepth);								
+			// first hole
+			translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
 
-		// second hole
-		translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
+			// second hole
+			translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
 
-		// middle hole
-		translate([zBackPlateWidth/2,zShortHeight/2+stepperExtraMargin,-1]) cylinder(r=nema17BaseHoleDia/2,h=mdfDepth+2);
+			// middle hole
+			translate([zBackPlateWidth/2,zShortHeight/2+stepperExtraMargin,-1]) cylinder(r=nema17BaseHoleDia/2,h=mdfDepth+2);
 
-		// screw holes
-		translate([zBackPlateWidth/2-nema17Mid,zShortHeight/2-nema17Mid+stepperExtraMargin,0]) Nema17ScrewHoles(); 		
+			// screw holes
+			translate([zBackPlateWidth/2-nema17Mid,zShortHeight/2-nema17Mid+stepperExtraMargin,0]) Nema17ScrewHoles(); 		
+		}
 	}
 }
 
 module ZModuleBottom() {
-	difference() {			
-		cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
-		
-		// first hole
-		translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
+	color(Oak) 
+	{
+		difference() {			
+			cube(size=[zBackPlateWidth,zShortHeight,mdfDepth]);
+			
+			// first hole
+			translate([zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
 
-		// second hole
-		translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
+			// second hole
+			translate([zBackPlateWidth-zRodMargin,zShortHeight/2,-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
 
-		// middle hole
-		translate([zBackPlateWidth/2,zShortHeight/2+stepperExtraMargin,-1]) cylinder(r=608OutDia/2,h=mdfDepth+2);																			
+			// middle hole
+			translate([zBackPlateWidth/2,zShortHeight/2+stepperExtraMargin,-1]) cylinder(r=608OutDia/2,h=mdfDepth+2);																			
+		}
 	}
 }
 
@@ -613,18 +646,15 @@ module ZModuleSlidingBottom() {
 module ZModule(exploded = 0) {
 					
 	translate([xAxisPos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
-	{
-		color(Oak) 
-		{			
-			// back plate
-			rotate([90,0,0]) ZModuleBack();
-			
-			// top plate with motor fastener
-			translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) ZModuleTop();
-			
-			// bottom plate
-			translate([0,-(zShortHeight+mdfDepth)-exploded,0]) ZModuleBottom();
-		}		
+	{					
+		// back plate
+		rotate([90,0,0]) ZModuleBack();
+		
+		// top plate with motor fastener
+		translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) ZModuleTop();
+		
+		// bottom plate
+		translate([0,-(zShortHeight+mdfDepth)-exploded,0]) ZModuleBottom();
 			
 		// 608 bearing Z axis
 		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,mdfDepth/2-608Thickness/2]) bearing(model=608);
@@ -671,5 +701,9 @@ module ZModule(exploded = 0) {
 		
 		// hexagon bolt Y axis
 		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) CouplingNut();
+		
+		// small coupling nut fastener plate
+		// TODO: fix proper positioning
+		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-8,-zPos-(slidingBackPlateLength/2)-13]) rotate([90,0,0]) CouplingNutFastenerPlate();
 	}
 }
