@@ -500,7 +500,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
 #define DEFAULT_XYJERK                0.4    // (mm/sec)
-#define DEFAULT_ZJERK                 0.8     // (mm/sec)
+#define DEFAULT_ZJERK                 0.4    // (mm/sec), was 0.8
 #define DEFAULT_EJERK                 5.0    // (mm/sec)
 
 //===========================================================================
