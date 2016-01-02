@@ -340,11 +340,19 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
 
 // Travel limits after homing
-#define X_MAX_POS 400
+// The Pulpit Rock CNC has the following dimensions:
+// X Min = 0
+// X Max = 365
+// Y Min = 0
+// Y Max = 234
+// Z Min = 0
+// Z Max = 123
+
+#define X_MAX_POS 350
 #define X_MIN_POS 0
-#define Y_MAX_POS 250
+#define Y_MAX_POS 230
 #define Y_MIN_POS 0
-#define Z_MAX_POS 200
+#define Z_MAX_POS 120
 #define Z_MIN_POS 0
 
 #define X_MAX_LENGTH (X_MAX_POS - X_MIN_POS)
@@ -481,15 +489,15 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 //// MOVEMENT SETTINGS
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-// As Cyclone is slow, the homing feedrate is set very high so it saturates to the DEFAULT_MAX_FEEDRATE defined below
+// Since PulpitRockCNC is slow, the homing feedrate is set very high so it saturates to the DEFAULT_MAX_FEEDRATE defined below
 #define HOMING_FEEDRATE {50*60, 50*60, 50*60, 0}  // set the homing speeds (mm/min) 50*60 = 3000, 50 mm per sec
 
 // default settings
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {2560,2560,2560,760*1.1}
-#define DEFAULT_MAX_FEEDRATE          {5, 5, 5, 25}         // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {3000,3000,3000,3000} // X, Y, Z, E maximum start speed for accelerated moves. For Cyclone, we saturate them since we always want accelerated moves
+#define DEFAULT_MAX_FEEDRATE          {8, 8, 5, 25}         // (mm/sec) (PIN: 5 mm per sec works well for all axis. 5 x 60 = 300, 8 x 60 = 480)
+#define DEFAULT_MAX_ACCELERATION      {3000,3000,3000,3000} // X, Y, Z, E maximum start speed for accelerated moves. For PulpitRockCNC we saturate them since we always want accelerated moves
 
-#define DEFAULT_ACCELERATION          1000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_ACCELERATION          1000   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
