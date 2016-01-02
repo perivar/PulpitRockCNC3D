@@ -348,7 +348,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // Z Min = 0
 // Z Max = 123
 
-#define X_MAX_POS 350
+#define X_MAX_POS 360
 #define X_MIN_POS 0
 #define Y_MAX_POS 230
 #define Y_MIN_POS 0
@@ -494,7 +494,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 // default settings
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {2560,2560,2560,760*1.1}
-#define DEFAULT_MAX_FEEDRATE          {8, 8, 5, 25}         // (mm/sec) (PIN: 5 mm per sec works well for all axis. 5 x 60 = 300, 8 x 60 = 480)
+#define DEFAULT_MAX_FEEDRATE          {7, 7, 5, 25}         // (mm/sec) (PIN: 5 mm/sec works well for all axis. 5 x 60 = 300, 6 x 60 = 360, 7 x 60 = 420, 8 x 60 = 480)
 #define DEFAULT_MAX_ACCELERATION      {3000,3000,3000,3000} // X, Y, Z, E maximum start speed for accelerated moves. For PulpitRockCNC we saturate them since we always want accelerated moves
 
 #define DEFAULT_ACCELERATION          1000   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
