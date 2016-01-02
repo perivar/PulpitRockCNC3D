@@ -122,16 +122,16 @@ Assembled();
 // full model view
 module Assembled() {
 
-	Front();
-    Back();
-    SideLeft();
-    SideRight();
+	//Front();
+    //Back();
+    //SideLeft();
+    //SideRight();
 	//Bottom();
 	YPlate();
 
-	SmoothRods();
+	//SmoothRods();
 	ThreadedRods();
-	StepperMotors();
+	//StepperMotors();
 	Bearings();
 
 	ZModule();		
@@ -173,9 +173,11 @@ module Parts() {
 	projection() translate([-300,700,0]) ZModuleSlidingBack();			
 	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
 	
+	/*
 	projection() translate([-200,500,0]) CouplingNutFastenerPlate();
 	projection() translate([-250,500,0]) CouplingNutFastenerPlate();
 	projection() translate([-300,500,0]) CouplingNutFastenerPlate();
+	*/
 }
 
 // originally from metric_fastners.scad
@@ -286,13 +288,24 @@ module Bearings() {
 		translate([mdfLength*1/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		
+		
+		// hex nut coupler fastener
+		// 12.5 mm from center of coupling to plate
+		// 6 mm from top flat to plate
+		www = 20;
+		hhh = 12.5;
+		lll = couplingNutLength + 10;
+		//translate([mdfLength/2-www/2,yPlatePos+(yPlateHeight/2)-lll/2,mdfWidth/2-stepperExtraMargin+couplingNutWidth/2]) cube(size=[www,lll,6]);
+		
+		
 		// hexagon bolt Y axis
-		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) CouplingNut();		
+		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		
+				
 	}	
 	
 	// small coupling nut fastener plate X axis
 	// TODO: fix the position properly
-	translate([xAxisPos-zBackPlateWidth/2-20+1,500-(mdfHighSideRodPos)-mdfDepth-8,xRodMidPos]) rotate([90,90,0]) CouplingNutFastenerPlate();		
+	//translate([xAxisPos-zBackPlateWidth/2-20+1,500-(mdfHighSideRodPos)-mdfDepth-8,xRodMidPos]) rotate([90,90,0]) CouplingNutFastenerPlate();		
 	
 }
 
@@ -522,8 +535,8 @@ module YPlate() {
 			}
 		}
 		
-		// small coupling nut fastener plate
-		translate([threadedRodMidPos,0,0]) CouplingNutFastenerPlate();
+		// small coupling nut fastener plate for Y axis
+		//translate([threadedRodMidPos,0,0.6]) CouplingNutFastenerPlate();
 	}			
 }
 
@@ -704,6 +717,6 @@ module ZModule(exploded = 0) {
 		
 		// small coupling nut fastener plate
 		// TODO: fix proper positioning
-		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-8,-zPos-(slidingBackPlateLength/2)-13]) rotate([90,0,0]) CouplingNutFastenerPlate();
+		//translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-8,-zPos-(slidingBackPlateLength/2)-13]) rotate([90,0,0]) CouplingNutFastenerPlate();
 	}
 }
