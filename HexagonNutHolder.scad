@@ -11,7 +11,7 @@
 // screw/nut dimensions
 // http://www.fairburyfastener.com/xdims_metric_nuts.htm
 screw_dia = 4.5;	// M3 = 3 mm, M4 = 4 mm - orig. 3.4
-nut_dia = 8.0;		// M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
+nut_dia = 8.2;		// M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
 nut_height = 3.2; 	// M3 = 2.3 mm, M4 = 3 mm - orig. 3
 
 // main body dimensions
@@ -37,7 +37,7 @@ lm8uu_length = 23;
 module hole() {
     couplingNutWidth = 13;	// distance from flat to flat = 13mm
 	couplingNutLength = 35; // length of the coupling nut = 35mm
-    margin = 0.5; // margin when printing
+    margin = 0.3; // margin when printing
 	
     Num_Sides = 6;			// Hexagon = 6
 	Nut_Flats = couplingNutWidth+margin; 	// Measure across the flats including margin
@@ -46,7 +46,7 @@ module hole() {
 
     // height from bottom of plate
     // 6 mm from top flat to plate
-    plateMargin = 6; // originally 2 mm
+    plateMargin = 5; // originally 2 mm
 
   	// bushing hole	
     //translate([0,0,LM8UU_dia/2+plateMargin]) rotate([90,0,0]) cylinder(r=LM8UU_dia/2, h=body_length+0.1, center=true);
