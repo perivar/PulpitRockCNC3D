@@ -1,0 +1,53 @@
+Repetier Firmware 0.92.5 for Melzi 2.0 with LCD2004 (4pin) and 5 keys
+
+Modified by axelsp @ Repetier forums, with files obtained from Mixanoid @ Repetier forums, originally programmed by person named "Hally".
+
+What I modified:
+
+==========================
+Configuration.h:
+==========================
+
+Added the following:
+#define HAVE_ADC_KEYPAD             true
+#define HAVE_LCD                    true    
+
+Defined (Line 395) the controller as:
+#define FEATURE_CONTROLLER 524
+
+Number is set in ui.h, might need to be changed if official controllers occupy it in the future.
+
+==========================
+pins.h
+==========================
+Line 961-970
+
+Defined LCD_PINS_*
+and
+ADC_KEYPAD_PIN
+
+==========================
+Repetier.h
+==========================
+Added analog section @ line 386-399
+Modified line 404, 421, 424 to reflect changes
+
+==========================
+ui.cpp
+==========================
+
+#if HAVE_ADC_KEYPAD==true section at line 3573-3627
+#if HAVE_ADC_KEYPAD==true section at line 3672-3707
+
+==========================
+ui.h
+==========================
+
+Added Controller 524 section at line 1465-1643
+
+==========================
+uiconfig.h
+==========================
+
+#ifndef HAVE_ADC_KEYPAD
+Line 369-376 and 385-394

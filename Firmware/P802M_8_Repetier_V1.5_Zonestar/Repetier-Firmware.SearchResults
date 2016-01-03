@@ -1,0 +1,10 @@
+---- Printer::kill Matches (9 in 4 files) ----
+Commands.cpp (repetier):                Printer::kill(true);
+Commands.cpp (repetier):    Printer::kill(false);
+Commands.cpp (repetier):		Printer::kill(true);
+Commands.cpp (repetier):	Printer::kill(true);
+Printer.cpp (repetier):void Printer::kill(uint8_t only_steppers)
+Printer.cpp (repetier):        if(maxInactiveTime!=0 && curtime >  maxInactiveTime ) Printer::kill(false);
+Printer.cpp (repetier):            Printer::kill(true);
+SDCard.cpp (repetier):	Printer::kill(true);
+Ui.cpp (repetier):            Printer::kill(true);
