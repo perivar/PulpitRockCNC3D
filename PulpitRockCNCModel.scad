@@ -6,6 +6,7 @@ include <stepper.scad>
 use <linear_bearing.scad>
 use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
+use <HexagonNutHolder.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
@@ -122,16 +123,16 @@ Assembled();
 // full model view
 module Assembled() {
 
-	//Front();
-    //Back();
-    //SideLeft();
-    //SideRight();
+	Front();
+    Back();
+    SideLeft();
+    SideRight();
 	//Bottom();
 	YPlate();
-
-	//SmoothRods();
+    
+	SmoothRods();
 	ThreadedRods();
-	//StepperMotors();
+	StepperMotors();
 	Bearings();
 
 	ZModule();		
@@ -279,7 +280,7 @@ module Bearings() {
 		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
 				
 		// hexagon bolt X axis
-		translate([xAxisPos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) CouplingNut();
+		translate([xAxisPos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([90,0,0]) rotate([0,90,0]) CouplingNut();
 				
 		
 		// LM8UU Y axis (second parameter is position on the rod)
@@ -287,16 +288,11 @@ module Bearings() {
 		translate([mdfLength*2/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*1/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		
-		
+				
 		// hex nut coupler fastener
 		// 12.5 mm from center of coupling to plate
 		// 6 mm from top flat to plate
-		www = 20;
-		hhh = 12.5;
-		lll = couplingNutLength + 10;
-		//translate([mdfLength/2-www/2,yPlatePos+(yPlateHeight/2)-lll/2,mdfWidth/2-stepperExtraMargin+couplingNutWidth/2]) cube(size=[www,lll,6]);
-		
+		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin+12.5]) rotate([0,180,0]) HexagonNutHolder();
 		
 		// hexagon bolt Y axis
 		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		
@@ -356,23 +352,19 @@ module ZipTieBearingHoles() {
 
 module CouplingNutFastenerHoles() {
 
-	couplingNutFastenerMarginSide = couplingNutFastenerHoleRadius;		// margin in the coupler width direction (diameter)
-	couplingNutFastenerMarginLength = couplingNutFastenerHoleRadius+4;	// margin in the coupler length direction
-	
-	// top left
-	translate([couplingNutWidth/2+couplingNutFastenerMarginSide,couplingNutFastenerMarginLength-couplingNutLength/2,-1*mm]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-
-	// top right
-	translate([couplingNutWidth/2+couplingNutFastenerMarginSide,-couplingNutFastenerMarginLength+couplingNutLength/2,-1*mm])
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-	
-	// bottom left
-	translate([-couplingNutWidth/2-couplingNutFastenerMarginSide,couplingNutFastenerMarginLength-couplingNutLength/2,-1*mm]) 
-	cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
-
-	// bottom right
-	translate([-couplingNutWidth/2-couplingNutFastenerMarginSide,-couplingNutFastenerMarginLength+couplingNutLength/2,-1*mm]) cylinder(h=couplingNutFastenerHoleDepth+1*mm, r=couplingNutFastenerHoleRadius);
+	screw_dia = 4*mm;	
+	screw_space_x = 26;
+	screw_space_y = 29;
+		
+	// screw holes
+	translate([screw_space_x/2,screw_space_y/2,-0.1])
+	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
+	translate([-screw_space_x/2,screw_space_y/2,-0.1])
+	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
+	translate([screw_space_x/2,-screw_space_y/2,-0.1])
+	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
+	translate([-screw_space_x/2,-screw_space_y/2,-0.1])
+	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
 }
 
 module Front() {
@@ -580,6 +572,11 @@ module ZModuleBack() {
 		}
 	}
 	
+	// hex nut coupler fastener
+	// 12.5 mm from center of coupling to plate
+	// 6 mm from top flat to plate
+	translate([50,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,180,90]) HexagonNutHolder();
+	
 	// small coupling nut fastener plate
 	//translate([169,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerPlate();
 }
@@ -714,6 +711,11 @@ module ZModule(exploded = 0) {
 		
 		// hexagon bolt Y axis
 		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) CouplingNut();
+		
+		// hex nut coupler fastener
+		// 12.5 mm from center of coupling to plate
+		// 6 mm from top flat to plate
+		translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();		
 		
 		// small coupling nut fastener plate
 		// TODO: fix proper positioning
