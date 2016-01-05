@@ -15,7 +15,7 @@ Version Number: V1.6
 Modified: 2015-08-20
 Modifications:
 1. hot bed temperature table
-2.
+2. since v 1.5 - added a load filament feature
 */
 
 #ifndef CONFIGURATION_H
