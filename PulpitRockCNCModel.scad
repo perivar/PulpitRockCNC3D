@@ -13,6 +13,8 @@ use <HexagonNutHolder.scad>
 $fa=0.5;   	// default minimum facet angle
 $fs=0.5; 	// default minimum facet size
 
+epsilon = 0.1*mm; // small tolerance used for CSG subtraction/addition
+	
 // Linear Bearing LM8UU
 // 24x15mm, Inside diameter: 8mm
 //linearBearing(model="LM8UU");
@@ -107,11 +109,6 @@ couplingNutWidth = 13*mm;	// distance from flat to flat
 couplingNutLength = 35*mm; 	// length of the coupling nut
 couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
 
-// small coupling nut fastener plate
-couplingNutFastenerPlateDepth = 2*mm;
-couplingNutFastenerPlateHeight = 40*mm;
-couplingNutFastenerPlateWidth = 40*mm;	
-
 
 // --------------------------------
 // Choose view
@@ -129,12 +126,11 @@ module Assembled() {
     SideRight();
 	//Bottom();
 	YPlate();
-    
 	SmoothRods();
 	ThreadedRods();
 	StepperMotors();
 	Bearings();
-
+	Fasteners();
 	ZModule();		
 }
 
@@ -151,6 +147,7 @@ module Exploded() {
 	SmoothRods();
 	ThreadedRods();
 	Bearings();
+	Fasteners();	
 	
 	StepperMotors(exploded = expanded);
 	
@@ -173,12 +170,7 @@ module Parts() {
 	projection() translate([-150,1000,0]) ZModuleBottom();	
 	projection() translate([-300,700,0]) ZModuleSlidingBack();			
 	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
-	
-	/*
-	projection() translate([-200,500,0]) CouplingNutFastenerPlate();
-	projection() translate([-250,500,0]) CouplingNutFastenerPlate();
-	projection() translate([-300,500,0]) CouplingNutFastenerPlate();
-	*/
+
 }
 
 // originally from metric_fastners.scad
@@ -197,12 +189,11 @@ module CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=coupli
 	center = true;	
 		
 	// center 
-	//translate([Nut_Flats/2,0,0]) // measure that the nut radius was correct
 	rotate([0,0,180/Num_Sides]) 
-	difference()
+		difference()
 		{
 			cylinder(r=Nut_Rad,h=height,$fn=Num_Sides,center=center);
-			translate([0,0,-1])cylinder(r=dia/2,h=height+2,center=center);
+			translate([0,0,0]) cylinder(r=dia/2,h=height+2*epsilon,center=center);
 		}
 }
 
@@ -264,6 +255,21 @@ module ThreadedRods() {
 	}
 }
 
+module Fasteners() {
+
+	// hexagon bolt X axis
+	color (Aluminum) translate([xAxisPos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([90,0,0]) rotate([0,90,0]) CouplingNut();
+	
+	// X axis hex nut coupler fastener
+	// 12.5 mm from center of coupling to plate
+	// 6 mm from top flat to plate
+	color ("White") translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin+12.5]) rotate([0,180,0]) HexagonNutHolder();
+	
+	// hexagon bolt Y axis
+	color (Aluminum) translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		
+		
+}
+
 module Bearings() {
 	color (Aluminum) {
 		
@@ -278,31 +284,15 @@ module Bearings() {
 		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
 		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
 		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-				
-		// hexagon bolt X axis
-		translate([xAxisPos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([90,0,0]) rotate([0,90,0]) CouplingNut();
-				
+								
 		
 		// LM8UU Y axis (second parameter is position on the rod)
 		translate([mdfLength*1/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*1/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
 		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
-				
-		// hex nut coupler fastener
-		// 12.5 mm from center of coupling to plate
-		// 6 mm from top flat to plate
-		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin+12.5]) rotate([0,180,0]) HexagonNutHolder();
-		
-		// hexagon bolt Y axis
-		translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		
-				
+							
 	}	
-	
-	// small coupling nut fastener plate X axis
-	// TODO: fix the position properly
-	//translate([xAxisPos-zBackPlateWidth/2-20+1,500-(mdfHighSideRodPos)-mdfDepth-8,xRodMidPos]) rotate([90,90,0]) CouplingNutFastenerPlate();		
-	
 }
 
 module SideChamfered(height, depth, mdfHighSideLengthidth) {
@@ -357,14 +347,14 @@ module CouplingNutFastenerHoles() {
 	screw_space_y = 29;
 		
 	// screw holes
-	translate([screw_space_x/2,screw_space_y/2,-0.1])
-	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
-	translate([-screw_space_x/2,screw_space_y/2,-0.1])
-	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
-	translate([screw_space_x/2,-screw_space_y/2,-0.1])
-	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
-	translate([-screw_space_x/2,-screw_space_y/2,-0.1])
-	cylinder(r=screw_dia/2, h=mdfDepth+1, $fn=20);
+	translate([screw_space_x/2,screw_space_y/2,-epsilon])
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	translate([-screw_space_x/2,screw_space_y/2,-epsilon])
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	translate([screw_space_x/2,-screw_space_y/2,-epsilon])
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	translate([-screw_space_x/2,-screw_space_y/2,-epsilon])
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
 }
 
 module Front() {
@@ -525,26 +515,8 @@ module YPlate() {
 					translate([threadedRodMidPos,yPlateHeight/2, 0]) CouplingNutFastenerHoles();
 				}
 			}
-		}
-		
-		// small coupling nut fastener plate for Y axis
-		//translate([threadedRodMidPos,0,0.6]) CouplingNutFastenerPlate();
+		}		
 	}			
-}
-
-module CouplingNutFastenerPlate() {
-
-	// small plastic coupling nut fastener plate
-	color("orange") {		
-		difference() {
-			translate([-couplingNutFastenerPlateWidth/2,yPlateHeight/2-couplingNutFastenerPlateHeight/2,-mdfDepth-couplingNutFastenerPlateDepth-8])
-			cube(size=[couplingNutFastenerPlateWidth,couplingNutFastenerPlateHeight,couplingNutFastenerPlateDepth]);
-			
-			// cut out room for the Coupling Nut fastener screw
-			translate([0,yPlateHeight/2, -mdfDepth-couplingNutFastenerPlateDepth-8]) CouplingNutFastenerHoles();
-			
-		}
-	}
 }
 
 module ZModuleBack() {
@@ -572,13 +544,10 @@ module ZModuleBack() {
 		}
 	}
 	
-	// hex nut coupler fastener
+	// z axis hex nut coupler fastener
 	// 12.5 mm from center of coupling to plate
 	// 6 mm from top flat to plate
-	translate([50,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,180,90]) HexagonNutHolder();
-	
-	// small coupling nut fastener plate
-	//translate([169,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerPlate();
+	color ("White") translate([50,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,180,90]) HexagonNutHolder();	
 }
 
 // top plate with motor fastener
@@ -710,15 +679,11 @@ module ZModule(exploded = 0) {
 		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
 		
 		// hexagon bolt Y axis
-		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) CouplingNut();
+		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,90]) CouplingNut();
 		
-		// hex nut coupler fastener
+		// Y axis hex nut coupler fastener
 		// 12.5 mm from center of coupling to plate
 		// 6 mm from top flat to plate
-		translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();		
-		
-		// small coupling nut fastener plate
-		// TODO: fix proper positioning
-		//translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-8,-zPos-(slidingBackPlateLength/2)-13]) rotate([90,0,0]) CouplingNutFastenerPlate();
+		color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();				
 	}
 }

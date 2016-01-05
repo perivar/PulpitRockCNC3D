@@ -1,11 +1,12 @@
 // Hexagon Nut Holder
 // Inspired/derived from:
-//http://www.thingiverse.com/thing:22065
-//Which is derived from:
+// http://www.thingiverse.com/thing:22065
+
+// Which is derived from:
 // http://www.thingiverse.com/thing:14942
 // http://www.thingiverse.com/thing:14814
-//And is a drop-in replacement for:
-//http://www.thingiverse.com/thing:10287
+// And is a drop-in replacement for:
+// http://www.thingiverse.com/thing:10287
 
 
 // screw/nut dimensions
@@ -17,8 +18,10 @@ nut_height = 3.2; 	// M3 = 2.3 mm, M4 = 3 mm - orig. 3
 // main body dimensions
 body_width = 21;
 gap_width = 10;
-body_height = 22;
+body_height = 23;	// original height: 22 mm
 body_length = 40;
+epsilon = 0.1; // small tolerance used for CSG subtraction/addition
+
 
 // Linear Bearing LM8UU
 // 24x15mm, Inside diameter: 8mm
@@ -39,22 +42,22 @@ HexagonNutHolder();
 module hexagonNutHole() {
 	couplingNutWidth = 13;	// distance from flat to flat = 13mm
 	couplingNutLength = 35; // length of the coupling nut = 35mm
-	margin = 0.3; // margin when printing, TODO: can be even smaller. 0.2?
+	extramargin = 0.2; // margin when printing (0.3). TODO: can be even smaller. 0.2?
 	
 	Num_Sides = 6;			// Hexagon = 6
-	Nut_Flats = couplingNutWidth+margin; 	// Measure across the flats including margin
+	Nut_Flats = couplingNutWidth+extramargin; 	// Measure across the flats including margin
 	Flats_Rad = Nut_Flats/2;
 	Nut_Rad = Flats_Rad / cos(180/Num_Sides);
 
 	// height from bottom of plate
 	// 6 mm from top flat to plate
-	plateMargin = 5; // originally 2 mm
+	plateMargin = 6; // originally 2 mm
 
 	// bushing hole	
-	//translate([0,0,LM8UU_dia/2+plateMargin]) rotate([90,0,0]) cylinder(r=LM8UU_dia/2, h=body_length+0.1, center=true);
+	//translate([0,0,LM8UU_dia/2+plateMargin]) rotate([90,0,0]) cylinder(r=LM8UU_dia/2, h=body_length+2*epsilon, center=true);
 	
 	// hex nut hole	
-	translate([0,0,Nut_Flats/2+plateMargin]) rotate([90,0,0]) cylinder(r=Nut_Rad,h=body_length+0.1,$fn=Num_Sides, center=true);
+	translate([0,0,Nut_Flats/2+plateMargin]) rotate([90,0,0]) cylinder(r=Nut_Rad,h=body_length+2*epsilon,$fn=Num_Sides, center=true);
 }
 
 module mount_plate() {
@@ -67,23 +70,23 @@ module mount_plate() {
 		if (true) {
 			// nut traps
 			translate([screw_space_x/2,screw_space_y/2,plate_height-nut_height])
-			cylinder(r=nut_dia/2, h=plate_height-2, $fn=6);
+			cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);
 			translate([-screw_space_x/2,screw_space_y/2,plate_height-nut_height])
-			cylinder(r=nut_dia/2, h=plate_height+1, $fn=6);
+			cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);
 			translate([screw_space_x/2,-screw_space_y/2,plate_height-nut_height])
-			cylinder(r=nut_dia/2, h=plate_height-2, $fn=6);
+			cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);
 			translate([-screw_space_x/2,-screw_space_y/2,plate_height-nut_height])
-			cylinder(r=nut_dia/2, h=plate_height-2, $fn=6);
+			cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);
 
 			// screw holes
-			translate([screw_space_x/2,screw_space_y/2,-0.1])
-			cylinder(r=screw_dia/2, h=plate_height+1, $fn=20);
-			translate([-screw_space_x/2,screw_space_y/2,-0.1])
-			cylinder(r=screw_dia/2, h=plate_height+1, $fn=20);
-			translate([screw_space_x/2,-screw_space_y/2,-0.1])
-			cylinder(r=screw_dia/2, h=plate_height+1, $fn=20);
-			translate([-screw_space_x/2,-screw_space_y/2,-0.1])
-			cylinder(r=screw_dia/2, h=plate_height+1, $fn=20);
+			translate([screw_space_x/2,screw_space_y/2,-epsilon])
+			cylinder(r=screw_dia/2, h=plate_height+epsilon, $fn=20);
+			translate([-screw_space_x/2,screw_space_y/2,-epsilon])
+			cylinder(r=screw_dia/2, h=plate_height+epsilon, $fn=20);
+			translate([screw_space_x/2,-screw_space_y/2,-epsilon])
+			cylinder(r=screw_dia/2, h=plate_height+epsilon, $fn=20);
+			translate([-screw_space_x/2,-screw_space_y/2,-epsilon])
+			cylinder(r=screw_dia/2, h=plate_height+epsilon, $fn=20);
 		}		
 	}
 }
@@ -106,7 +109,7 @@ module HexagonNutHolder() {
 			rotate([0,90,0])
 			cylinder(r=nut_dia/2+2, h=body_width/2 - gap_width/2, $fn=6);
 
-			// Screw hole surround
+			// screw hole surround
 			translate([-gap_width/2,0,screw_elevation])
 			rotate([0,-90,0])
 			cylinder(r=nut_dia/2+2, h=(body_width-gap_width)/2 - nut_height, $fn=20);
@@ -117,7 +120,7 @@ module HexagonNutHolder() {
 		
 		// top gap
 		translate([0,0,20])
-		cube([gap_width,body_length+0.1,20],center=true);
+		cube([gap_width,body_length,20],center=true);
 
 		// screw hole (one all the way through)
 		translate([0,0,screw_elevation])
@@ -127,11 +130,11 @@ module HexagonNutHolder() {
 		// nut trap
 		translate([body_width/2-nut_height,0,screw_elevation])
 		rotate([0,90,0])
-		cylinder(r=nut_dia/2, h=nut_height+.01,$fn=6);
+		cylinder(r=nut_dia/2, h=nut_height+epsilon,$fn=6);
 
-		// Screw hole
+		// screw hole
 		translate([-(body_width/2-nut_height),0,screw_elevation])
 		rotate([0,-90,0])
-		cylinder(r=nut_dia/2, h=nut_height+.01,$fn=20);
+		cylinder(r=nut_dia/2, h=nut_height+epsilon,$fn=20);
 	}
 }
