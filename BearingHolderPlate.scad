@@ -10,8 +10,8 @@ Abbrev.	Inner D.	Outer D.	Thickness	Notes
 603		3 mm		9 mm		5 mm	 
 */
 
-bearingInnerDia = 8; 		// not used
-bearingOuterDia = 22;		// outer dimensions
+bearingInnerDia = 8; 		
+bearingOuterDia = 22;	// outer dimensions
 bearingThickness = 7;	// thickness
 bearingClearance = 0.3;	// clearance around the outer dimensions
 
@@ -36,7 +36,7 @@ nut_dia = 8.2;		// M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
 nut_height = 3.2; 	// M3 = 2.3 mm, M4 = 3 mm - orig. 3
 
 // mounting plate dimensions
-plate_height = 4;
+plate_height = 5;
 plate_length = 35;
 plate_width = 35;
 screw_space_x = 22;
@@ -130,12 +130,20 @@ module bearingHolePlate() {
 	{
 		mount_plate();
 		translate([0,0,-epsilon]) 
-		cylinder(r=bearingDiameter/2,h=bearingThickness+2*epsilon);
+		cylinder(r=bearingDiameter/2,h=bearingThickness+2*epsilon);	
 	}
 }
 
 mdfDepth = 12.7;
 
-translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();
-translate([0,0,plate_height]) 
-cylinder(r=bearingDiameter/2,h=(mdfDepth-bearingThickness)/2);
+difference() 
+{
+	union() {
+		translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();	
+		cylinder(r=bearingDiameter/2,h=plate_height+(mdfDepth-bearingThickness)/2);
+	}
+
+	translate([0,0,-epsilon]) 
+	cylinder(r=bearingInnerDia/2+2,h=plate_height+bearingThickness+2*epsilon);
+}
+
