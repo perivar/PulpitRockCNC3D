@@ -33,7 +33,7 @@ clearance = 0.0;
 // http://www.fairburyfastener.com/xdims_metric_nuts.htm
 screw_dia = 4.5;	// M3 = 3 mm, M4 = 4 mm - orig. 3.4
 nut_dia = 8.2;		// M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
-nut_height = 3.2; 	// M3 = 2.3 mm, M4 = 3 mm - orig. 3
+nut_height = 2.5; 	// M3 = 2.3 mm, M4 = 3 mm - orig. 3
 
 // mounting plate dimensions
 plate_height = 5;
@@ -140,7 +140,7 @@ difference()
 {
 	union() {
 		translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();	
-		cylinder(r=bearingDiameter/2,h=plate_height+(mdfDepth-bearingThickness)/2);
+		cylinder(r=bearingDiameter/2+0.5,h=plate_height+(mdfDepth-bearingThickness)/2);
 	}
 
 	translate([0,0,-epsilon]) 
