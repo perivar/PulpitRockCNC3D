@@ -89,7 +89,7 @@ module z_probe_holder() {
     // LJ18A3-8-Z/BX        
     probediameter = 18.3;
 
-    probemargin = 7; // 3
+    probemargin = 5; // 3
     
     width = probediameter+2*probemargin; // original 20.3
     depth = 3.5; // 3.5
@@ -101,10 +101,10 @@ module z_probe_holder() {
         union() {
             translate([0,depth,0]) rotate([90,0,0]) rcube([width,length,depth],radius=rounded_radius,fn=30);
                        
-            // small triangle support
-            trianglemargin = 2; // 6.7
-            trianglesize = 4;
-            rotate([0,-90,180]) translate([0,0,0]) triangle(trianglesize,trianglesize,width-trianglemargin);
+            // large triangle support
+            trianglesize = 26;
+            triangledepth = 2;
+            rotate([0,0,0]) translate([0,3.5,0]) triangle(trianglesize,trianglesize,triangledepth);
         }
 
         rotate([-90,0,0]) translate([width/2,-length/2,-epsilon]) cylinder(r=probediameter/2,h=depth+2*epsilon);
@@ -117,7 +117,7 @@ posy = 19.600000381469727; // 19.6
 posz = 59.5; // 61.5
 translate([posx,posy,posz]) color("blue")z_probe_holder();
 
-move=16;
+move=14;
 //translate([posx+move,posy+3.5,posz+move]) rotate([-90,0,0]) color("green") hexagon_nut();
 
 //translate([posx+move,posy-3.5,posz+move]) rotate([-90,0,0]) color("green") hexagon_nut();
