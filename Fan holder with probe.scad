@@ -17,6 +17,43 @@ module triangle(o_len, a_len, depth)
     }
 }
 
+// the hexagon nut on the LJ18A3-8-Z/BX   
+// is 24 mm wide and 3.5 mm thick
+module hexagon_nut(width=24, depth=3.5, center=false, rotate=false) {
+    
+   	// When you make a hexagon, the radius is the distance from the center to the corners. 
+	// To get a hexagon with a specified dimension from the center to the flats (called the apothem),
+	// divide your radius by cos(180/6). 
+	// This works for other polygons too if you change the 6 to whatever $fn value you're using. 
+	Num_Sides = 6;		// Hexagon = 6
+	Nut_Flats = width; 	// Measure across the flats
+	Flats_Rad = Nut_Flats/2;
+	Nut_Rad = Flats_Rad / cos(180/Num_Sides);	
+	
+    probediameter = 18.3;
+    
+    // determine if we should rotate
+    rot_degrees = rotate ? 180/Num_Sides : 0;	
+    
+    rotate([0,0,rot_degrees]) {
+        difference() {
+            cylinder(r=Nut_Rad,h=depth,$fn=Num_Sides,center=center);
+
+            translate([0,0,-epsilon]) cylinder(r=probediameter/2,h=depth+2*epsilon);            
+        }
+    }
+}
+
+// create a round holder for the hexagon nut
+module hexagon_nut_holder(base_height=7, dia=34, depth=3.5) {
+		
+	difference()
+	{
+        cylinder(d=dia, h=base_height);
+        translate([0,0,base_height-depth]) hexagon_nut(depth=depth+epsilon);
+		}
+}
+
 module rcube(size = [1, 1, 1], center = false, radius = 1.5, fn = 8) {
 	
 	translate = (center == true) ?
@@ -52,29 +89,38 @@ module z_probe_holder() {
     // LJ18A3-8-Z/BX        
     probediameter = 18.3;
 
-    probemargin = 3;
+    probemargin = 7; // 3
     
     width = probediameter+2*probemargin; // original 20.3
-    depth = 3.5;
+    depth = 3.5; // 3.5
     length = probediameter+2*probemargin;
-    radius = 4/2; // 4 mm
+    rounded_radius = 4/2; // 4 mm diameter
     
 	difference()
 	{
         union() {
-            translate([0,depth,0]) rotate([90,0,0]) rcube([width,length,depth],radius=radius,fn=30);
+            translate([0,depth,0]) rotate([90,0,0]) rcube([width,length,depth],radius=rounded_radius,fn=30);
                        
             // small triangle support
-            trianglemargin = 12;
-            trianglesize = 3;
-            rotate([0,-90,180]) translate([0,0,trianglemargin/2]) triangle(trianglesize,trianglesize,width-trianglemargin);
+            trianglemargin = 2; // 6.7
+            trianglesize = 4;
+            rotate([0,-90,180]) translate([0,0,0]) triangle(trianglesize,trianglesize,width-trianglemargin);
         }
 
-        rotate([-90,0,0]) translate([width/2,-length/2,-epsilon]) cylinder(r=probediameter/2,h=3.5+2*epsilon);
+        rotate([-90,0,0]) translate([width/2,-length/2,-epsilon]) cylinder(r=probediameter/2,h=depth+2*epsilon);
     }
 }
 
 fan_holder(1); 
-// orignal position 10.14,19.6,61.5
-translate([10.14,19.6,61.5]) z_probe_holder();
+posx = 10.140000343322754; // 10.14
+posy = 19.600000381469727; // 19.6
+posz = 59.5; // 61.5
+translate([posx,posy,posz]) color("blue")z_probe_holder();
 
+move=16;
+//translate([posx+move,posy+3.5,posz+move]) rotate([-90,0,0]) color("green") hexagon_nut();
+
+//translate([posx+move,posy-3.5,posz+move]) rotate([-90,0,0]) color("green") hexagon_nut();
+
+
+//hexagon_nut_holder();
