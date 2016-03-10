@@ -101,4 +101,4 @@ module nut_trap() {
     }            
 }
 
-translate([-length,-base_width+epsilon,height]) rotate([180,0,0]) LM8UUHolder();
+translate([0,width+base_width-epsilon,height]) rotate([180,0,0]) LM8UUHolder();
