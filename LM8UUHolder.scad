@@ -19,7 +19,7 @@ lm8uuOutDia = 15 + lm8uu_margin; // 15
 lm8uuInDia = 8 + 2.5; // 8
 
 // holder dimensions
-margin = 2.5;
+margin = 2.0;
 length = lm8uuLength + 2*margin; // 31.10;
 width = lm8uuOutDia + 2*margin; // 22.10;
 height = lm8uuOutDia + 2*margin; // 22.46;
@@ -50,7 +50,7 @@ module LM8UUHolder() {
             rotate([0,90,0]) translate([-height+lm8uuOutDia/2,width/2,(length-lm8uuLength)/2]) cylinder(r=lm8uuOutDia/2, h=lm8uuLength);
      
             // cutout for lm8uu   
-            sidemargin = 2.5;
+            sidemargin = 1.0;
             topmargin = lm8uuOutDia/2-2*epsilon;
             translate([(length-lm8uuLength)/2,(width-lm8uuOutDia)/2+sidemargin/2,height-topmargin]) cube([lm8uuLength,lm8uuOutDia-sidemargin,topmargin+epsilon]);
         
