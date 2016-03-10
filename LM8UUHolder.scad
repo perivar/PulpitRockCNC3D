@@ -6,7 +6,7 @@ $fn=30;
 
 // screw/nut dimensions
 //chttp://www.fairburyfastener.com/xdims_metric_nuts.htm
-screw_margin = 0.5;
+screw_margin = 0.6;
 screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
 nut_dia = 7.7 + screw_margin; // M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
 nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
@@ -19,7 +19,7 @@ lm8uuOutDia = 15 + lm8uu_margin; // 15
 lm8uuInDia = 8 + 2.5; // 8
 
 // holder dimensions
-margin = 2;
+margin = 2.5;
 length = lm8uuLength + 2*margin; // 31.10;
 width = lm8uuOutDia + 2*margin; // 22.10;
 height = lm8uuOutDia + 2*margin; // 22.46;
@@ -50,15 +50,15 @@ module LM8UUHolder() {
             rotate([0,90,0]) translate([-height+lm8uuOutDia/2,width/2,(length-lm8uuLength)/2]) cylinder(r=lm8uuOutDia/2, h=lm8uuLength);
      
             // cutout for lm8uu   
-            sidemargin = 1.5;
+            sidemargin = 2.5;
             topmargin = lm8uuOutDia/2-2*epsilon;
             translate([(length-lm8uuLength)/2,(width-lm8uuOutDia)/2+sidemargin/2,height-topmargin]) cube([lm8uuLength,lm8uuOutDia-sidemargin,topmargin+epsilon]);
         
-            cutouts();                     
+            //cutouts();                     
         }               
     }
     
-    nut_traps();
+    nut_traps2();
 }
 
 module cutouts() {
@@ -67,6 +67,36 @@ module cutouts() {
         
     // cutouts
     translate([length-cutout_margin-cutout_width, -epsilon, height-cutout_height+epsilon]) cube([cutout_width, width+2*epsilon, cutout_height+2*epsilon]);  
+}
+
+module nut_trap2() {
+    union() {
+        // nut traps
+        cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);
+
+        // screw holes
+        cylinder(r=screw_dia/2, h=base_height+2*epsilon, $fn=20);		         
+    }    
+}
+
+module nut_traps2() {
+    
+    translate([0,-base_width+epsilon,height-base_height]) 
+    difference() {
+        cube([length,base_width,base_height]);
+
+        translate([margin+nut_dia/2,base_width/2,-epsilon]) nut_trap2();
+
+        translate([length-margin-nut_dia/2,base_width/2,-epsilon]) nut_trap2();
+    }
+
+    translate([0,width-epsilon,height-base_height]) 
+    difference() {    
+        cube([length,base_width,base_height]);        
+        translate([margin+nut_dia/2,base_width/2,-epsilon]) nut_trap2();
+
+        translate([length-margin-nut_dia/2,base_width/2,-epsilon]) nut_trap2();
+    }
 }
 
 module nut_traps() {
