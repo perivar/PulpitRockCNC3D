@@ -13,10 +13,11 @@ nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
 
 // Linear Bearing LM8UU dimensions
 // 24x15mm, Inside diameter: 8mm
-lm8uu_margin = 0.7;
+lm8uu_margin = 0.5; // 0.5 is very tight
 lm8uuLength = 24 + lm8uu_margin; // 24
 lm8uuOutDia = 15 + lm8uu_margin; // 15
 lm8uuInDia = 8 + 2.5; // 8
+lm8uu_sidemargin = 0.5; // how much should we add to the sides on top of the lm8uu to keep the bearing inside (1.0 mm is a bit tight)
 
 // holder dimensions
 margin = 2.0;
@@ -50,9 +51,8 @@ module LM8UUHolder() {
             rotate([0,90,0]) translate([-height+lm8uuOutDia/2,width/2,(length-lm8uuLength)/2]) cylinder(r=lm8uuOutDia/2, h=lm8uuLength);
      
             // cutout for lm8uu   
-            sidemargin = 1.0;
             topmargin = lm8uuOutDia/2-2*epsilon;
-            translate([(length-lm8uuLength)/2,(width-lm8uuOutDia)/2+sidemargin/2,height-topmargin]) cube([lm8uuLength,lm8uuOutDia-sidemargin,topmargin+epsilon]);
+            translate([(length-lm8uuLength)/2,(width-lm8uuOutDia)/2+lm8uu_sidemargin/2,height-topmargin]) cube([lm8uuLength,lm8uuOutDia-lm8uu_sidemargin,topmargin+epsilon]);
         
             //cutouts();                     
         }               
