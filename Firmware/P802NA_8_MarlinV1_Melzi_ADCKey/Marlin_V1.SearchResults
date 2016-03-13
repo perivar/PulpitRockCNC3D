@@ -1,0 +1,7 @@
+---- 501 Matches (9 in 3 files) ----
+Configuration.h (marlin):// 501 is 100K thermistor -B3950  (4.7k pullup) =========Zonestar ==========
+Configuration.h (marlin):#define TEMP_SENSOR_0 		501
+Configuration.h (marlin):#define TEMP_SENSOR_BED 	501
+Marlin_main.cpp (marlin):    case 501: // M501 Read settings from EEPROM
+Thermistortables.h (marlin):#if (THERMISTORHEATER_0 == 501) || (THERMISTORHEATER_1 == 501) || (THERMISTORHEATER_2 == 501) || (THERMISTORBED == 501) //100k ParCan thermistor (104GT-2)
+Thermistortables.h (marlin):   {501*OVERSAMPLENR, 116},
