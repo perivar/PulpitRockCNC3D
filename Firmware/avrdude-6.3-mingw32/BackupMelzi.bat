@@ -6,14 +6,17 @@
 @echo Author:Per Ivar Nerseth (Based on Update Tool from Hally @ zonestar3d)
 @echo #######################################################################
 @pause
-@echo Please Input ComPort Number and press ENTER (E.g. 8)
+@echo Please Input ComPort Number and press ENTER (e.g. 8)
 @set/p x= >nul
-
-@avrdude -p m1284p -b57600 -c Arduino -P COM%x% -U flash:r:MelziBackup-flash.hex:i
-@avrdude -p m1284p -b57600 -c Arduino -P COM%x% -U eeprom:r:MelziBackup-eeprom.hex:i
-@avrdude -p m1284p -b57600 -c Arduino -P COM%x% -U hfuse:r:MelziBackup-hfuse.hex:i
-@avrdude -p m1284p -b57600 -c Arduino -P COM%x% -U lfuse:r:MelziBackup-lfuse.hex:i
-@avrdude -p m1284p -b57600 -c Arduino -P COM%x% -U efuse:r:MelziBackup-efuse.hex:i
+:inputfilename
+@echo Please Input File Name and press ENTER (without .hex extension)
+@set/p filename= >nul
+:start
+@avrdude -p m1284p -b115200 -c Arduino -P COM%x% -U flash:r:%filename%-flash.hex:i
+@avrdude -p m1284p -b115200 -c Arduino -P COM%x% -U eeprom:r:%filename%-eeprom.hex:i
+@avrdude -p m1284p -b115200 -c Arduino -P COM%x% -U hfuse:r:%filename%-hfuse.hex:i
+@avrdude -p m1284p -b115200 -c Arduino -P COM%x% -U lfuse:r:%filename%-lfuse.hex:i
+@avrdude -p m1284p -b115200 -c Arduino -P COM%x% -U efuse:r:%filename%-efuse.hex:i
 
 @echo Backup Finished!
 @pause

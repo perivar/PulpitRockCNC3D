@@ -1,10 +1,9 @@
+@echo off
 @color 9E
 @echo #######################################################################
-@echo           3D Printer Control Board Firmware Updata Tool
-@echo                    for AVR ATMAGE MCU ONLY
-@echo Date:2015-05-05
-@echo Author:Hally
-@echo Web:www.zonestar3d.com
+@echo           Restore Melzi Flash Image
+@echo Date:2016-03-17
+@echo Author: perivar@nerseth.com
 @echo #######################################################################
 @pause
 @echo Please Input ComPort Number and press ENTER (e.g. 8)
@@ -16,6 +15,17 @@
 @echo [ERROR]File is not exist or filename is error!
 @goto inputfilename
 :start
-@avrdude -p m1284p -b57600 -c Arduino -P COM%x% -e -U flash:w:%filename%.hex
-@echo Updata Finished!
+REM C:\Users\perivar.nerseth\Desktop\MAKER\arduino-1.6.7\hardware\tools\avr/bin/avrdude ^
+REM -CC:\Users\perivar.nerseth\Desktop\MAKER\arduino-1.6.7\hardware\tools\avr/etc/avrdude.conf ^
+REM C:\Users\perivar.nerseth\Desktop\MAKER\arduino-1.0.5-r2\hardware/tools/avr/bin/avrdude ^
+REM -CC:\Users\perivar.nerseth\Desktop\MAKER\arduino-1.0.5-r2\hardware/tools/avr/etc/avrdude.conf ^
+@avrdude ^
+-p atmega1284p ^
+-c arduino ^
+-P COM%x% ^
+-b 115200 ^
+-D ^
+-U flash:w:%filename%.hex:i ^
+
+@echo Update Finished!
 @pause
