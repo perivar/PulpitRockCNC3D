@@ -136,28 +136,36 @@ module fan_duct_with_support() {
     }
 }
 
-hole_height = 6;
-hole_margin = 5;
-nut_margin = 3.5/2;
-difference() {
-    union() {
-        //holder_no_fan_duct();
-        fan_duct_with_support();
-    }
-    
-    // screw holes
-    union() {
-        // nut traps
-        translate([10.5,50+hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
-
-        // nut traps
-        translate([10.5,50+38-hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
-
+module main_parts(part) {
+    hole_height = 6;
+    hole_margin = 5;
+    nut_margin = 3.5/2;
+    difference() {
+        union() {
+            if (part == "holder") { holder_no_fan_duct();
+            } else { 
+                fan_duct_with_support();
+            }
+        }
+        
         // screw holes
-        translate([10.5,50+hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
-            
-        // screw holes
-        translate([10.5,50+38-hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+        union() {
+            // nut traps
+            translate([10.5,50+hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
+
+            // nut traps
+            translate([10.5,50+38-hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
+
+            // screw holes
+            translate([10.5,50+hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+                
+            // screw holes
+            translate([10.5,50+38-hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+        }
     }
 }
 //color("green") translate([-posx,probe_holder_width+posz,-posy]) rotate([90,0,0]) holder();
+
+
+//main_parts("holder");
+translate([0,-posy-7,0]) rotate([0,180,0]) main_parts();
