@@ -2,6 +2,7 @@
 include <MCAD/bearing.scad>
 include <MCAD/materials.scad>
 include <stepper.scad>
+use <LM8UUHolder.scad>
 
 use <linear_bearing.scad>
 use <flexible_coupling.scad>
@@ -48,7 +49,7 @@ smoothRodDia = 8*mm;
 threadRodDia = 8*mm;
 
 // Y plate dimensions
-yPlateMargin = 30*mm;	// margin on the left and right side of the plate
+yPlateMargin = 10*mm;	// margin on the left and right side of the plate
 yPlateWidth = mdfLength-2*mdfDepth-2*yPlateMargin;
 yPlateHeight = (mdfLength-(2*mdfDepth))/2; // the height of the yPlate (width in Y direction)
 yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDepth-yPlateHeight
@@ -113,13 +114,13 @@ couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
 // --------------------------------
 // Choose view
 // --------------------------------
-Assembled();
+//Assembled();
 //Exploded();
-//Parts();
+Parts();
 
 // full model view
 module Assembled() {
-
+    
 	Front();
     Back();
     SideLeft();
@@ -270,6 +271,17 @@ module Fasteners() {
 		
 }
 
+module LM8UUAndHolder(flip=false) {
+    linearBearing(model="LM8UU");
+
+    if (flip) {         
+        rotate([0,0,180]) translate([9.8,-12.0,26.3]) rotate([0,90,90]) LM8UUHolder();
+    } else {
+        translate([9.8,-12.0,26.3]) rotate([0,90,90]) LM8UUHolder();
+    }
+        
+}
+
 module Bearings() {
 	color (Aluminum) {
 		
@@ -280,18 +292,20 @@ module Bearings() {
 		translate([mdfLength-(mdfDepth/2),mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
 		
 		// LM8UU X axis (first parameter is position on the rod, last parameter is height)
-		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
-		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) linearBearing(model="LM8UU");
+		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) LM8UUAndHolder(true);
+		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
+		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
+		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
 								
 		
-		// LM8UU Y axis (second parameter is position on the rod)
-		translate([mdfLength*1/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		translate([mdfLength*2/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		translate([mdfLength*1/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
-		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) linearBearing(model="LM8UU");
-							
+		// LM8UU Y axis (second parameter is position on the rod)        
+		translate([mdfLength*1/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) LM8UUAndHolder();
+        
+		translate([mdfLength*2/3,yPlateBearingLowPos,mdfWidth/2]) rotate([90,0,0]) LM8UUAndHolder();
+        
+		translate([mdfLength*1/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) LM8UUAndHolder();   
+        
+		translate([mdfLength*2/3,yPlateBearingHighPos,mdfWidth/2]) rotate([90,0,0]) LM8UUAndHolder();	
 	}	
 }
 
@@ -328,6 +342,23 @@ module Nema17ScrewHoles() {
 }
 
 module ZipTieBearingHoles() {
+    
+    screw_margin = 0.6;
+    screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
+
+    translate([-7.25,3.85,-1*mm])
+    cylinder(h=zipTieHoleDepth+1*mm, r=screw_dia/2);
+
+    translate([22.35,3.85,-1*mm])
+    cylinder(h=zipTieHoleDepth+1*mm, r=screw_dia/2);
+
+    translate([-7.25,20.06,-1*mm])
+    cylinder(h=zipTieHoleDepth+1*mm, r=screw_dia/2);
+
+    translate([22.35,20.06,-1*mm])
+    cylinder(h=zipTieHoleDepth+1*mm, r=screw_dia/2);
+    
+    /*
 	zipTieMarginSide = zipTieHoleRadius;		// margin in the bearing width direction (diameter)
 	zipTieMarginLength = zipTieHoleRadius+2;	// margin in the bearing length direction
 
@@ -338,6 +369,7 @@ module ZipTieBearingHoles() {
 	translate([-zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
 
 	translate([lm8uuOutDia+zipTieMarginSide,lm8uuLength-zipTieMarginLength,-1*mm]) cylinder(h=zipTieHoleDepth+1*mm, r=zipTieHoleRadius);
+    */
 }
 
 module CouplingNutFastenerHoles() {
