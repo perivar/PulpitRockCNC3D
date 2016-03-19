@@ -1,6 +1,26 @@
 
 epsilon = 0.1; // small tolerance used for CSG subtraction/addition
 
+// 18 mm hole for the inductive sensor
+// LJ18A3-8-Z/BX   
+probe_extra_margin = 0.6;
+probediameter = 18.0 + probe_extra_margin;
+probemargin = 5; 
+probe_holder_width = probediameter+2*probemargin;
+
+posx = 10.140000343322754; // 10.14
+posy = 19.600000381469727; // 19.6
+posz = 59.5; // 61.5
+
+$fn=30;
+
+// screw/nut dimensions
+//chttp://www.fairburyfastener.com/xdims_metric_nuts.htm
+screw_margin = 0.6;
+screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
+nut_dia = 7.7 + screw_margin; // M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
+nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
+
 /**
  * Standard right-angled triangle
  * from MCAD
@@ -47,14 +67,8 @@ faces=[[0,1,2],[3,4,5],[6,7,8],[9,10,11],[12,13,14],[15,16,17],[18,19,20],[21,22
 
 
 module z_probe_holder() {
-    
-    // 18 mm hole for the inductive sensor
-    // LJ18A3-8-Z/BX        
-    probediameter = 18.3;
 
-    probemargin = 5; // 3
-    
-    width = probediameter+2*probemargin; // original 20.3
+    width = probe_holder_width; // original 20.3
     depth = 3.5; // 3.5
     length = probediameter+2*probemargin;
     rounded_radius = 4/2; // 4 mm diameter
@@ -62,7 +76,7 @@ module z_probe_holder() {
 	difference()
 	{
         union() {
-            translate([0,depth,0]) rotate([90,0,0]) rcube([width,length,depth],radius=rounded_radius,fn=30);
+            translate([0,depth,0]) rotate([90,0,0]) rcube([width,length,depth],radius=rounded_radius,fn=$fn);
                        
             // large triangle support
             trianglesize = 26;
@@ -74,8 +88,76 @@ module z_probe_holder() {
     }
 }
 
-fan_holder(1); 
-posx = 10.140000343322754; // 10.14
-posy = 19.600000381469727; // 19.6
-posz = 59.5; // 61.5
-translate([posx,posy,posz]) color("blue")z_probe_holder();
+module holder() {
+    fan_holder(1); 
+    translate([posx,posy,posz]) color("blue")   z_probe_holder();
+}
+
+module holder_no_fan_duct() {
+    translate([0,probe_holder_width+posz,0]) rotate([90,0,0])
+    intersection() {
+        translate([-posx,-posy,0]) holder();
+        cube([30,60,100]);
+    }
+}
+
+module fan_duct() {
+
+    difference() 
+    {
+        translate([-posx,-posy,0]) fan_holder(1);
+        union() { 
+            // cannot print the small edge
+            //cube([40,60,100]);
+            
+            translate([-15,0,0]) cube([40,60,100]);
+            
+            // remove surplus plate
+            translate([-40,0,-4]) cube([40,40,40]);
+        }
+    }                     
+}
+
+module fan_duct_with_support() {    
+    thickness = 2.5;
+    length = 38;
+    translate([0,probe_holder_width+posz,0]) rotate([90,0,0]) {
+        
+        fan_duct();
+
+        union() {
+       translate([0,-thickness,-length+38]) cube([18,thickness,length]);
+    
+        // large triangle support
+        trianglesize = 12;
+        triangledepth = 6.5;
+        rotate([180,90,0]) translate([-38,0,-triangledepth]) triangle(trianglesize,trianglesize,triangledepth);
+        }
+    }
+}
+
+hole_height = 6;
+hole_margin = 5;
+nut_margin = 3.5/2;
+difference() {
+    union() {
+        //holder_no_fan_duct();
+        fan_duct_with_support();
+    }
+    
+    // screw holes
+    union() {
+        // nut traps
+        translate([10.5,50+hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
+
+        // nut traps
+        translate([10.5,50+38-hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
+
+        // screw holes
+        translate([10.5,50+hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+            
+        // screw holes
+        translate([10.5,50+38-hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+    }
+}
+//color("green") translate([-posx,probe_holder_width+posz,-posy]) rotate([90,0,0]) holder();
