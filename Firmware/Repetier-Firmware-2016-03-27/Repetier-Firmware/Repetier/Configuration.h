@@ -234,8 +234,8 @@ It also can add a delay to wait for spindle to run on full speed.
 #define ENDSTOP_Y_MIN_INVERTING true
 #define MIN_HARDWARE_ENDSTOP_Y true
 #define ENDSTOP_PULLUP_Z_MIN true
-#define ENDSTOP_Z_MIN_INVERTING true
-#define MIN_HARDWARE_ENDSTOP_Z true
+#define ENDSTOP_Z_MIN_INVERTING false
+#define MIN_HARDWARE_ENDSTOP_Z false
 #define ENDSTOP_PULLUP_X_MAX true
 #define ENDSTOP_X_MAX_INVERTING false
 #define MAX_HARDWARE_ENDSTOP_X false
@@ -252,7 +252,7 @@ It also can add a delay to wait for spindle to run on full speed.
 #define min_software_endstop_z false
 #define max_software_endstop_x true
 #define max_software_endstop_y true
-#define max_software_endstop_z true
+#define max_software_endstop_z false
 #define ENDSTOP_X_BACK_MOVE 5
 #define ENDSTOP_Y_BACK_MOVE 5
 #define ENDSTOP_Z_BACK_MOVE 2
@@ -279,7 +279,7 @@ It also can add a delay to wait for spindle to run on full speed.
 #define X_HOME_DIR -1
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
-#define X_MAX_LENGTH 265
+#define X_MAX_LENGTH 260
 #define Y_MAX_LENGTH 230
 #define Z_MAX_LENGTH 235
 #define X_MIN_POS -45
@@ -350,6 +350,8 @@ It also can add a delay to wait for spindle to run on full speed.
 #define PRINTLINE_CACHE_SIZE 16
 #define MOVE_CACHE_LOW 10
 #define LOW_TICKS_PER_MOVE 250000
+#define EXTRUDER_SWITCH_XY_SPEED 100
+#define DUAL_X_AXIS 0
 #define FEATURE_TWO_XSTEPPER 0
 #define X2_STEP_PIN   ORIG_E1_STEP_PIN
 #define X2_DIR_PIN    ORIG_E1_DIR_PIN
@@ -410,30 +412,30 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define Z_PROBE_Z_OFFSET 0
 #define Z_PROBE_Z_OFFSET_MODE 0
 #define UI_BED_COATING 1
-#define FEATURE_Z_PROBE 0
-#define Z_PROBE_BED_DISTANCE 10
-#define Z_PROBE_PIN -1
-#define Z_PROBE_PULLUP 0
+#define FEATURE_Z_PROBE 1
+#define Z_PROBE_BED_DISTANCE 6
+#define Z_PROBE_PIN ORIG_Z_MIN_PIN
+#define Z_PROBE_PULLUP 1
 #define Z_PROBE_ON_HIGH 0
 #define Z_PROBE_X_OFFSET 0
 #define Z_PROBE_Y_OFFSET 0
 #define Z_PROBE_WAIT_BEFORE_TEST 0
 #define Z_PROBE_SPEED 2
-#define Z_PROBE_XY_SPEED 150
+#define Z_PROBE_XY_SPEED 200
 #define Z_PROBE_SWITCHING_DISTANCE 1
-#define Z_PROBE_REPETITIONS 1
-#define Z_PROBE_HEIGHT 40
+#define Z_PROBE_REPETITIONS 3
+#define Z_PROBE_HEIGHT 6
 #define Z_PROBE_START_SCRIPT ""
 #define Z_PROBE_FINISHED_SCRIPT ""
 #define Z_PROBE_REQUIRES_HEATING 0
 #define Z_PROBE_MIN_TEMPERATURE 150
 #define FEATURE_AUTOLEVEL 1
-#define Z_PROBE_X1 20
-#define Z_PROBE_Y1 20
-#define Z_PROBE_X2 160
-#define Z_PROBE_Y2 20
-#define Z_PROBE_X3 100
-#define Z_PROBE_Y3 160
+#define Z_PROBE_X1 28
+#define Z_PROBE_Y1 52
+#define Z_PROBE_X2 220
+#define Z_PROBE_Y2 52
+#define Z_PROBE_X3 124
+#define Z_PROBE_Y3 200
 #define BED_LEVELING_METHOD 0
 #define BED_CORRECTION_METHOD 0
 #define BED_LEVELING_GRID_SIZE 5
@@ -480,7 +482,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define LANGUAGE_CZ_ACTIVE 0
 #define LANGUAGE_PL_ACTIVE 0
 #define LANGUAGE_TR_ACTIVE 0
-#define UI_PRINTER_NAME "P802_8_V1.5-1"
+#define UI_PRINTER_NAME "P802_8_V1.5-10"
 #define UI_PRINTER_COMPANY "Zonestar 3D printer"
 #define UI_PAGES_DURATION 4000
 #define UI_ANIMATION 0
@@ -624,7 +626,7 @@ Values must be in range 1..255
     "uiController": 0,
     "xMinEndstop": 1,
     "yMinEndstop": 1,
-    "zMinEndstop": 1,
+    "zMinEndstop": 0,
     "xMaxEndstop": 0,
     "yMaxEndstop": 0,
     "zMaxEndstop": 0,
@@ -669,7 +671,7 @@ Values must be in range 1..255
     "xMinPos": -45,
     "yMinPos": -5,
     "zMinPos": 0,
-    "xLength": 265,
+    "xLength": 260,
     "yLength": 230,
     "zLength": 235,
     "alwaysCheckEndstops": "1",
@@ -756,11 +758,11 @@ Values must be in range 1..255
     "servo3Pin": -1,
     "featureWatchdog": "0",
     "hasHeatedBed": "1",
-    "enableZProbing": "0",
+    "enableZProbing": "1",
     "extrudeMaxLength": 160,
     "homeOrder": "HOME_ORDER_XYZ",
     "featureController": 24,
-    "uiPrinterName": "P802_8_V1.5-1",
+    "uiPrinterName": "P802_8_V1.5-10",
     "uiPrinterCompany": "Zonestar 3D printer",
     "uiPagesDuration": 4000,
     "uiAnimation": "0",
@@ -1321,27 +1323,27 @@ Values must be in range 1..255
     "fanThermoThermistorPin": -1,
     "fanThermoThermistorType": 1,
     "scalePidToMax": "1",
-    "zProbePin": -1,
-    "zProbeBedDistance": 10,
-    "zProbePullup": "0",
+    "zProbePin": "ORIG_Z_MIN_PIN",
+    "zProbeBedDistance": 6,
+    "zProbePullup": "1",
     "zProbeOnHigh": "0",
     "zProbeXOffset": 0,
     "zProbeYOffset": 0,
     "zProbeWaitBeforeTest": "0",
     "zProbeSpeed": 2,
-    "zProbeXYSpeed": 150,
-    "zProbeHeight": 40,
+    "zProbeXYSpeed": 200,
+    "zProbeHeight": 6,
     "zProbeStartScript": "",
     "zProbeFinishedScript": "",
     "featureAutolevel": "1",
-    "zProbeX1": 20,
-    "zProbeY1": 20,
-    "zProbeX2": 160,
-    "zProbeY2": 20,
-    "zProbeX3": 100,
-    "zProbeY3": 160,
+    "zProbeX1": 28,
+    "zProbeY1": 52,
+    "zProbeX2": 220,
+    "zProbeY2": 52,
+    "zProbeX3": 124,
+    "zProbeY3": 200,
     "zProbeSwitchingDistance": 1,
-    "zProbeRepetitions": 1,
+    "zProbeRepetitions": 3,
     "sdSupport": "0",
     "sdCardDetectPin": -1,
     "sdCardDetectInverted": "0",
@@ -1543,6 +1545,8 @@ Values must be in range 1..255
     "zProbeMinTemperature": 150,
     "adcKeypadPin": "1",
     "sharedExtruderHeater": "0",
+    "extruderSwitchXYSpeed": 100,
+    "dualXAxis": "0",
     "hasMAX6675": false,
     "hasMAX31855": false,
     "hasGeneric1": false,
@@ -1552,7 +1556,7 @@ Values must be in range 1..255
     "hasUser1": true,
     "hasUser2": false,
     "numExtruder": 1,
-    "version": 92.8,
+    "version": 92.9,
     "primaryPortName": ""
 }
 ========== End configuration string ==========
