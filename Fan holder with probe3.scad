@@ -136,7 +136,7 @@ back_thin_height = 23.5;
 
 bottom_thickness = 3.5;
 bottom_length = 61.5;
-bottom_width = 20;//20.3;
+bottom_width = 20.3;//20.3;
 
 bottom_left_margin = 2;
 bottom_side_margin = 1;
@@ -157,13 +157,14 @@ module back() {
     screw_dia = 3.5;
     screw_length = 6.5;
     screw_top_margin = 1.5;//1.5;
-    screw_left_margin = 6.25;//6.25;
+    screw_left_margin = 6.3;//6.25;
                 
     translate([screw_left_margin,0,back_height-screw_top_margin]) long_cylinder(dia=screw_dia, width=screw_length, thickness = back_thickness);
          
-    pos_2nd_screw = back_height - back_thin_height - 12.25;
-                
-    translate([back_width-screw_length-7,0,pos_2nd_screw]) long_cylinder(dia=screw_dia, width=screw_length, thickness = back_thickness);
+    screw2_right_margin = 7;//6.96;
+    screw2_top_margin = 12.25;
+    screw2_pos_z = back_thin_height-screw2_top_margin;                
+    translate([back_width-screw_length-screw2_right_margin,0,screw2_pos_z]) long_cylinder(dia=screw_dia, width=screw_length, thickness = back_thickness);
                                 
             }
         }
@@ -195,10 +196,45 @@ module bottom() {
     translate([0,0,0]) {
         difference() {
             cube([bottom_length, bottom_width, bottom_thickness]);
+            
+            union() {
+            // cut-out to fan
             translate([bottom_left_margin,bottom_side_margin,-epsilon]) cube([bottom_opening_length,bottom_opening_width,bottom_thickness+2*epsilon]);
+                
+            // screw holes
+                // 1.31
+                #translate([bottom_opening_length+bottom_left_margin-1.405+1.31,10,0]) rotate([0,0,-90]) screws();
+            }
+                
         }
     }
 }
+
+module screws() {
+    
+ 	// Find Nut_Flats = Measure across the flats    
+    Num_Sides = 6; // Hexagon = 6
+    Flats_Rad = nut_dia/2 * cos(180/Num_Sides);
+    Nut_Flats = 2 * Flats_Rad;
+    echo (Flats_Rad);
+ 
+    hole_height = 6;
+    hole_margin = 5;
+    nut_margin = 3.5/2;
+
+    // nut traps
+    translate([0,hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=Num_Sides);        
+
+    // nut traps
+    translate([0,38-hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=Num_Sides);        
+
+    // screw holes
+    translate([0,hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+        
+    // screw holes
+    translate([0,38-hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+}
+
 
 back();
 bottom();
