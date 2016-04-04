@@ -17,6 +17,23 @@ screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
 nut_dia = 7.7 + screw_margin; // M3 = 6 mm, M4 = 7.7 mm - orig. 6.5
 nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
 
+
+back_thickness = 2.5;
+back_height = 52; // 51.5;
+back_width = 61.5;
+back_thin_width = 15;
+back_thin_height = 23.5;
+
+bottom_thickness = 3.5;
+bottom_length = 61.5;
+bottom_width = 20.3;//20.3;
+
+bottom_left_margin = 2;
+bottom_side_margin = 1;
+
+bottom_opening_length = 21.5;
+bottom_opening_width = bottom_width-bottom_side_margin-back_thickness;//16.80
+
 /**
  * Standard right-angled triangle
  * from MCAD
@@ -54,6 +71,7 @@ module rcube(size = [1, 1, 1], center = false, radius = 1.5, fn = 8) {
 	}
 }
 
+// flat screw is 24 mm across
 module z_probe_holder() {
 
     width = probe_holder_width; // original 20.3
@@ -64,96 +82,97 @@ module z_probe_holder() {
 	difference()
 	{
         union() {
-            translate([0,depth,0]) rotate([90,0,0]) rcube([width,length,depth],radius=rounded_radius,fn=$fn);
+            translate([0,0,0]) rotate([0,0,0]) rcube([width,length,depth],radius=rounded_radius,fn=$fn);
                        
             // large triangle support
+            
             trianglesize = 26;
             triangledepth = 2;
-            rotate([0,0,0]) translate([0,3.5,0]) triangle(trianglesize,trianglesize,triangledepth);
+            translate([width,width,3.5-epsilon]) rotate([90,0,-90]) triangle(trianglesize,trianglesize,triangledepth);
+            
+            
         }
-
-        rotate([-90,0,0]) translate([width/2,-length/2,-epsilon]) cylinder(r=probediameter/2,h=depth+2*epsilon);
+ 
+        rotate([0,0,0]) translate([width/2,length/2,-epsilon]) cylinder(r=probediameter/2,h=depth+2*epsilon);
     }
 }
 
-module fan_duct_with_support() {    
-    thickness = 2.5;
-    length = 38;
-    translate([0,probe_holder_width,0]) rotate([90,0,0]) {
-        
-        //fan_duct();
 
-        union() {
-       translate([0,-thickness,-length+38]) cube([18,thickness,length]);
+// **********
+// FUNCTIONS
+// **********
+
+// calculate the real diameter from measuring a non circle from flat to flat
+function flatsdia2realdia(flatsdia=10, sides=6) 
+ = ( flatsdia / cos(180/sides) );
+
+// calculate the flats diameter (measure from flat to flat) from the real diameter
+function realdia2flatsdia(realdia=11.547, sides=6) 
+ = ( realdia * cos(180/sides) );
+
+
+
+// figure that can be used to make an inside circular cut
+// dia = diameter
+// thickness = thickness of the cube
+// w = width
+// h = height
+module inside_cut(dia=10, thickness=2, w=20, h=20) {
     
-        // large triangle support
-        trianglesize = 12;
-        triangledepth = 6.5;
-        rotate([180,90,0]) translate([-38,0,-triangledepth]) triangle(trianglesize,trianglesize,triangledepth);
-        }
-    }
-}
-
-module main_parts() {
-    hole_height = 6;
-    hole_margin = 5;
-    nut_margin = 3.5/2;
-    difference() {
-        translate([0,59.5,3]) fan_duct_with_support();
-        
-        // screw holes
-        union() {
-            // nut traps
-            translate([10.5,50+hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
-
-            // nut traps
-            translate([10.5,50+38-hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=6);        
-
-            // screw holes
-            translate([10.5,50+hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
+    radius = dia/2;
+    
+    // cut-out big circle
+    translate([radius,-epsilon,radius]) rotate([-90,0,0]) cylinder(h=thickness+2*epsilon, r=radius);
+              
+    // cut-out box at the top            
+    translate([0,-epsilon,radius]) cube([w+epsilon, thickness+2*epsilon, h-radius+epsilon]);
                 
-            // screw holes
-            translate([10.5,50+38-hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
-        }
-    }
+    // cut-out box at the right
+    translate([radius,-epsilon,0]) cube([w-radius+epsilon, thickness+2*epsilon, h+epsilon]);       
 }
-//color("green") translate([-posx,probe_holder_width+posz,-posy]) rotate([90,0,0]) holder();
 
-//z_probe_holder();
-//main_parts();
-//translate([0,-posy-7,0]) rotate([0,180,0]) main_parts();
+// figure that can be used to make an outside circular cut
+// dia = diameter
+// thickness = thickness of the cube
+module outside_cut(dia=10, thickness=2, direction="right") {
 
-
-// flat screw is 24 mm across
-
-
-
-back_thickness = 2.5;
-back_height = 52; // 51.5;
-back_width = 61.5;
-back_thin_width = 15;
-back_thin_height = 23.5;
-
-bottom_thickness = 3.5;
-bottom_length = 61.5;
-bottom_width = 20.3;//20.3;
-
-bottom_left_margin = 2;
-bottom_side_margin = 1;
-
-bottom_opening_length = 21.5;
-bottom_opening_width = bottom_width-bottom_side_margin-back_thickness;//16.80
-
+    radius = dia/2;
+    
+    if (direction == "right") {        
+        translate([-radius,-epsilon,-radius]) difference() {
+            cube([radius+epsilon,thickness+2*epsilon,radius+epsilon]);
+            translate([0,-epsilon,0]) rotate([-90,0,0]) cylinder(h=thickness+4*epsilon, r=radius);
+        }   
+    } else if (direction == "left") {
+        translate([-epsilon,-epsilon,-radius]) difference() {
+            cube([radius+epsilon,thickness+2*epsilon,radius+epsilon]);
+            translate([radius,-epsilon,0]) rotate([-90,0,0]) cylinder(h=thickness+4*epsilon, r=radius);
+        }          
+    } 
+}
 
 module back() {
+       
     translate([0,bottom_width-back_thickness,0]) {
         difference() {
             cube([back_width, back_thickness, back_height]);
             
             union() {
-            translate([back_thin_width,-epsilon,back_thin_height]) cube([back_width-back_thin_width, back_thickness+2*epsilon, back_height-back_thin_height]);
+            //translate([back_thin_width,-epsilon,back_thin_height]) cube([back_width-back_thin_width+epsilon, back_thickness+2*epsilon, back_height-back_thin_height+epsilon]);
                 
-    // screw hole
+    // inside cut-out
+    translate([back_thin_width,0,back_thin_height]) inside_cut(dia=20, thickness=back_thickness, w = back_width-back_thin_width, h = back_height-back_thin_height);            
+          
+    // outside cut-out at the bottom right 
+    translate([back_width,0,back_thin_height]) outside_cut(dia=10, thickness=back_thickness);             
+
+    // outside cut-out at the top right 
+    translate([back_thin_width,0,back_height]) outside_cut(dia=4, thickness=back_thickness, direction="right");
+
+    // outside cut-out at the top left 
+    translate([0,0,back_height]) outside_cut(dia=4, thickness=back_thickness, direction="left");
+                
+    // screw holes
     screw_dia = 3.5;
     screw_length = 6.5;
     screw_top_margin = 1.5;//1.5;
@@ -169,6 +188,50 @@ module back() {
             }
         }
     }
+}
+
+
+module bottom() {
+    translate([0,0,0]) {
+        difference() {
+            cube([bottom_length, bottom_width, bottom_thickness]);
+            
+            union() {
+            // cut-out for the fan
+            translate([bottom_left_margin,bottom_side_margin,-epsilon]) cube([bottom_opening_length,bottom_opening_width,bottom_thickness+2*epsilon]);
+                
+                // nut traps
+                nut_trap_margin_back = 3.85;//3.85;            
+             
+    // nut openings: 1.51 right, 1.31 left
+    // 38 mm width from fan end to right end
+                translate([bottom_opening_length+bottom_left_margin,bottom_width-back_thickness-nut_dia/2-nut_trap_margin_back,0]) rotate([0,0,-90]) nut_traps(left_margin=1.31, right_margin=1.51, length=38);
+                                               
+            }                
+        }
+    }
+}
+
+module nut_trap(sides=6, margin=0) {
+    
+    screw_hole_height = bottom_thickness+2*epsilon;
+    nut_margin = bottom_thickness/2;
+    
+    // nut trap
+    translate([0,margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=sides);        
+
+    // screw hole
+    translate([0,margin,-epsilon]) cylinder(r=screw_dia/2, h=screw_hole_height+2*epsilon, $fn=20);	    
+}
+
+module nut_traps(sides=6, left_margin=0, right_margin=0, length=38) {
+                  
+    side_margin = realdia2flatsdia(realdia=nut_dia)/2;
+    
+    //left margin: 1.31 mm
+    //right margin: 1.51 mm
+    nut_trap(margin=side_margin+left_margin); 
+    nut_trap(margin=length-side_margin-right_margin); 
 }
 
 module long_cylinder(dia=3.5, width=6.5, thickness=5) {
@@ -192,57 +255,10 @@ module long_cylinder(dia=3.5, width=6.5, thickness=5) {
         }
 }
 
-module bottom() {
-    translate([0,0,0]) {
-        difference() {
-            cube([bottom_length, bottom_width, bottom_thickness]);
-            
-            union() {
-            // cut-out to fan
-            translate([bottom_left_margin,bottom_side_margin,-epsilon]) cube([bottom_opening_length,bottom_opening_width,bottom_thickness+2*epsilon]);
-                
-            // screw holes
-                // 1.31
-                #translate([bottom_opening_length+bottom_left_margin-1.405+1.31,10,0]) rotate([0,0,-90]) screws();
-            }
-                
-        }
-    }
+
+union() {
+    back();
+    bottom();
+
+translate([-probe_holder_width+bottom_left_margin-epsilon,-probe_holder_width+bottom_width,0]) z_probe_holder();
 }
-
-module screws() {
-    
- 	// Find Nut_Flats = Measure across the flats    
-    Num_Sides = 6; // Hexagon = 6
-    Flats_Rad = nut_dia/2 * cos(180/Num_Sides);
-    Nut_Flats = 2 * Flats_Rad;
-    echo (Flats_Rad);
- 
-    hole_height = 6;
-    hole_margin = 5;
-    nut_margin = 3.5/2;
-
-    // nut traps
-    translate([0,hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=Num_Sides);        
-
-    // nut traps
-    translate([0,38-hole_margin,nut_margin-epsilon]) cylinder(r=nut_dia/2, h=nut_height+epsilon, $fn=Num_Sides);        
-
-    // screw holes
-    translate([0,hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
-        
-    // screw holes
-    translate([0,38-hole_margin,-2.5-epsilon]) cylinder(r=screw_dia/2, h=hole_height+2*epsilon, $fn=20);	
-}
-
-
-back();
-bottom();
-
-// wall 6.51
-// 4.03
-// opening 21.5
-
-
-// nut openings: 1.51 right, 1.31 left
-// 38 mm width from fan end to right end
