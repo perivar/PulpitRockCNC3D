@@ -10,6 +10,7 @@ probe_dia = 18.0 + probe_extra_margin;
 
 // flat screw is 24 mm across
 // i.e. 27.7128 dia
+// and the washer is 30 mm dia
 probe_realdia = flatsdia2realdia(dia=24);
 
 
@@ -46,6 +47,10 @@ probe_holder_width = probe_realdia + back_thickness + triangle_thickness + probe
 
 //probe_holder_length = probe_dia+2*probe_margin;
 probe_holder_length = probe_holder_width;
+
+echo ("probe_holder_width", probe_holder_width);
+
+echo ("probe_holder_length", probe_holder_length);
 
 
 /**
