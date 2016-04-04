@@ -40,6 +40,8 @@ bottom_opening_width = bottom_width-bottom_side_margin-back_thickness;//16.80
 
 // triangle support
 triangle_thickness = 2;
+triangle_width = 30;
+triangle_height = back_height-bottom_thickness;
 
 //probe_margin = 5; 
 //probe_holder_width = probe_dia+2*probe_margin;
@@ -266,7 +268,7 @@ module bottom_probe() {
     width = probe_holder_width; 
     length = probe_holder_length; 
         
-    rounded_radius = 6/2; // 4 mm diameter
+    rounded_radius = 4/2; // 4 mm diameter
 
     translate([-width,-width+bottom_width,0]) {
         difference() {
@@ -276,10 +278,7 @@ module bottom_probe() {
         }
         
             // large triangle support
-            
-            trianglesize = 30;
-            triangledepth = 2;
-            translate([width,width,3.5-epsilon]) rotate([90,0,-90]) triangle(trianglesize,trianglesize,triangledepth);        
+            translate([width,width,bottom_thickness-epsilon]) rotate([90,0,-90]) triangle(triangle_height,triangle_width,triangle_thickness);        
         
     }
 }
