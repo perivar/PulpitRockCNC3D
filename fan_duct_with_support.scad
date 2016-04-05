@@ -164,8 +164,18 @@ module main_parts(part) {
         }
     }
 }
+
+// Choose one of these three modules:
+
+// 1. Full OLD probe holder with fan 
+// (not enough space for the washer and nut)
 //color("green") translate([-posx,probe_holder_width+posz,-posy]) rotate([90,0,0]) holder();
 
+// 2. OLD probe holder without fan so 
+// that fan can be connected later
+// main_parts("holder");
 
-//main_parts("holder");
+// 3. Fan with support element
+// can be attached to the probe holder 
+// without fan
 translate([0,-posy-7,0]) rotate([0,180,0]) main_parts();
