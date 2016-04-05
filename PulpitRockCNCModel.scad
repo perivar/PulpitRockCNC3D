@@ -55,7 +55,7 @@ yPlateHeight = (mdfLength-(2*mdfDepth))/2; // the height of the yPlate (width in
 yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDepth-yPlateHeight
 
 // sliding drill holder variables
-slidingBackPlateLength = 80*mm;
+slidingBackPlateLength = 120*mm;
 slidingBottomPlateLength = 60*mm;			
 holderHoleDiameter = 30*mm; // hole for the pen or dremmel
 
@@ -83,7 +83,7 @@ yPlateBearingLowPos = yPlatePos+ lm8uuLength + yPlateBearingMargin;
 yPlateBearingHighPos = yPlatePos + yPlateHeight - yPlateBearingMargin;
 
 // LM8UU bearing parameters for the small sliding plate
-slidingBearingMargin = 10*mm;	// smaller margins than yPlateBearingMargin 
+slidingBearingMargin = 14*mm;	// smaller margins than yPlateBearingMargin 
 								// since the sliding plate is smaller
 slidingBearingLowPos = zPos+slidingBearingMargin;
 slidingBearingHighPos = slidingBearingLowPos + slidingBackPlateLength - lm8uuLength - 2 *slidingBearingMargin;
@@ -114,9 +114,9 @@ couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
 // --------------------------------
 // Choose view
 // --------------------------------
-//Assembled();
+Assembled();
 //Exploded();
-Parts();
+//Parts();
 
 // full model view
 module Assembled() {
@@ -343,7 +343,7 @@ module Nema17ScrewHoles() {
 
 module ZipTieBearingHoles() {
     
-    screw_margin = 0.6;
+    screw_margin = 0; //0.6;
     screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
 
     translate([-7.25,3.85,-1*mm])
@@ -545,6 +545,22 @@ module YPlate() {
 			
 					// cut out room for the Coupling Nut fastener screw
 					translate([threadedRodMidPos,yPlateHeight/2, 0]) CouplingNutFastenerHoles();
+                    
+                    
+                    // cut out room for M8 screws
+                    m8Margin = 15*mm;
+                    m8screwRadius = (8*mm + 0.6) * 0.5;	// M8 screw    
+                    
+                    // bottom left
+                    translate([m8Margin,m8Margin,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=m8screwRadius);
+                    
+                    // bottom right
+                    translate([yPlateWidth-m8Margin,m8Margin,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=m8screwRadius);
+
+                    // top left
+                    translate([m8Margin,yPlateHeight-m8Margin,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=m8screwRadius);                    
+                    // top right
+                    translate([yPlateWidth-m8Margin,yPlateHeight-m8Margin,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=m8screwRadius);                    
 				}
 			}
 		}		
