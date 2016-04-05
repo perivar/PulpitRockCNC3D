@@ -413,20 +413,20 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define Z_PROBE_Z_OFFSET_MODE 0
 #define UI_BED_COATING 1
 #define FEATURE_Z_PROBE 1
-#define Z_PROBE_BED_DISTANCE 10
+#define Z_PROBE_BED_DISTANCE 6
 #define Z_PROBE_PIN ORIG_Z_MIN_PIN
 #define Z_PROBE_PULLUP 1
 #define Z_PROBE_ON_HIGH 0
-#define Z_PROBE_X_OFFSET -22.1
-#define Z_PROBE_Y_OFFSET -44.2
+#define Z_PROBE_X_OFFSET -30
+#define Z_PROBE_Y_OFFSET -45
 #define Z_PROBE_WAIT_BEFORE_TEST 0
 #define Z_PROBE_SPEED 2
 #define Z_PROBE_XY_SPEED 200
-#define Z_PROBE_SWITCHING_DISTANCE 1
+#define Z_PROBE_SWITCHING_DISTANCE 1.5
 #define Z_PROBE_REPETITIONS 3
-#define Z_PROBE_HEIGHT 1
-#define Z_PROBE_START_SCRIPT ""
-#define Z_PROBE_FINISHED_SCRIPT ""
+#define Z_PROBE_HEIGHT 2.9
+#define Z_PROBE_START_SCRIPT "G21\n G90\n G92 Z0\n G1 Z5\n G28 X0 Y0\n"
+#define Z_PROBE_FINISHED_SCRIPT "G1 X100 Y100 Z5\n"
 #define Z_PROBE_REQUIRES_HEATING 0
 #define Z_PROBE_MIN_TEMPERATURE 150
 #define FEATURE_AUTOLEVEL 1
@@ -1324,17 +1324,17 @@ Values must be in range 1..255
     "fanThermoThermistorType": 1,
     "scalePidToMax": "1",
     "zProbePin": "ORIG_Z_MIN_PIN",
-    "zProbeBedDistance": 10,
+    "zProbeBedDistance": 6,
     "zProbePullup": "1",
     "zProbeOnHigh": "0",
-    "zProbeXOffset": -22.1,
-    "zProbeYOffset": -44.2,
+    "zProbeXOffset": -30,
+    "zProbeYOffset": -45,
     "zProbeWaitBeforeTest": "0",
     "zProbeSpeed": 2,
     "zProbeXYSpeed": 200,
-    "zProbeHeight": 1,
-    "zProbeStartScript": "",
-    "zProbeFinishedScript": "",
+    "zProbeHeight": 2.9,
+    "zProbeStartScript": "G21\\n G90\\n G92 Z0\\n G1 Z5\\n G28 X0 Y0\\n",
+    "zProbeFinishedScript": "G1 X100 Y100 Z5\\n",
     "featureAutolevel": "1",
     "zProbeX1": 0,
     "zProbeY1": 10,
@@ -1342,7 +1342,7 @@ Values must be in range 1..255
     "zProbeY2": 10,
     "zProbeX3": 100,
     "zProbeY3": 160,
-    "zProbeSwitchingDistance": 1,
+    "zProbeSwitchingDistance": 1.5,
     "zProbeRepetitions": 3,
     "sdSupport": "0",
     "sdCardDetectPin": -1,
