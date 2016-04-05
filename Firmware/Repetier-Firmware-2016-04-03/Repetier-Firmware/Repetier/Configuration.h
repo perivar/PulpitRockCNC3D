@@ -417,25 +417,25 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define Z_PROBE_PIN ORIG_Z_MIN_PIN
 #define Z_PROBE_PULLUP 1
 #define Z_PROBE_ON_HIGH 0
-#define Z_PROBE_X_OFFSET -30
-#define Z_PROBE_Y_OFFSET -45
+#define Z_PROBE_X_OFFSET -26
+#define Z_PROBE_Y_OFFSET -48
 #define Z_PROBE_WAIT_BEFORE_TEST 0
-#define Z_PROBE_SPEED 2
+#define Z_PROBE_SPEED 4
 #define Z_PROBE_XY_SPEED 200
-#define Z_PROBE_SWITCHING_DISTANCE 1.5
+#define Z_PROBE_SWITCHING_DISTANCE 1
 #define Z_PROBE_REPETITIONS 3
-#define Z_PROBE_HEIGHT 2.9
+#define Z_PROBE_HEIGHT 2.75
 #define Z_PROBE_START_SCRIPT "G21\n G90\n G92 Z0\n G1 Z5\n G28 X0 Y0\n"
 #define Z_PROBE_FINISHED_SCRIPT "G1 X100 Y100 Z5\n"
 #define Z_PROBE_REQUIRES_HEATING 0
 #define Z_PROBE_MIN_TEMPERATURE 150
 #define FEATURE_AUTOLEVEL 1
-#define Z_PROBE_X1 0
-#define Z_PROBE_Y1 10
-#define Z_PROBE_X2 185
+#define Z_PROBE_X1 20
+#define Z_PROBE_Y1 160
+#define Z_PROBE_X2 20
 #define Z_PROBE_Y2 10
-#define Z_PROBE_X3 100
-#define Z_PROBE_Y3 160
+#define Z_PROBE_X3 180
+#define Z_PROBE_Y3 10
 #define BED_LEVELING_METHOD 0
 #define BED_CORRECTION_METHOD 0
 #define BED_LEVELING_GRID_SIZE 5
@@ -482,7 +482,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define LANGUAGE_CZ_ACTIVE 0
 #define LANGUAGE_PL_ACTIVE 0
 #define LANGUAGE_TR_ACTIVE 0
-#define UI_PRINTER_NAME "P802_8_V1.5-11"
+#define UI_PRINTER_NAME "P802_8_V1.5-14"
 #define UI_PRINTER_COMPANY "Zonestar 3D printer"
 #define UI_PAGES_DURATION 4000
 #define UI_ANIMATION 0
@@ -762,7 +762,7 @@ Values must be in range 1..255
     "extrudeMaxLength": 160,
     "homeOrder": "HOME_ORDER_XYZ",
     "featureController": 24,
-    "uiPrinterName": "P802_8_V1.5-11",
+    "uiPrinterName": "P802_8_V1.5-14",
     "uiPrinterCompany": "Zonestar 3D printer",
     "uiPagesDuration": 4000,
     "uiAnimation": "0",
@@ -1327,22 +1327,22 @@ Values must be in range 1..255
     "zProbeBedDistance": 6,
     "zProbePullup": "1",
     "zProbeOnHigh": "0",
-    "zProbeXOffset": -30,
-    "zProbeYOffset": -45,
+    "zProbeXOffset": -26,
+    "zProbeYOffset": -48,
     "zProbeWaitBeforeTest": "0",
-    "zProbeSpeed": 2,
+    "zProbeSpeed": 4,
     "zProbeXYSpeed": 200,
-    "zProbeHeight": 2.9,
+    "zProbeHeight": 2.75,
     "zProbeStartScript": "G21\\n G90\\n G92 Z0\\n G1 Z5\\n G28 X0 Y0\\n",
     "zProbeFinishedScript": "G1 X100 Y100 Z5\\n",
     "featureAutolevel": "1",
-    "zProbeX1": 0,
-    "zProbeY1": 10,
-    "zProbeX2": 185,
+    "zProbeX1": 20,
+    "zProbeY1": 160,
+    "zProbeX2": 20,
     "zProbeY2": 10,
-    "zProbeX3": 100,
-    "zProbeY3": 160,
-    "zProbeSwitchingDistance": 1.5,
+    "zProbeX3": 180,
+    "zProbeY3": 10,
+    "zProbeSwitchingDistance": 1,
     "zProbeRepetitions": 3,
     "sdSupport": "0",
     "sdCardDetectPin": -1,
