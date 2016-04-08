@@ -116,22 +116,24 @@ module drawtext(text) {
 	//Process string one character at a time
 	for(itext = [0:len(text)-1]) {
 		//Convert character to index
-		assign(ichar = search(text[itext],chars,1)[0]) {
-			//Decode character - rows
-			for(irow = [0:6]) {
-				assign(val = dec_table[char_table[ichar][irow]]) {
-					//Decode character - cols
-					for(icol = [0:4]) {
-						assign(bit = search(val[icol],"01",1)[0]) {
-							if(bit) {
-								//Output cube
-								translate([icol + (6*itext), irow, 0])
-									cube([1.0001,1.0001,1]);
-							}
-						}
-					}
-				}
-			}
-		}
+		ichar = search(text[itext],chars,1)[0];
+
+        //Decode character - rows
+        for(irow = [0:6]) {
+            //Select value to draw from table
+            val = dec_table[char_table[ichar][irow]];
+
+            //Decode character - cols
+            for(icol = [0:4]) {
+                // Retrieve bit to draw
+                bit = search(val[icol],"01",1)[0];
+
+                if(bit) {
+                    //Output cube
+                    translate([icol + (6*itext), irow, 0])
+                        cube([1.0001,1.0001,1]);
+                }
+            }
+        }
 	}
 }

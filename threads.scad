@@ -7,6 +7,8 @@
  * You are welcome to make free use of this software.  Retention of my
  * authorship credit would be appreciated.
  *
+ * Version 1.8.  2016-01-08  Option: (non-standard) angle.
+ * Version 1.7.  2015-11-28  Larger x-increment - for small-diameters.
  * Version 1.6.  2015-09-01  Options: square threads, rectangular threads.
  * Version 1.5.  2015-06-12  Options: thread_size, groove.
  * Version 1.4.  2014-10-17  Use "faces" instead of "triangles" for polyhedron
@@ -18,10 +20,10 @@
 // Examples.
 //
 // Standard M8 x 1.
-//metric_thread (diameter=8, pitch=1, length=4);
+// metric_thread (diameter=8, pitch=1, length=4);
 
 // Square thread.
-//metric_thread (diameter=8, pitch=1, length=4, square=true);
+// metric_thread (diameter=8, pitch=1, length=4, square=true);
 
 // Non-standard: long pitch, same thread size.
 //metric_thread (diameter=8, pitch=4, length=4, thread_size=1, groove=true);
@@ -61,8 +63,11 @@ function segments (diameter) = min (50, ceil (diameter*6));
 //               https://en.wikipedia.org/wiki/Square_thread_form).
 // rectangle   - (non-standard) "Rectangular" thread - ratio depth/width
 //               Default: 1 (square).
+// angle       - (non-standard) angle (deg) of thread side from perpendicular to
+//               axis (default = standard = 30 degrees).
 module metric_thread (diameter=8, pitch=1, length=1, internal=false, n_starts=1,
-                      thread_size=-1, groove=false, square=false, rectangle=0)
+                      thread_size=-1, groove=false, square=false, rectangle=0,
+                      angle=30)
 {
    // thread_size: size of thread "V" different than travel per turn (pitch).
    // Default: same as pitch.
@@ -70,7 +75,7 @@ module metric_thread (diameter=8, pitch=1, length=1, internal=false, n_starts=1,
    local_rectangle = rectangle ? rectangle : 1;
 
    n_segments = segments (diameter);
-   h = (square || rectangle) ? local_thread_size*local_rectangle/2 : local_thread_size * cos (30);
+   h = (square || rectangle) ? local_thread_size*local_rectangle/2 : local_thread_size * cos (angle);
 
    h_fac1 = (square || rectangle) ? 0.90 : 0.625;
 
@@ -79,7 +84,7 @@ module metric_thread (diameter=8, pitch=1, length=1, internal=false, n_starts=1,
 
    if (! groove) {
       metric_thread_turns (diameter, pitch, length, internal, n_starts, 
-                           local_thread_size, groove, square, rectangle);
+                           local_thread_size, groove, square, rectangle, angle);
    }
 
    difference () {
@@ -97,7 +102,8 @@ module metric_thread (diameter=8, pitch=1, length=1, internal=false, n_starts=1,
 
       if (groove) {
          metric_thread_turns (diameter, pitch, length, internal, n_starts, 
-                              local_thread_size, groove, square, rectangle);
+                              local_thread_size, groove, square, rectangle,
+                              angle);
       }
    }
 }
@@ -124,7 +130,7 @@ module english_thread (diameter=0.25, threads_per_inch=20, length=1,
 
 // ----------------------------------------------------------------------------
 module metric_thread_turns (diameter, pitch, length, internal, n_starts, 
-                            thread_size, groove, square, rectangle)
+                            thread_size, groove, square, rectangle, angle)
 {
    // Number of turns needed.
    n_turns = floor (length/pitch);
@@ -135,7 +141,7 @@ module metric_thread_turns (diameter, pitch, length, internal, n_starts,
       for (i=[-1*n_starts : n_turns+1]) {
          translate ([0, 0, i*pitch]) {
             metric_thread_turn (diameter, pitch, internal, n_starts, 
-                                thread_size, groove, square, rectangle);
+                                thread_size, groove, square, rectangle, angle);
          }
       }
 
@@ -149,7 +155,7 @@ module metric_thread_turns (diameter, pitch, length, internal, n_starts,
 
 // ----------------------------------------------------------------------------
 module metric_thread_turn (diameter, pitch, internal, n_starts, thread_size,
-                           groove, square, rectangle)
+                           groove, square, rectangle, angle)
 {
    n_segments = segments (diameter);
    fraction_circle = 1.0/n_segments;
@@ -157,7 +163,7 @@ module metric_thread_turn (diameter, pitch, internal, n_starts, thread_size,
       rotate ([0, 0, i*360*fraction_circle]) {
          translate ([0, 0, i*n_starts*pitch*fraction_circle]) {
             thread_polyhedron (diameter/2, pitch, internal, n_starts, 
-                               thread_size, groove, square, rectangle);
+                               thread_size, groove, square, rectangle, angle);
          }
       }
    }
@@ -167,36 +173,35 @@ module metric_thread_turn (diameter, pitch, internal, n_starts, thread_size,
 // ----------------------------------------------------------------------------
 // z (see diagram) as function of current radius.
 // (Only good for first half-pitch.)
-function z_fct (current_radius, radius, pitch)
-   = 0.5* (current_radius - (radius - 0.875*pitch*cos (30)))
-                                                       /cos (30);
+function z_fct (current_radius, radius, pitch, angle)
+   = 0.5* (current_radius - (radius - 0.875*pitch*cos (angle)))
+                                                       /cos (angle);
 
 // ----------------------------------------------------------------------------
 module thread_polyhedron (radius, pitch, internal, n_starts, thread_size,
-                          groove, square, rectangle)
+                          groove, square, rectangle, angle)
 {
    n_segments = segments (radius*2);
    fraction_circle = 1.0/n_segments;
 
    local_rectangle = rectangle ? rectangle : 1;
 
-   h = (square || rectangle) ? thread_size*local_rectangle/2 : thread_size * cos (30);
-   // DKTMP - check
+   h = (square || rectangle) ? thread_size*local_rectangle/2 : thread_size * cos (angle);
    outer_r = radius + (internal ? h/20 : 0); // Adds internal relief.
    //echo (str ("outer_r: ", outer_r));
 
    // A little extra on square thread -- make sure overlaps cylinder.
    h_fac1 = (square || rectangle) ? 1.1 : 0.875;
    inner_r = radius - h*h_fac1; // Does NOT do Dmin_truncation - do later with
-                               // cylinder.
+                                // cylinder.
 
    translate_y = groove ? outer_r + inner_r : 0;
    reflect_x   = groove ? 1 : 0;
 
    // Make these just slightly bigger (keep in proportion) so polyhedra will
    // overlap.
-   x_incr_outer = (! groove ? outer_r : inner_r) * fraction_circle * 2 * PI * 1.005;
-   x_incr_inner = (! groove ? inner_r : outer_r) * fraction_circle * 2 * PI * 1.005;
+   x_incr_outer = (! groove ? outer_r : inner_r) * fraction_circle * 2 * PI * 1.02;
+   x_incr_inner = (! groove ? inner_r : outer_r) * fraction_circle * 2 * PI * 1.02;
    z_incr = n_starts * pitch * fraction_circle * 1.005;
 
    /*
@@ -222,7 +227,7 @@ module thread_polyhedron (radius, pitch, internal, n_starts, thread_size,
 
    x1_outer = outer_r * fraction_circle * 2 * PI;
 
-   z0_outer = z_fct (outer_r, radius, thread_size);
+   z0_outer = z_fct (outer_r, radius, thread_size, angle);
    //echo (str ("z0_outer: ", z0_outer));
 
    //polygon ([[inner_r, 0], [outer_r, z0_outer], 
