@@ -425,7 +425,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define Z_PROBE_XY_SPEED 200
 #define Z_PROBE_SWITCHING_DISTANCE 1
 #define Z_PROBE_REPETITIONS 3
-#define Z_PROBE_HEIGHT 2.28
+#define Z_PROBE_HEIGHT 2.650
 #define Z_PROBE_START_SCRIPT ""
 #define Z_PROBE_FINISHED_SCRIPT ""
 #define Z_PROBE_REQUIRES_HEATING 0
@@ -1333,7 +1333,7 @@ Values must be in range 1..255
     "zProbeWaitBeforeTest": "0",
     "zProbeSpeed": 5,
     "zProbeXYSpeed": 200,
-    "zProbeHeight": 2.28,
+    "zProbeHeight": 2.650,
     "zProbeStartScript": "",
     "zProbeFinishedScript": "",
     "featureAutolevel": "1",
