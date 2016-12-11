@@ -286,7 +286,7 @@ It also can add a delay to wait for spindle to run on full speed.
 #define X_MIN_POS -51
 #define Y_MIN_POS -7
 #define Z_MIN_POS 0
-#define DISTORTION_CORRECTION 1
+#define DISTORTION_CORRECTION 0
 #define DISTORTION_CORRECTION_POINTS 5
 #define DISTORTION_CORRECTION_R 100
 #define DISTORTION_PERMANENT 1
@@ -426,8 +426,8 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define Z_PROBE_SWITCHING_DISTANCE 1
 #define Z_PROBE_REPETITIONS 3
 #define Z_PROBE_HEIGHT 2.28
-#define Z_PROBE_START_SCRIPT "G21\n G90\n G92 Z0\n G1 Z5\n G28 X0 Y0\n"
-#define Z_PROBE_FINISHED_SCRIPT "G1 X100 Y100 Z5\n"
+#define Z_PROBE_START_SCRIPT ""
+#define Z_PROBE_FINISHED_SCRIPT ""
 #define Z_PROBE_REQUIRES_HEATING 0
 #define Z_PROBE_MIN_TEMPERATURE 150
 #define FEATURE_AUTOLEVEL 1
@@ -483,7 +483,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define LANGUAGE_CZ_ACTIVE 0
 #define LANGUAGE_PL_ACTIVE 0
 #define LANGUAGE_TR_ACTIVE 0
-#define UI_PRINTER_NAME "P802_8_V1.5-21"
+#define UI_PRINTER_NAME "P802_8_V1.5-22"
 #define UI_PRINTER_COMPANY "Zonestar 3D printer"
 #define UI_PAGES_DURATION 4000
 #define UI_ANIMATION 0
@@ -763,7 +763,7 @@ Values must be in range 1..255
     "extrudeMaxLength": 160,
     "homeOrder": "HOME_ORDER_XYZ",
     "featureController": 24,
-    "uiPrinterName": "P802_8_V1.5-21",
+    "uiPrinterName": "P802_8_V1.5-22",
     "uiPrinterCompany": "Zonestar 3D printer",
     "uiPagesDuration": 4000,
     "uiAnimation": "0",
@@ -1334,8 +1334,8 @@ Values must be in range 1..255
     "zProbeSpeed": 5,
     "zProbeXYSpeed": 200,
     "zProbeHeight": 2.28,
-    "zProbeStartScript": "G21\\n G90\\n G92 Z0\\n G1 Z5\\n G28 X0 Y0\\n",
-    "zProbeFinishedScript": "G1 X100 Y100 Z5\\n",
+    "zProbeStartScript": "",
+    "zProbeFinishedScript": "",
     "featureAutolevel": "1",
     "zProbeX1": 20,
     "zProbeY1": 160,
@@ -1379,7 +1379,7 @@ Values must be in range 1..255
     "retractOnPause": 2,
     "pauseStartCommands": "",
     "pauseEndCommands": "",
-    "distortionCorrection": "1",
+    "distortionCorrection": "0",
     "distortionCorrectionPoints": 5,
     "distortionCorrectionR": 100,
     "distortionPermanent": "1",
