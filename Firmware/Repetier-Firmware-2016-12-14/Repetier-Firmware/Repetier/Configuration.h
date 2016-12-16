@@ -444,7 +444,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define Z_PROBE_WAIT_BEFORE_TEST 0
 #define Z_PROBE_SPEED 5
 #define Z_PROBE_XY_SPEED 200
-#define Z_PROBE_SWITCHING_DISTANCE 1
+#define Z_PROBE_SWITCHING_DISTANCE 1.2
 #define Z_PROBE_REPETITIONS 3
 #define Z_PROBE_HEIGHT 2.850
 #define Z_PROBE_START_SCRIPT ""
@@ -504,7 +504,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define LANGUAGE_CZ_ACTIVE 0
 #define LANGUAGE_PL_ACTIVE 0
 #define LANGUAGE_TR_ACTIVE 0
-#define UI_PRINTER_NAME "P802M_8 - v20"
+#define UI_PRINTER_NAME "P802M_8 - v23"
 #define UI_PRINTER_COMPANY "Zonestar 3D printer"
 #define UI_PAGES_DURATION 4000
 #define UI_SPEEDDEPENDENT_POSITIONING 0
@@ -790,7 +790,7 @@ Values must be in range 1..255
     "extrudeMaxLength": 160,
     "homeOrder": "HOME_ORDER_XYZ",
     "featureController": 24,
-    "uiPrinterName": "P802M_8 - v20",
+    "uiPrinterName": "P802M_8 - v23",
     "uiPrinterCompany": "Zonestar 3D printer",
     "uiPagesDuration": 4000,
     "uiHeadline": "",
@@ -1370,7 +1370,7 @@ Values must be in range 1..255
     "zProbeY2": 10,
     "zProbeX3": 170,
     "zProbeY3": 20,
-    "zProbeSwitchingDistance": 1,
+    "zProbeSwitchingDistance": 1.2,
     "zProbeRepetitions": 3,
     "sdSupport": "0",
     "sdCardDetectPin": -1,
