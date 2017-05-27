@@ -60,11 +60,11 @@ slidingBottomPlateLength = 60*mm;
 holderHoleDiameter = 30*mm; // hole for the pen or dremmel
 
 // Z axis and back plate
-zBackPlateHeightPos = 200*mm;	// position of the zmodule compared to the rest of the CNC
-zBackPlateWidth = 100*mm;		// width of the back plate
-zBackPlateHeight = 250*mm;		// height of the back plate
-zShortHeight = 60*mm;			// height of the short end plates
-zRodMargin = 20*mm;				// margins from the sides for the smooth rod holes
+zBackPlateHeightPos = 215*mm;	// position of the zmodule compared to the rest of the CNC
+zBackPlateWidth = 80*mm;		// width of the back plate
+zBackPlateHeight = 220*mm;		// height of the back plate
+zShortHeight = 70*mm;			// height of the short end plates
+zRodMargin = 13*mm;				// margins from the sides for the smooth rod holes
 
 // Z Position: min = mdfDepth, max = zBackPlateHeight-mdfDepth-slidingBackPlateLength
 zPos = mdfDepth;
@@ -122,17 +122,17 @@ Assembled();
 module Assembled() {
     
 	Front();
-    Back();
-    SideLeft();
-    SideRight();
+    //Back();
+    //SideLeft();
+    //SideRight();
 	//Bottom();
-	YPlate();
+	//YPlate();
 	SmoothRods();
 	ThreadedRods();
 	StepperMotors();
 	Bearings();
 	Fasteners();
-	ZModule();		
+	ZModule2();		
 }
 
 // exploded view
@@ -291,11 +291,6 @@ module Bearings() {
 		// 608 bearing X axis
 		translate([mdfLength-(mdfDepth/2),mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
 		
-		// LM8UU X axis (first parameter is position on the rod, last parameter is height)
-		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) LM8UUAndHolder(true);
-		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
-		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
-		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
 								
 		
 		// LM8UU Y axis (second parameter is position on the rod)        
@@ -567,6 +562,19 @@ module YPlate() {
 	}			
 }
 
+module ZModuleBackHoles() {
+	
+    // top bearings zip-tie holes
+    translate([yPlateBearingMargin+lm8uuLength,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+		
+	translate([yPlateBearingMargin+lm8uuLength,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+
+	// bottom bearings zip-tie holes
+	translate([zBackPlateWidth-yPlateBearingMargin,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+			
+	translate([zBackPlateWidth-yPlateBearingMargin,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();    
+}
+
 module ZModuleBack() {
 
 	color(Oak) 
@@ -577,15 +585,7 @@ module ZModuleBack() {
 			echo("ZModule back plate dimensions in mm: ", zBackPlateWidth, zBackPlateHeight, mdfDepth);
 			
 			// cut out room for the zip-ties
-			// top bearings zip-tie holes
-			translate([yPlateBearingMargin+lm8uuLength,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
-		
-			translate([yPlateBearingMargin+lm8uuLength,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
-
-			// bottom bearings zip-tie holes
-			translate([zBackPlateWidth-yPlateBearingMargin,xRodLowPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
-			
-			translate([zBackPlateWidth-yPlateBearingMargin,xRodHighPos-zBackPlateHeightPos-(lm8uuOutDia/2),0]) rotate([0,0,90]) ZipTieBearingHoles();
+            ZModuleBackHoles();
 
 			// cut out room for the Coupling Nut fastener screw
 			translate([zBackPlateWidth/2,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,0,90]) CouplingNutFastenerHoles();
@@ -595,7 +595,7 @@ module ZModuleBack() {
 	// z axis hex nut coupler fastener
 	// 12.5 mm from center of coupling to plate
 	// 6 mm from top flat to plate
-	color ("White") translate([50,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,180,90]) HexagonNutHolder();	
+	color ("White") translate([zBackPlateWidth/2,xRodMidPos-zBackPlateHeightPos,0]) rotate([0,180,90]) HexagonNutHolder();	
 }
 
 // top plate with motor fastener
@@ -670,8 +670,19 @@ module ZModuleSlidingBottom() {
 	}
 }
 
+module ZModuleBackBearings() {
+
+		// LM8UU X axis (first parameter is position on the rod, last parameter is height)
+		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) LM8UUAndHolder(true);
+		translate([xAxisPos+yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
+		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodLowPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
+		translate([xAxisPos+zBackPlateWidth-lm8uuLength-yPlateBearingMargin,500-(mdfHighSideRodPos)-mdfDepth,xRodHighPos]) rotate([0,90,0]) LM8UUAndHolder(true);       
+}
+
 module ZModule(exploded = 0) {
-					
+	
+    ZModuleBackBearings();
+    
 	translate([xAxisPos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
 	{					
 		// back plate
@@ -735,3 +746,231 @@ module ZModule(exploded = 0) {
 		color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();				
 	}
 }
+
+module ZModule2(exploded = 0) {
+
+    ZModuleBackBearings();					
+	translate([xAxisPos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
+	{					
+		// back plate
+		rotate([90,0,0]) ZModuleBack();
+		        
+        // plate holders
+        translate([zBackPlateWidth/2,-mdfDepth,zBackPlateHeight]) rotate([-90,0,180]) Axis();
+        
+		// top plate with motor fastener
+		//translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) ZModuleTop();
+		
+		// bottom plate
+		//translate([0,-(zShortHeight+mdfDepth)-exploded,0]) ZModuleBottom();
+			
+		// 608 bearing Z axis
+		//translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,mdfDepth/2-608Thickness/2]) bearing(model=608);
+						
+		// stepper motor at the top with coupling
+		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-exploded+stepperExtraMargin,-2+zBackPlateHeight-23+exploded]) rotate([180,0,0]) Nema17AndCoupling();	
+			
+		// sliding drill holder
+        /*
+		color (Pine) { 			
+			// back plate
+			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-exploded*2,zPos+exploded]) 
+			rotate([90,0,0]) 
+			ZModuleSlidingBack();
+			
+			translate([0,-exploded*2,0]) ZModuleSlidingBottom();
+		}
+        */
+		
+		// Rods
+		zRodLength = zBackPlateHeight; // smoothRodLength;
+		color(Steel) {
+			// left Z rod
+            translate([zRodMargin,-mdfDepth-(zShortHeight/2),0]) cylinder(r=smoothRodDia/2,h=zRodLength);
+			
+			// right Z rod
+			translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),0]) cylinder(r=smoothRodDia/2,h=zRodLength);
+		}
+		
+		color(Stainless) {
+			// Z threaded rod
+			translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,0]) cylinder(r=threadRodDia/2,h=zRodLength);
+		}
+
+		// LM8UU bearings
+		// From min: mdfDepth 
+		// To max: 	 zBackPlateHeight-mdfDepth-lm8uuLength
+		
+		// LM8UU on left rod (third parameter is position on the rod)
+		translate([zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingLowPos]) linearBearing(model="LM8UU");
+		translate([zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");
+
+		// LM8UU on right rod (third parameter is position on the rod)
+		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingLowPos]) linearBearing(model="LM8UU");
+		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
+		
+		// hexagon bolt Y axis
+		//color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,90]) CouplingNut();
+		
+		// Y axis hex nut coupler fastener
+		// 12.5 mm from center of coupling to plate
+		// 6 mm from top flat to plate
+		//color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();				
+	}
+}
+
+module smallnut()
+{
+    // m4
+    // orig height = 3
+	cylinder(h=6,r=8/2+epsilon,$fn=6);
+}
+
+module RightTriangle(width,height,thick)
+{
+    linear_extrude(height = thick, center = false, convexity = 10, twist = 0)
+polygon(points=[[0,0],[height,0],[0,width]], paths=[[0,1,2]]);
+}
+
+// a common base that both the left and right half are derived from
+module BaseCommon()
+{  
+    baseThickness = 10*mm;
+    baseHeight = zBackPlateWidth;
+    baseLength = 56;
+    supportThickness = 8*mm;
+    marginY = zBackPlateWidth/2-zRodMargin;
+    extraRodMargin = 1.4; // 40% bigger     
+    rodsize = smoothRodDia;
+    rodHolderHeight = 15;
+    
+	difference()
+	{
+		union()
+		{
+            // side
+			translate([-baseHeight/2,0,0])
+            cube([baseHeight,baseThickness,baseLength]);
+
+            // back that connects to the wood plate
+			translate([-baseHeight/2,0,0])			
+				cube([baseHeight,baseLength,baseThickness]);
+
+            // left rod holder
+			translate([-marginY,0,zShortHeight/2])		
+				rotate([-90,0,0]) 
+					cylinder(h=rodHolderHeight,r=(rodsize*extraRodMargin)/2);
+
+		
+           // right rod holder
+            translate([marginY,0,zShortHeight/2])		
+				rotate([-90,0,0]) 
+					cylinder(h=rodHolderHeight,r=(rodsize*extraRodMargin)/2);
+
+			
+           // left support 
+         translate([baseHeight/2,baseThickness-epsilon,baseThickness-epsilon])
+				rotate([0,-90,0]) 
+					RightTriangle(30,30,supportThickness);
+
+          // right support
+			translate([-baseHeight/2+supportThickness,baseThickness-epsilon,baseThickness-epsilon])			    rotate([0,-90,0]) 
+					RightTriangle(30,30,supportThickness);
+
+		}
+        
+        // small hole to keep the rods in place
+        smallHoleDepth = marginY-6;
+        
+       // left
+        translate([marginY,baseThickness/2,baseLength-smallHoleDepth])		
+				smallnut();
+        translate([marginY,baseThickness/2,baseLength-smallHoleDepth+epsilon])		
+				cylinder(h=smallHoleDepth+2*epsilon,r=3/2,$fn=33);
+
+    // right
+		translate([-marginY,baseThickness/2,baseLength-smallHoleDepth])		
+				smallnut();
+		translate([-marginY,baseThickness/2,baseLength-smallHoleDepth+epsilon])		
+				cylinder(h=smallHoleDepth+2*epsilon,r=3/2,$fn=33);
+
+
+		// take out the place for the holes
+		    translate([yPlateBearingMargin+lm8uuLength-4.1,baseHeight-52.6,0]) rotate([0,0,90]) ZipTieBearingHoles();
+        
+        translate([yPlateBearingMargin+lm8uuLength-40.1,baseHeight-52.6,0]) rotate([0,0,90]) ZipTieBearingHoles();
+
+
+    // hollow out the rod holders
+	// left rod	
+        translate([-marginY,-epsilon,zShortHeight/2]) 		
+			rotate([-90,0,0]) 
+				cylinder(h=30,r=(rodsize)/2);
+
+        // right rod
+		translate([marginY,-epsilon,zShortHeight/2]) 		
+			rotate([-90,0,0]) 
+				cylinder(h=30,r=(rodsize)/2);
+
+	}
+}
+
+// The section with the stepper motor
+// this is going to be somewhat low-profile and kind of hefty
+module LeftHalf()
+{
+	difference()
+	{
+		BaseCommon();
+        
+		// take out a place for the stepper mount
+		translate([0,12,zBackPlateWidth/2-10])
+			rotate([90,0,0]) 
+				steppermount();
+	}
+}
+
+// The section with the idler bearing
+module RightHalf()
+{    
+    pos = 10;
+    
+	difference()
+	{
+		BaseCommon();
+
+		// space for a 608 bearing
+		translate([0,pos+epsilon,zBackPlateWidth/2-10])
+			rotate([90,0,0]) 
+				cylinder(h=608Thickness+2*epsilon,r=608OutDia/2);
+
+		// and a hole for the center threaded rod
+		translate([0,pos+epsilon,zBackPlateWidth/2-10])
+			rotate([90,0,0]) 
+				cylinder(h=10+2*epsilon,r=(threadRodDia+3)/2);
+	}
+}
+
+module steppermount(cx=0,cy=0,cz=0)
+{
+
+		// make a hole for the stepper
+        translate(v=[cx,cy,cz])
+        {
+            cylinder(r=nema17BaseHoleDia/2,h=mdfDepth+2);            		
+	// screw holes
+translate([-nema17Mid,-nema17Mid,0])  Nema17ScrewHoles(); 		
+        }         
+}
+
+module Axis()
+{
+	translate([0,0,0])
+		LeftHalf();
+    
+	translate([0,zBackPlateHeight,0])
+		rotate([0,0,180])
+			RightHalf();
+}
+
+//!RightHalf();
