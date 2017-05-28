@@ -113,7 +113,7 @@
 #define EXT0_DESELECT_COMMANDS ""
 #define EXT0_EXTRUDER_COOLER_PIN -1
 #define EXT0_EXTRUDER_COOLER_SPEED 255
-#define EXT0_DECOUPLE_TEST_PERIOD 40000
+#define EXT0_DECOUPLE_TEST_PERIOD 0
 #define EXT0_JAM_PIN -1
 #define EXT0_JAM_PULLUP 0
 
@@ -171,7 +171,7 @@
 #define HEATED_BED_PID_IGAIN   33
 #define HEATED_BED_PID_DGAIN 290
 #define HEATED_BED_PID_MAX 255
-#define HEATED_BED_DECOUPLE_TEST_PERIOD 300000
+#define HEATED_BED_DECOUPLE_TEST_PERIOD 0
 #define MIN_EXTRUDER_TEMP 150
 #define MAXTEMP 275
 #define MIN_DEFECT_TEMPERATURE -10
@@ -483,7 +483,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 #define LANGUAGE_CZ_ACTIVE 0
 #define LANGUAGE_PL_ACTIVE 0
 #define LANGUAGE_TR_ACTIVE 0
-#define UI_PRINTER_NAME "P802M_8 - v26"
+#define UI_PRINTER_NAME "P802M_8 - v27"
 #define UI_PRINTER_COMPANY "Zonestar 3D printer"
 #define UI_PAGES_DURATION 4000
 #define UI_ANIMATION 0
@@ -610,7 +610,7 @@ Values must be in range 1..255
                 "enable": "ORIG_E0_ENABLE_PIN"
             },
             "advanceBacklashSteps": 0,
-            "decoupleTestPeriod": 40,
+            "decoupleTestPeriod": 0,
             "jamPin": -1,
             "jamPullup": "0",
             "mirror": "0",
@@ -763,7 +763,7 @@ Values must be in range 1..255
     "extrudeMaxLength": 160,
     "homeOrder": "HOME_ORDER_XYZ",
     "featureController": 24,
-    "uiPrinterName": "P802M_8 - v26",
+    "uiPrinterName": "P802M_8 - v27",
     "uiPrinterCompany": "Zonestar 3D printer",
     "uiPagesDuration": 4000,
     "uiAnimation": "0",
@@ -800,7 +800,7 @@ Values must be in range 1..255
     "bedPidI": 33,
     "bedPidD": 290,
     "bedPidMax": 255,
-    "bedDecoupleTestPeriod": 300,
+    "bedDecoupleTestPeriod": 0,
     "caseLightPin": -1,
     "caseLightDefaultOn": "1",
     "bedSkipIfWithin": 3,
