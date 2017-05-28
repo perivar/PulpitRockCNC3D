@@ -110,6 +110,10 @@ couplingNutWidth = 13*mm;	// distance from flat to flat
 couplingNutLength = 35*mm; 	// length of the coupling nut
 couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
 
+// z Slider information
+zSliderExtraMargin = 1.5;
+zSliderThickness =26;// orig: 22.5 lm8uuOutDia*zSliderExtraMargin;
+
 
 // --------------------------------
 // Choose view
@@ -1001,39 +1005,43 @@ nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
 	union()
 	{
 		cylinder(h=screw_length,r= screw_dia/2);
-		cylinder(h=nut_height,r= nut_dia/2, $fn=6);
+		cylinder(h=nut_height+epsilon,r= nut_dia/2, $fn=6);
 	}
 }
 
-module ZSliderHolePattern()
+module ZSliderHolePattern(screw_length = 40)
 {
     screw_margin = 0.6;
     screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
     
     //boltsize = 6; // assume 6 mm bolts to hold this to the base
     
-	holeXOffset =14;
-	holeYOffset =23;
+	holeXOffset = 14;
+	holeYOffset = 23;
    
-    translate([holeXOffset,holeYOffset,-2])			
-			rotate([180,0,0]) FakeBolt(screw_length = 30);
-    
-    translate([-holeXOffset,holeYOffset,-2])			
-			rotate([180,0,0]) FakeBolt(screw_length = 30);
-	translate([holeXOffset,-holeYOffset,-2])			
-			rotate([180,0,0]) FakeBolt(screw_length = 30);
-	translate([-holeXOffset,-holeYOffset,-2])			
-			rotate([180,0,0]) FakeBolt(screw_length = 30);
+    translate([holeXOffset,holeYOffset,0])			
+			FakeBolt(screw_length);   
+    translate([-holeXOffset,holeYOffset,0])			
+			FakeBolt(screw_length);
+	translate([holeXOffset,-holeYOffset,0])			
+			FakeBolt(screw_length);
+	translate([-holeXOffset,-holeYOffset,0])			
+			FakeBolt(screw_length);
 }
 
 module ZSlider()
 {
     sliderHeight = 60;
     sliderWidth = 55;
-    extraMargin = 1.7;
+    
     doubleBearingHeight = lm8uuLength*2 + 3;    
     // lm8uuLength = 24*mm;
     bearingDia = lm8uuOutDia;
+    
+    // added to the diameter for margin
+    rodMargin = 2;
+    
+    echo ("ZSlider thickness: ", zSliderThickness);
     
 	difference()
 	{
@@ -1041,22 +1049,22 @@ module ZSlider()
 		{
 
 			translate([0,0,0])
-				cube(size=[sliderWidth,sliderHeight,lm8uuOutDia*extraMargin],center = true);
+				cube(size=[sliderWidth,sliderHeight,zSliderThickness],center = true);
 
 			// the round holder parts for the bushings
 			translate([-sliderWidth/2,sliderHeight/2,0])
 				rotate([90,0,0])
-					cylinder(h=sliderHeight,r=(lm8uuOutDia*extraMargin)/2,$fn=33);
+					cylinder(h=sliderHeight,r=zSliderThickness/2,$fn=33);
 			
             translate([sliderWidth/2,sliderHeight/2,0])
 				rotate([90,0,0])
-					cylinder(h=sliderHeight,r=(lm8uuOutDia*extraMargin)/2,$fn=33);
+					cylinder(h=sliderHeight,r=zSliderThickness/2,$fn=33);
 
             //translate([0,0,-13]) CouplerNutHolder();
 		
 		}
 
-        boltZPos = lm8uuOutDia*extraMargin/2+epsilon;
+        boltZPos = zSliderThickness/2+epsilon;
 
         // bolts to keep the nut in place
         for (a =[10,-10]) {
@@ -1085,29 +1093,31 @@ module ZSlider()
             // the cutouts for the rails
 		translate([-sliderWidth/2,sliderHeight/2+epsilon,0])
 			rotate([90,0,0])
-				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+extraMargin)/2,$fn=33);
-		translate([sliderWidth/2,sliderHeight/2+epsilon,0])
+				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+rodMargin)/2,$fn=33);
+		
+        translate([sliderWidth/2,sliderHeight/2+epsilon,0])
 			rotate([90,0,0])
-				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+extraMargin)/2,$fn=33);
+				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+rodMargin)/2,$fn=33);
 		
         // the threaded rod
 		translate([0,100,-5])
 			rotate(a=[90,0,0])
-				cylinder(h=200,r=(threadRodDia/2)+1,$fn=33);
+				cylinder(h=200,r=(threadRodDia+rodMargin)/2,$fn=33);
 
-    translate([0,0,15])
-			ZSliderHolePattern();
+    translate([0,0,zSliderThickness/2-30+4-epsilon])
+			ZSliderHolePattern(screw_length=30);
 
 	}
 }
 
 module ZSliderBottom()
 {
-    shift = 10;
+    cutAwayThickness = 20;
     
 	difference(){
         ZSlider();
-        translate([0,0,shift])
+        
+        translate([0,0,cutAwayThickness/2])
             cube(size=[100,100,20],center= true);
         
         // add another coupling nut and shift it so that we open up enough room to let the nut enter the casing
@@ -1125,33 +1135,33 @@ module ZSliderBottom()
 
 module ZSliderTop()
 {
-    shift = 10;
+    cutAwayThickness = 20;
     
     difference() {
         ZSlider();
 	
-        translate([0,0,-shift])
-            cube(size=[100,100,20],center= true);
+        translate([0,0,-cutAwayThickness/2])
+            cube(size=[100,100,cutAwayThickness],center= true);
 	}
 }
 
 module ZSliderTopLayout() {
 
-    translate([0,0,lm8uuOutDia*0.85]) 
+    translate([0,0,zSliderThickness/2]) 
         rotate([180,0,0]) 
             ZSliderTop();
 }
 
 module ZSliderBottomLayout() {
     
-    translate([0,0,lm8uuOutDia*0.85]) 
+    translate([0,0,zSliderThickness/2]) 
         ZSliderBottom();
 }
 
 module ZSliderLayout() {
     
     ZSliderTopLayout();
-    translate([90,0,0]) ZSliderBottomLayout();
+    translate([0,65,0]) ZSliderBottomLayout();
 }
 
 //!ZSlider();
@@ -1159,6 +1169,7 @@ module ZSliderLayout() {
 //!YSupportBottom();
 //!SliderBottom();
 //!SliderTop();
-//!ZSliderLayout();
 
-!ZSliderBottomLayout();
+!ZSliderLayout();
+//!ZSliderTopLayout();
+//!ZSliderBottomLayout();
