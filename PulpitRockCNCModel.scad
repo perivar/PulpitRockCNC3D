@@ -762,13 +762,12 @@ module ZModule2(exploded = 0) {
         translate([zBackPlateWidth/2,-mdfDepth,zBackPlateHeight]) rotate([-90,0,180]) YCarriage();
         
 
-    translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) rotate([90,0,0]) ZSlider();
-
-		// top plate with motor fastener
-		//translate([0,-(zShortHeight+mdfDepth)-exploded,zBackPlateHeight-mdfDepth]) ZModuleTop();
-		
-		// bottom plate
-		//translate([0,-(zShortHeight+mdfDepth)-exploded,0]) ZModuleBottom();
+    translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) rotate([90,0,0]) 
+        {   
+            ZSliderTop();
+            ZSliderBottom();
+        }
+        
 			
 		// 608 bearing Z axis
 		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,mdfDepth/2-608Thickness/2]) bearing(model=608);
@@ -816,7 +815,7 @@ module ZModule2(exploded = 0) {
 		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
 		
 		// hexagon bolt Y axis
-		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,0]) CouplingNut();
+		//color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,0]) CouplingNut();
 		
 		// Y axis hex nut coupler fastener
 		// 12.5 mm from center of coupling to plate
@@ -1008,7 +1007,11 @@ nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
 
 module ZSliderHolePattern()
 {
-    boltsize = 6; // assume 6 mm bolts to hold this to the base
+    screw_margin = 0.6;
+    screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
+    
+    //boltsize = 6; // assume 6 mm bolts to hold this to the base
+    boltsize = screw_dia;
 
 	holeXOffset =14;
 	holeYOffset =23;
@@ -1026,7 +1029,7 @@ module ZSlider()
 {
     sliderHeight = 60;
     sliderWidth = 55;
-    extraMargin = 1.5;
+    extraMargin = 1.7;
     doubleBearingHeight = lm8uuLength*2 + 3;    
     // lm8uuLength = 24*mm;
     bearingDia = lm8uuOutDia;
@@ -1052,13 +1055,15 @@ module ZSlider()
 		
 		}
 
+        boltZPos = lm8uuOutDia*extraMargin/2+epsilon;
+
         // bolts to keep the nut in place
         for (a =[10,-10]) {
-            translate([a,a,11.2+epsilon])
+            translate([a,a,boltZPos])
                 rotate(a=[180,0,0])
                     FakeBolt();
 
-            translate([-a,a,11.2+epsilon])
+            translate([-a,a,boltZPos])
                 rotate(a=[180,0,0])
                     FakeBolt();
         }      
@@ -1095,13 +1100,14 @@ module ZSlider()
 	}
 }
 
-module SliderBottom()
+module ZSliderBottom()
 {
-    translate([0,0,lm8uuOutDia*0.75]) 
+    shift = 10;
+    
 	difference(){
         ZSlider();
-        translate(v=[0,0,10])
-            cube(size=[80,80,20],center= true);
+        translate([0,0,shift])
+            cube(size=[100,100,20],center= true);
         
         // add another coupling nut and shift it so that we open up enough room to let the nut enter the casing
         translate([0,0,0])
@@ -1116,20 +1122,25 @@ module SliderBottom()
 	}    
 }
 
-module SliderTop()
+module ZSliderTop()
 {
-    translate([0,0,lm8uuOutDia*0.75]) 
-	rotate([180,0,0])
-    difference(){
-	ZSlider();
-	translate([0,0,-10])
-		 cube(size=[80,80,20],center= true);
+    shift = 10;
+    
+    difference() {
+        ZSlider();
+	
+        translate([0,0,-shift])
+            cube(size=[100,100,20],center= true);
 	}
 }
 
 module ZSliderLayout() {
-    translate([0,0,0]) SliderTop();
-    translate([90,0,0]) SliderBottom();
+    
+    translate([0,0,lm8uuOutDia*0.75]) 
+        rotate([180,0,0]) 
+            ZSliderTop();
+    
+    translate([90,0,lm8uuOutDia*0.75]) ZSliderBottom();
 }
 
 //!ZSlider();
