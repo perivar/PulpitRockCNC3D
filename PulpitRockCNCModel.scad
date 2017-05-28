@@ -760,7 +760,7 @@ module ZModule2(exploded = 0) {
 	translate([xYCarriagePos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
 	{					
 		// back plate
-		//rotate([90,0,0]) ZModuleBack();
+		rotate([90,0,0]) ZModuleBack();
 		        
         // plate holders
         translate([zBackPlateWidth/2,-mdfDepth,zBackPlateHeight]) rotate([-90,0,180]) YCarriage();
@@ -1170,6 +1170,6 @@ module ZSliderLayout() {
 //!SliderBottom();
 //!SliderTop();
 
-!ZSliderLayout();
+//!ZSliderLayout();
 //!ZSliderTopLayout();
 //!ZSliderBottomLayout();
