@@ -816,7 +816,7 @@ module ZModule2(exploded = 0) {
 		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
 		
 		// hexagon bolt Y axis
-		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,90]) CouplingNut();
+		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,0]) CouplingNut();
 		
 		// Y axis hex nut coupler fastener
 		// 12.5 mm from center of coupling to plate
@@ -1048,8 +1048,7 @@ module ZSlider()
 				rotate([90,0,0])
 					cylinder(h=sliderHeight,r=(lm8uuOutDia*extraMargin)/2,$fn=33);
 
-            translate([0,0,-13])
-                CouplerNutHolder();
+            //translate([0,0,-13]) CouplerNutHolder();
 		
 		}
 
@@ -1067,7 +1066,7 @@ module ZSlider()
 		translate([0,0,-5])
 			rotate([90,0,0])
                 CouplingNut();
-
+        
 		// the OD cutouts of the bushings inside the bushing holders
 
         translate([-sliderWidth/2,doubleBearingHeight/2,0])
@@ -1098,25 +1097,38 @@ module ZSlider()
 
 module SliderBottom()
 {
+    translate([0,0,lm8uuOutDia*0.75]) 
 	difference(){
-	ZSlider();
-	translate(v=[0,0,10])
-		 cube(size=[80,80,20],center= true);
-	}
+        ZSlider();
+        translate(v=[0,0,10])
+            cube(size=[80,80,20],center= true);
+        
+        // add another coupling nut and shift it so that we open up enough room to let the nut enter the casing
+        translate([0,0,0])
+			rotate([90,0,0])
+                CouplingNut();
+
+        // add another rod and shift it so that we open up anough room to let the rod enter the casing
+        // the threaded rod
+        cubeSize = threadRodDia+2;
+		translate([-cubeSize/2,-100,-cubeSize/2])
+                cube([cubeSize,200,cubeSize]);    
+	}    
 }
 
 module SliderTop()
 {
+    translate([0,0,lm8uuOutDia*0.75]) 
 	rotate([180,0,0])
     difference(){
 	ZSlider();
-	translate(v=[0,0,-10])
+	translate([0,0,-10])
 		 cube(size=[80,80,20],center= true);
 	}
 }
 
 module ZSliderLayout() {
-    SliderTop();
+    translate([0,0,0]) SliderTop();
     translate([90,0,0]) SliderBottom();
 }
 
