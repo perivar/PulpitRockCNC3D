@@ -991,7 +991,7 @@ module CouplerNutHolder()
 	}
 }
 
-module FakeBolt()
+module FakeBolt(screw_length = 40)
 {
     screw_margin = 0.6;
 screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
@@ -1000,7 +1000,7 @@ nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
     
 	union()
 	{
-		cylinder(h=40,r= screw_dia/2);
+		cylinder(h=screw_length,r= screw_dia/2);
 		cylinder(h=nut_height,r= nut_dia/2, $fn=6);
 	}
 }
@@ -1011,18 +1011,19 @@ module ZSliderHolePattern()
     screw_dia = 4.0 + screw_margin; // M3 = 3 mm, M4 = 4 mm - orig. 3.4
     
     //boltsize = 6; // assume 6 mm bolts to hold this to the base
-    boltsize = screw_dia;
-
+    
 	holeXOffset =14;
 	holeYOffset =23;
-	translate(v=[holeXOffset,holeYOffset,-30])			
-			cylinder(h=30,r=boltsize/2,$fn=33);
-	translate(v=[-holeXOffset,holeYOffset,-30])			
-			cylinder(h=30,r=boltsize/2,$fn=33);
-	translate(v=[holeXOffset,-holeYOffset,-30])			
-			cylinder(h=30,r=boltsize/2,$fn=33);
-	translate(v=[-holeXOffset,-holeYOffset,-30])			
-			cylinder(h=30,r=boltsize/2,$fn=33);
+   
+    translate([holeXOffset,holeYOffset,-2])			
+			rotate([180,0,0]) FakeBolt(screw_length = 30);
+    
+    translate([-holeXOffset,holeYOffset,-2])			
+			rotate([180,0,0]) FakeBolt(screw_length = 30);
+	translate([holeXOffset,-holeYOffset,-2])			
+			rotate([180,0,0]) FakeBolt(screw_length = 30);
+	translate([-holeXOffset,-holeYOffset,-2])			
+			rotate([180,0,0]) FakeBolt(screw_length = 30);
 }
 
 module ZSlider()
@@ -1134,13 +1135,23 @@ module ZSliderTop()
 	}
 }
 
-module ZSliderLayout() {
-    
-    translate([0,0,lm8uuOutDia*0.75]) 
+module ZSliderTopLayout() {
+
+    translate([0,0,lm8uuOutDia*0.85]) 
         rotate([180,0,0]) 
             ZSliderTop();
+}
+
+module ZSliderBottomLayout() {
     
-    translate([90,0,lm8uuOutDia*0.75]) ZSliderBottom();
+    translate([0,0,lm8uuOutDia*0.85]) 
+        ZSliderBottom();
+}
+
+module ZSliderLayout() {
+    
+    ZSliderTopLayout();
+    translate([90,0,0]) ZSliderBottomLayout();
 }
 
 //!ZSlider();
@@ -1148,4 +1159,6 @@ module ZSliderLayout() {
 //!YSupportBottom();
 //!SliderBottom();
 //!SliderTop();
-!ZSliderLayout();
+//!ZSliderLayout();
+
+!ZSliderBottomLayout();
