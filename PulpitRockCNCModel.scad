@@ -2,6 +2,7 @@
 include <MCAD/bearing.scad>
 include <MCAD/materials.scad>
 include <stepper.scad>
+include <DrillMotorMount.scad>
 use <LM8UUHolder.scad>
 
 use <linear_bearing.scad>
@@ -754,7 +755,7 @@ module ZModule(exploded = 0) {
 }
 
 module ZModule2(exploded = 0) {
-
+        
     //ZModuleBackBearings();
     
 	translate([xYCarriagePos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
@@ -824,7 +825,10 @@ module ZModule2(exploded = 0) {
 		// Y axis hex nut coupler fastener
 		// 12.5 mm from center of coupling to plate
 		// 6 mm from top flat to plate
-		//color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();				
+		//color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();		
+
+    translate([40,-90,60]) DrillMotorMountBack(x = 40, d = 30, z = 20, wall_w = 60, wall_t = 5);
+		
 	}
 }
 
