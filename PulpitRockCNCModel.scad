@@ -2,7 +2,6 @@
 include <MCAD/bearing.scad>
 include <MCAD/materials.scad>
 include <stepper.scad>
-//include <DrillMotorMount.scad>
 use <LM8UUHolder.scad>
 
 use <linear_bearing.scad>
@@ -126,7 +125,6 @@ Assembled();
 // full model view
 module Assembled() {
     
-    /*
 	Front();
     Back();
     SideLeft();
@@ -138,7 +136,6 @@ module Assembled() {
 	StepperMotors();
 	Bearings();
 	Fasteners();
-    */
 	ZModule2();		
 }
 
@@ -159,7 +156,7 @@ module Exploded() {
 	
 	StepperMotors(exploded = expanded);
 	
-	ZModule(exploded = expanded);
+	ZModule2(exploded = expanded);
 }
 
 // stacked for laser cutting and to make dxfs
@@ -173,11 +170,15 @@ module Parts() {
 	projection() rotate([0,0,0]) translate([0,500+margin*2,margin]) Bottom();	
 	projection() rotate([0,0,0]) translate([0,-700+margin,margin]) YPlate();
 	
+    /*
 	projection() translate([-150,600,0]) ZModuleTop();
 	projection() translate([-150,700,0]) ZModuleBack();
 	projection() translate([-150,1000,0]) ZModuleBottom();	
 	projection() translate([-300,700,0]) ZModuleSlidingBack();			
 	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
+    */
+
+    projection() translate([-150,600,0]) ZModuleBack();
 
 }
 
@@ -756,7 +757,7 @@ module ZModule(exploded = 0) {
 
 module ZModule2(exploded = 0) {
         
-    //ZModuleBackBearings();
+    ZModuleBackBearings();
     
 	translate([xYCarriagePos,500-(mdfHighSideRodPos)-mdfDepth-lm8uuOutDia/2*mm-exploded,zBackPlateHeightPos]) 
 	{					
@@ -764,34 +765,24 @@ module ZModule2(exploded = 0) {
 		rotate([90,0,0]) ZModuleBack();
 		        
         // plate holders
-        translate([zBackPlateWidth/2,-mdfDepth,zBackPlateHeight]) rotate([-90,0,180]) YCarriage();
+        translate([zBackPlateWidth/2,-mdfDepth-exploded,zBackPlateHeight]) rotate([-90,0,180]) YCarriage();
         
 
+    // sliding drill holder back
     translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) rotate([90,0,0]) 
         {   
-            ZSliderTop();
-            ZSliderBottom();
+            translate([0,0,exploded]) ZSliderTop();
+            translate([0,0,-exploded/5]) ZSliderBottom();
         }
-        
+     
+    translate([11.5,-60.70-2*exploded,57]) rotate([90,0,0]) Dremel395Mount();	   
 			
 		// 608 bearing Z axis
 		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,mdfDepth/2-608Thickness/2]) bearing(model=608);
 						
 		// stepper motor at the top with coupling
 		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)-exploded+stepperExtraMargin,-2+zBackPlateHeight-23+exploded]) rotate([180,0,0]) Nema17AndCoupling();	
-			
-		// sliding drill holder
-        /*
-		color (Pine) { 			
-			// back plate
-			translate([0,-mdfDepth-(zShortHeight/2)-(lm8uuOutDia/2)-exploded*2,zPos+exploded]) 
-			rotate([90,0,0]) 
-			ZModuleSlidingBack();
-			
-			translate([0,-exploded*2,0]) ZModuleSlidingBottom();
-		}
-        */
-		
+					
 		// Rods
 		zRodLength = zBackPlateHeight; // smoothRodLength;
 		color(Steel) {
@@ -820,16 +811,8 @@ module ZModule2(exploded = 0) {
 		translate([zBackPlateWidth-zRodMargin,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) linearBearing(model="LM8UU");		
 		
 		// hexagon bolt Y axis
-		//color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,0]) CouplingNut();
-		
-		// Y axis hex nut coupler fastener
-		// 12.5 mm from center of coupling to plate
-		// 6 mm from top flat to plate
-		//color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();		
+		color (Aluminum) translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([0,0,0]) CouplingNut();
 
-    //translate([40,-90,60]) DrillMotorMountBack(x = 40, d = 30, z = 20, wall_w = 60, wall_t = 5);
-    translate([11.5,-60.70,57]) rotate([90,0,0]) Dremel395Mount();
-		
 	}
 }
 
