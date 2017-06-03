@@ -2,7 +2,7 @@
 include <MCAD/bearing.scad>
 include <MCAD/materials.scad>
 include <stepper.scad>
-include <DrillMotorMount.scad>
+//include <DrillMotorMount.scad>
 use <LM8UUHolder.scad>
 
 use <linear_bearing.scad>
@@ -107,8 +107,8 @@ zipTieHoleDepth = mdfDepth+1;	// M3 screw depth
 // coupling nut fastener holes
 couplingNutFastenerHoleRadius = 4*mm * 0.5;	// M4 is enough for the zip-tie hole
 couplingNutFastenerHoleDepth = mdfDepth+1;	// M4 screw depth
-couplingNutWidth = 13*mm;	// distance from flat to flat
-couplingNutLength = 35*mm; 	// length of the coupling nut
+couplingNutWidth = 13.2;//13*mm;	// distance from flat to flat
+couplingNutLength = 36;//35*mm; 	// length of the coupling nut
 couplingNutHoleDia = 8*mm;	// coupling nut hole (M8)
 
 // z Slider information
@@ -827,7 +827,8 @@ module ZModule2(exploded = 0) {
 		// 6 mm from top flat to plate
 		//color ("White") translate([zBackPlateWidth/2,-12.5-mdfDepth-(zShortHeight/2)+stepperExtraMargin,zPos+(slidingBackPlateLength/2)]) rotate([-90,0,0]) HexagonNutHolder();		
 
-    translate([40,-90,60]) DrillMotorMountBack(x = 40, d = 30, z = 20, wall_w = 60, wall_t = 5);
+    //translate([40,-90,60]) DrillMotorMountBack(x = 40, d = 30, z = 20, wall_w = 60, wall_t = 5);
+    translate([11.5,-60.70,57]) rotate([90,0,0]) Dremel395Mount();
 		
 	}
 }
@@ -1013,6 +1014,23 @@ nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
 	}
 }
 
+module Dremel395Mount() {
+    width = 56.85; // 55
+    height = 68; // 60
+    thickness = 9;
+    
+    difference() {
+        union() {
+    translate([-71.575,-66,0]) import("Dremel/Dremel_395_Prusa_i3_Mount.stl", convexity=5);
+
+    cube([width,height,thickness]);
+        }
+        
+        // the screw holes
+        translate([28.5,33.8,-10]) ZSliderHolePattern();
+    }
+}
+
 module ZSliderHolePattern(screw_length = 40)
 {
     screw_margin = 0.6;
@@ -1020,8 +1038,8 @@ module ZSliderHolePattern(screw_length = 40)
     
     //boltsize = 6; // assume 6 mm bolts to hold this to the base
     
-	holeXOffset = 14;
-	holeYOffset = 23;
+	holeXOffset = 12;
+	holeYOffset = 12;
    
     translate([holeXOffset,holeYOffset,0])			
 			FakeBolt(screw_length);   
@@ -1031,6 +1049,33 @@ module ZSliderHolePattern(screw_length = 40)
 			FakeBolt(screw_length);
 	translate([-holeXOffset,-holeYOffset,0])			
 			FakeBolt(screw_length);
+}
+
+module ZSliderLockHoles() {
+
+    boltZPos = zSliderThickness/2+epsilon;
+    boltHeadDia = 8;
+    boltHeadHeight = 3.5;
+
+	holeXOffset = 15;
+	holeYOffset = 23;
+   
+    translate([holeXOffset,holeYOffset,-boltZPos]){			
+		FakeBolt();   
+        translate([0,0,zSliderThickness-boltHeadHeight+2*epsilon]) cylinder(h=boltHeadHeight, r=boltHeadDia/2);
+    }
+    translate([-holeXOffset,holeYOffset,-boltZPos]) {			
+			FakeBolt();
+        translate([0,0,zSliderThickness-boltHeadHeight+2*epsilon]) cylinder(h=boltHeadHeight, r=boltHeadDia/2);
+    }
+	translate([holeXOffset,-holeYOffset,-boltZPos]) {			
+			FakeBolt();
+        translate([0,0,zSliderThickness-boltHeadHeight+2*epsilon]) cylinder(h=boltHeadHeight, r=boltHeadDia/2);
+    }
+	translate([-holeXOffset,-holeYOffset,-boltZPos]) {			
+			FakeBolt();
+        translate([0,0,zSliderThickness-boltHeadHeight+2*epsilon]) cylinder(h=boltHeadHeight, r=boltHeadDia/2);
+    }
 }
 
 module ZSlider()
@@ -1066,21 +1111,15 @@ module ZSlider()
 
             //translate([0,0,-13]) CouplerNutHolder();
 		
+            // add z-end stop holder
+            translate([20,25,-13]) cube([30-epsilon,5,zSliderThickness]);
 		}
 
-        boltZPos = zSliderThickness/2+epsilon;
+        // add holes to lock the two parts of the slider together
+        ZSliderLockHoles();
 
-        // bolts to keep the nut in place
-        for (a =[10,-10]) {
-            translate([a,a,boltZPos])
-                rotate(a=[180,0,0])
-                    FakeBolt();
-
-            translate([-a,a,boltZPos])
-                rotate(a=[180,0,0])
-                    FakeBolt();
-        }      
-
+        // this was way to tight!
+        // therefore increased the coupling nut dia and height
 		translate([0,0,-5])
 			rotate([90,0,0])
                 CouplingNut();
@@ -1108,6 +1147,7 @@ module ZSlider()
 			rotate(a=[90,0,0])
 				cylinder(h=200,r=(threadRodDia+rodMargin)/2,$fn=33);
 
+    // holes to keep the slider addons in place
     translate([0,0,zSliderThickness/2-30+4-epsilon])
 			ZSliderHolePattern(screw_length=30);
 
