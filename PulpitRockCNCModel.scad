@@ -67,7 +67,7 @@ zShortHeight = 70*mm;			// height of the short end plates
 zRodMargin = 12.5*mm;				// margins from the sides for the smooth rod holes
 
 // Z Position: min = mdfDepth, max = zBackPlateHeight-mdfDepth-slidingBackPlateLength
-zPos = mdfDepth+40;
+zPos = mdfDepth+15;
 
 // X axis
 xYCarriagePos = (mdfLength-zBackPlateWidth)/2; 	// position on the X axis. 
@@ -774,8 +774,11 @@ module ZModule2(exploded = 0) {
             translate([0,0,exploded]) ZSliderTop();
             translate([0,0,-exploded/5]) ZSliderBottom();
         }
-     
-    translate([11.5,-60.70-2*exploded,57]) rotate([90,0,0]) Dremel395Mount();	   
+        
+    // extension to get the drill holder lower
+    translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2),slidingBearingHighPos]) DremelExtension();
+            
+    translate([11.5,-60.70-2*exploded-20,zPos-66]) rotate([90,0,0]) Dremel395Mount();	   
 			
 		// 608 bearing Z axis
 		translate([zBackPlateWidth/2,-mdfDepth-(zShortHeight/2)+stepperExtraMargin,mdfDepth/2-608Thickness/2]) bearing(model=608);
@@ -1014,6 +1017,40 @@ module Dremel395Mount() {
     }
 }
 
+module DremelExtension() {
+    // extension to get the drill holder lower
+    extHeight = 60;
+    extWidth = 55;
+    extThickness = 20;
+    
+    
+    translate([-extWidth/2,-extThickness-13,-extHeight+30]) {
+       difference() { 
+            cube([extWidth,extThickness,extHeight]);
+           
+        // the screw holes
+        translate([27.5,extThickness+20-epsilon,30]) rotate([90,0,0]) ZSliderHolePattern();
+           
+        }         
+    }
+    
+    // support
+    translate([-extWidth/2,-extThickness-3,-extHeight+30]) {
+        rotate([0,90,0]) Triangle(10,20,55);
+    }
+    
+    translate([-extWidth/2,-extThickness-13,-extHeight-40]) {
+       difference() { 
+            cube([extWidth,10,extHeight+20]);
+           
+        // the screw holes
+        translate([27.5,extThickness+epsilon,30]) rotate([90,0,0]) ZSliderHolePattern();
+           
+        }         
+    }
+     
+}
+
 module ZSliderHolePattern(screw_length = 40)
 {
     screw_margin = 0.6;
@@ -1200,3 +1237,5 @@ module ZSliderLayout() {
 //!ZSliderLayout();
 //!ZSliderTopLayout();
 //!ZSliderBottomLayout();
+//!Dremel395Mount();
+//!translate([0,0,33]) rotate([90,0,0]) DremelExtension();
