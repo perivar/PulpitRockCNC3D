@@ -1,5 +1,5 @@
 
-pen_diameter = 12;
+pen_diameter = 8;
 
 $fn = 120;
 

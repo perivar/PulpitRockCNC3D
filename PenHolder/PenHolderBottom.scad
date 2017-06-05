@@ -1,12 +1,12 @@
 $fn=100;
 epsilon=0.1;
-pen_diameter = 10.5;//9.6;
+pen_diameter = 12.5;//9.6;
 pen_diameter_point1=pen_diameter;
 pen_diameter_point2=5;
 plate_l=34.5;
 plate_w=18;
 plate_h=5;
-base_diameter=18.0; // dremel holder hole opening
+base_diameter=19.2; // dremel holder hole opening
 base_h=10; // dremel holder base thickness
 thickness=2; 
 pointHeight=6;
