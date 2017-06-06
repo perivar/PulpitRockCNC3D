@@ -1,8 +1,8 @@
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
-//$fa=0.5;   	// default minimum facet angle
-//$fs=0.5; 	// default minimum facet size
-//$fn = 24;
+$fa=0.5;   	// default minimum facet angle
+$fs=0.5; 	// default minimum facet size
+//$fn = 100;
 
 epsilon = 0.1; // small tolerance used for CSG subtraction/addition
 
@@ -13,10 +13,10 @@ module Dremel395Mount() {
     width = 56.85; 
     height = 68; 
     platethickness = 9; // bottom plate thickness
-    thickness=11; // ring thickness
+    thickness=13; // ring thickness, orig. 11 mm
     screwmountslit=3;
     extramargin=6; // distance to move big ring up
-    bigextrawidth=7; // extra at bottom of big ring
+    bigextrawidth=5; // extra at bottom of big ring, orig. 7 mm
     bigextraheight=14;
 
     // outer dia for rings
@@ -34,28 +34,28 @@ module Dremel395Mount() {
         cube([width,height,platethickness]);
                 
         // big holder
-        translate([d1/2,height,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d1/2, h=thickness+bigextrawidth, center=false, $fn = 24);
+        translate([d1/2,height,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d1/2, h=thickness+bigextrawidth, center=false);
 
         // big holder extend downwards
         translate([0,height-thickness-bigextrawidth,0]) cube([d1,thickness+bigextrawidth,d1/2+platethickness]);
 
         // big holder screw hole
-        translate([d1/2,height-thickness,d1+platethickness-5])
-    ScrewHolder();
+        translate([d1/2,height-thickness,d1+platethickness-4])
+    ScrewHolder(thickness);
 
         // small holder
-        translate([d1/2,thickness,d1/2+extramargin]) rotate([90,5.3,0]) cylinder(r=d2/2, h=thickness, center=false, $fn = 24);
+        translate([d1/2,thickness,d1/2+extramargin]) rotate([90,5.3,0]) cylinder(r=d2/2, h=thickness, center=false);
         
         // small holder extend downwards
         translate([(width-d2)/2,0,0]) cube([d2,thickness,d1/2+extramargin]);
         
         // small holder screw hole
-        translate([d1/2,0,d1/2+extramargin+d2/2-2.177])
-    ScrewHolder();
+        translate([d1/2,0,d1/2+extramargin+d2/2-2])
+    ScrewHolder(thickness);
 
         // supports for the small hole
         m=18;
-        n=14.13;
+        n=14;
         scale([2,1,1])
     translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = n, scale = 11/m) square(m, center = false);
 
@@ -75,17 +75,17 @@ module Dremel395Mount() {
         translate([28.5,33.8,-10]) ZSliderHolePattern();
                 
         // the small hole
-    translate([d1/2,thickness+3,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d3/2, h=thickness+4, center=false, $fn = 24);
+    translate([d1/2,thickness+3,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d3/2, h=thickness+4, center=false);
         
         // the small slit
-        translate([width/2-screwmountslit/2,-1,d1/2+extramargin]) cube([screwmountslit,thickness+4,100]);
+        translate([width/2-screwmountslit/2,-2,d1/2+extramargin]) cube([screwmountslit,thickness+4,100]);
         
         // the small support slit
         gap=15;
         translate([(width-gap)/2,thickness,platethickness]) cube([gap,thickness,100]);
 
         // the big hole
-        translate([d1/2,height+2,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d4/2, h=thickness+bigextrawidth+20, center=false, $fn = 24);
+        translate([d1/2,height+2,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d4/2, h=thickness+bigextrawidth+20, center=false);
 
         // the big slit
         translate([d1/2-screwmountslit/2,height-thickness-1-bigextrawidth,d1/2+extramargin]) cube([screwmountslit,thickness+bigextrawidth+2,100]);
@@ -96,25 +96,20 @@ module Dremel395Mount() {
     }
 }
 
-module ScrewHolder() {
+module ScrewHolder(thickness=11) {
     
-    thickness=11;
     screwmountthickness=6;
     screwmountslit=3;
-    screwmountheight=thickness;//14.18;
-    //holdermarg=5.10; // and 4.96, probably 5mm
+    screwmountheight=11;
+    totalthickness=2*screwmountthickness+screwmountslit;
+    //rimthickness=5; // 5.10 and 4.96, probably 5mm
     
     difference() {
-        union() {
-            // screw holder left
-            translate([-screwmountthickness-screwmountslit/2,0,0]) cube([screwmountthickness,thickness,screwmountheight]);
-
-            // screw holder right
-            translate([screwmountslit/2,0,0]) cube([screwmountthickness,thickness,screwmountheight]);
-        }
+        // screw holder
+        translate([-screwmountthickness-screwmountslit/2,0,0]) cube([totalthickness,thickness,screwmountheight]);
 
         // screw hole
-        translate([-6-1.5-epsilon,5.5,thickness/2]) rotate([90,0,0]) rotate([0,90,0]) FakeBolt();
+        translate([-screwmountthickness-screwmountslit/2-epsilon,thickness/2,screwmountheight/2]) rotate([90,0,0]) rotate([0,90,0]) FakeBolt();
     }
     
 }
