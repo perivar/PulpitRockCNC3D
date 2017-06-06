@@ -12,13 +12,14 @@ Dremel395Mount();
 module Dremel395Mount() {
     width = 56.85; 
     height = 68; 
-    platethickness = 9; // bottom plate
-    thickness=11; // 11
+    platethickness = 9; // bottom plate thickness
+    thickness=11; // ring thickness
     screwmountslit=3;
-    bigextra=7; // extra at bottom of big ring
+    extramargin=6; // distance to move big ring up
+    bigextrawidth=7; // extra at bottom of big ring
+    bigextraheight=14;
 
     // outer dia for rings
-    extramargin=6; // extra margin up
     d1=width;
     d4=46.85; //10
     
@@ -29,53 +30,50 @@ module Dremel395Mount() {
         union() {
     //#translate([-71.575,-66,0]) import("Dremel_395_Prusa_i3_Mount.stl", convexity=5);
 
-    // bottom plate
-    cube([width,height,platethickness]);
-            
-            // big holder
-            translate([d1/2,height,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d1/2, h=thickness+bigextra, center=false, $fn = 24);
+        // bottom plate
+        cube([width,height,platethickness]);
+                
+        // big holder
+        translate([d1/2,height,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d1/2, h=thickness+bigextrawidth, center=false, $fn = 24);
 
-            // big holder extend downwards
-            translate([0,height-thickness-bigextra,0]) cube([d1,thickness+bigextra,d1/2+platethickness]);
+        // big holder extend downwards
+        translate([0,height-thickness-bigextrawidth,0]) cube([d1,thickness+bigextrawidth,d1/2+platethickness]);
 
-            // big holder screw hole
-            translate([d1/2,height-thickness,d1+platethickness-5])
-        ScrewHolder();
+        // big holder screw hole
+        translate([d1/2,height-thickness,d1+platethickness-5])
+    ScrewHolder();
 
+        // small holder
+        translate([d1/2,thickness,d1/2+extramargin]) rotate([90,5.3,0]) cylinder(r=d2/2, h=thickness, center=false, $fn = 24);
+        
+        // small holder extend downwards
+        translate([(width-d2)/2,0,0]) cube([d2,thickness,d1/2+extramargin]);
+        
+        // small holder screw hole
+        translate([d1/2,0,d1/2+extramargin+d2/2-2.177])
+    ScrewHolder();
 
-            // small holder
-            translate([d1/2,thickness,d1/2+extramargin]) rotate([90,5.3,0]) cylinder(r=d2/2, h=thickness, center=false, $fn = 24);
-            
-            // small holder extend downwards
-            translate([(width-d2)/2,0,0]) cube([d2,thickness,d1/2+extramargin]);
-            
-            // small holder screw hole
-            translate([d1/2,0,d1/2+extramargin+d2/2-2.177])
-        ScrewHolder();
+        // supports for the small hole
+        m=18;
+        n=14.13;
+        scale([2,1,1])
+    translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = n, scale = 11/m) square(m, center = false);
 
-            // small holder support
-            //translate([width/2,-10,platethickness]) rotate([0,0,45]) cylinder(width/4,40,20,$fn=4);
-            
-            //translate([width/2,-3.3,platethickness]) rotate([0,0,45]) cylinder(width/4,30.8,20,$fn=4);
-m=18;
-translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = 14, scale = 11/m) square(m, center = false);
+        translate([width,0,0]) mirror() 
+        scale([2,1,1])
+    translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = n, scale = 11/m) square(m, center = false);
 
-/*
-   hull() 
-   {
-    translate([14,thickness,platethickness]) rotate([90,-90,0]) Triangle(14,14,thickness);
+        // supports for the big hole
+        translate([0,height-thickness-bigextrawidth,platethickness]) rotate([0,-90,180]) Triangle(10,bigextraheight,12);
 
-    translate([width-14,thickness,platethickness]) rotate([90,0,0]) Triangle(14,14,thickness);
-    
-    translate([14,thickness,platethickness]) rotate([90,0,90]) Triangle(14,7.5,29);
-   }
- */
+        translate([width,0,0]) mirror() 
+        translate([0,height-thickness-bigextrawidth,platethickness]) rotate([0,-90,180]) Triangle(10,bigextraheight,12);
+
         }
         
         // the bottom plate screw holes
         translate([28.5,33.8,-10]) ZSliderHolePattern();
-        
-        
+                
         // the small hole
     translate([d1/2,thickness+3,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d3/2, h=thickness+4, center=false, $fn = 24);
         
@@ -83,20 +81,17 @@ translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = 14, sca
         translate([width/2-screwmountslit/2,-1,d1/2+extramargin]) cube([screwmountslit,thickness+4,100]);
         
         // the small support slit
-        //gap=15;
-        //translate([(width-gap)/2,11,platethickness]) cube([gap,thickness,100]);
-   
+        gap=15;
+        translate([(width-gap)/2,thickness,platethickness]) cube([gap,thickness,100]);
 
         // the big hole
-        translate([d1/2,height+2,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d4/2, h=thickness+10, center=false, $fn = 24);
+        translate([d1/2,height+2,d1/2+extramargin]) rotate([90,0,0]) cylinder(r=d4/2, h=thickness+bigextrawidth+20, center=false, $fn = 24);
 
         // the big slit
-        translate([d1/2-screwmountslit/2,height-thickness-1,d1/2+extramargin]) cube([screwmountslit,thickness+2,100]);
+        translate([d1/2-screwmountslit/2,height-thickness-1-bigextrawidth,d1/2+extramargin]) cube([screwmountslit,thickness+bigextrawidth+2,100]);
 
         // big cut off top
-        translate([-1,height-2*thickness,platethickness+14]) cube([d1+2,thickness,d1]);
-        
-        
+        translate([-1,height-2*thickness,platethickness+bigextraheight]) cube([d1+2,thickness,d1]);
         
     }
 }
