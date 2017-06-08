@@ -121,6 +121,7 @@ zSliderThickness =26;// orig: 22.5 lm8uuOutDia*zSliderExtraMargin;
 Assembled();
 //Exploded();
 //Parts();
+//YPlateLayout();
 
 // full model view
 module Assembled() {
@@ -1226,6 +1227,13 @@ module ZSliderLayout() {
     
     ZSliderTopLayout();
     translate([0,65,0]) ZSliderBottomLayout();
+}
+
+module YPlateLayout() {
+    //translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
+    
+    // reset the position to zero
+    projection() rotate([0,0,0]) translate([-mdfDepth-yPlateMargin,-yPlatePos,0]) YPlate();
 }
 
 //!ZSlider();
