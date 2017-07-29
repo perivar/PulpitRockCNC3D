@@ -49,9 +49,10 @@ smoothRodDia = 8*mm;
 threadRodDia = 8*mm;
 
 // Y plate dimensions
-yPlateMargin = 10*mm;	// margin on the left and right side of the plate
+yPlateMargin = 12.3*mm;	// margin on the left and right side of the plate
+yPlateMarginFrontBack = 1.15*mm;	// margin on the front and back side of the plate
 yPlateWidth = mdfLength-2*mdfDepth-2*yPlateMargin;
-yPlateHeight = (mdfLength-(2*mdfDepth))/2; // the height of the yPlate (width in Y direction)
+yPlateHeight = (mdfLength-(2*mdfDepth))/2-2*yPlateMarginFrontBack; // the height of the yPlate (width in Y direction)
 yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDepth-yPlateHeight
 
 // sliding drill holder variables
