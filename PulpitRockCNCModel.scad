@@ -49,10 +49,10 @@ smoothRodDia = 8*mm;
 threadRodDia = 8*mm;
 
 // Y plate dimensions
-yPlateMargin = 12.3*mm;	// margin on the left and right side of the plate
-yPlateMarginFrontBack = 1.15*mm;	// margin on the front and back side of the plate
-yPlateWidth = mdfLength-2*mdfDepth-2*yPlateMargin;
-yPlateHeight = (mdfLength-(2*mdfDepth))/2-2*yPlateMarginFrontBack; // the height of the yPlate (width in Y direction)
+yPlateMargin = 32.30*mm;	// margin on the left and right side of the plate
+yPlateMarginFrontBack = 3.65*mm;	// margin on the front and back side of the plate
+yPlateWidth  = (mdfLength-2*mdfDepth) -2*yPlateMargin;
+yPlateHeight = (mdfLength-2*mdfDepth)/2 -2*yPlateMarginFrontBack; // the height of the yPlate (width in Y direction)
 yPlatePos = mdfLength-mdfDepth-yPlateHeight; // from mdfDepth to mdfLength-mdfDepth-yPlateHeight
 
 // sliding drill holder variables
@@ -119,10 +119,10 @@ zSliderThickness =26;// orig: 22.5 lm8uuOutDia*zSliderExtraMargin;
 // --------------------------------
 // Choose view
 // --------------------------------
-Assembled();
+//Assembled();
 //Exploded();
 //Parts();
-//YPlateLayout();
+YPlateLayout();
 
 // full model view
 module Assembled() {
@@ -131,7 +131,7 @@ module Assembled() {
     Back();
     SideLeft();
     SideRight();
-	Bottom();
+	//Bottom();
 	YPlate();
 	SmoothRods();
 	ThreadedRods();
@@ -529,14 +529,12 @@ module YPlate() {
 			difference() {
 				cube(size=[yPlateWidth,yPlateHeight,mdfDepth]);
 				echo("YPlate dimensions in mm: ", yPlateWidth, yPlateHeight, mdfDepth);					
-				
 				union() {				
 					// bearing positions
 					bearingLeftPos = (mdfLength*1/3)-(mdfDepth+yPlateMargin)
 					-( lm8uuOutDia / 2);
 					bearingRightPos = (mdfLength*2/3)-(mdfDepth+yPlateMargin)
-					-( lm8uuOutDia / 2);				
-														
+					-( lm8uuOutDia / 2);																		
 					// cut out room for the zip-ties
 					// top bearings zip-tie holes
 					translate([bearingLeftPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
@@ -553,9 +551,15 @@ module YPlate() {
                     
                     
                     // cut out room for M8 screws
-                    m8Margin = 15*mm;
+                    m8Margin = 17.5*mm;
                     m8screwRadius = (8*mm + 0.6) * 0.5;	// M8 screw    
                     
+                    // distance between the M8 screws
+                    m8DistanceWidth = yPlateWidth-m8Margin-m8Margin;
+                    m8DistanceHeight = yPlateHeight-m8Margin-m8Margin;
+  echo("Distance between m8 screws in mm: ", m8DistanceWidth, m8DistanceHeight);            
+        
+       
                     // bottom left
                     translate([m8Margin,m8Margin,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=m8screwRadius);
                     
