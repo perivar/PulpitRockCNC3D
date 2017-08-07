@@ -119,10 +119,11 @@ zSliderThickness =26;// orig: 22.5 lm8uuOutDia*zSliderExtraMargin;
 // --------------------------------
 // Choose view
 // --------------------------------
-//Assembled();
+Assembled();
 //Exploded();
 //Parts();
-YPlateLayout();
+//YPlateBottomLayout();
+//YPlateTopLayout();
 
 // full model view
 module Assembled() {
@@ -132,7 +133,8 @@ module Assembled() {
     SideLeft();
     SideRight();
 	//Bottom();
-	YPlate();
+	YPlateBottom();
+    YPlateTop();
 	SmoothRods();
 	ThreadedRods();
 	StepperMotors();
@@ -149,7 +151,8 @@ module Exploded() {
     translate([-expanded, 0, 0]) SideLeft();
     translate([expanded, 0, 0]) SideRight();   
 	translate([0, 0, -expanded]) Bottom();		
-	translate([0, 0, expanded]) YPlate();
+	translate([0, 0, expanded/3]) YPlateBottom();
+    translate([0, 0, expanded/2]) YPlateTop();
 	
 	SmoothRods();
 	ThreadedRods();
@@ -169,8 +172,10 @@ module Parts() {
     projection() rotate([-90, 0, 0]) translate([0,0,margin]) Back();
     projection() rotate([0, -90, 0]) translate([0,margin,margin]) SideLeft();
     projection() rotate([0,90,0]) translate([0,margin,500+margin]) SideRight();  
-	projection() rotate([0,0,0]) translate([0,500+margin*2,margin]) Bottom();	
-	projection() rotate([0,0,0]) translate([0,-700+margin,margin]) YPlate();
+	//projection() rotate([0,0,0]) translate([0,500+margin*2,margin]) Bottom();	
+	projection() rotate([0,0,0]) translate([0,-700+margin,margin]) YPlateBottom();
+    
+    projection() rotate([0,0,0]) translate([0,-1000+margin,margin]) YPlateTop();
 	
     /*
 	projection() translate([-150,600,0]) ZModuleTop();
@@ -180,7 +185,7 @@ module Parts() {
 	projection() translate([-300,1000,0]) ZModuleSlidingBottom();
     */
 
-    projection() translate([-150,600,0]) ZModuleBack();
+    projection() translate([-150,-300,0]) ZModuleBack();
 
 }
 
@@ -514,46 +519,18 @@ module Bottom() {
 	}
 }
 
-module YPlate() {
-		
-	translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
-	{ 
-		// debug pointer to find middle position on Y plate
-		//translate([xYCarriagePos+8, 0, 0]) cylinder(r=10, h=300); // mid position
-	
-		// store the mid position for the threaded rod
-		threadedRodMidPos = (mdfLength*1/2)-(mdfDepth+yPlateMargin);
-		
+module YPlateBase() {
+    
 		// plate
 		color(Pine) {
 			difference() {
 				cube(size=[yPlateWidth,yPlateHeight,mdfDepth]);
 				echo("YPlate dimensions in mm: ", yPlateWidth, yPlateHeight, mdfDepth);					
-				union() {				
-					// bearing positions
-					bearingLeftPos = (mdfLength*1/3)-(mdfDepth+yPlateMargin)
-					-( lm8uuOutDia / 2);
-					bearingRightPos = (mdfLength*2/3)-(mdfDepth+yPlateMargin)
-					-( lm8uuOutDia / 2);																		
-					// cut out room for the zip-ties
-					// top bearings zip-tie holes
-					translate([bearingLeftPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
-					
-					translate([bearingRightPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
-
-					// bottom bearings zip-tie holes
-					translate([bearingLeftPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
-					
-					translate([bearingRightPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
-			
-					// cut out room for the Coupling Nut fastener screw
-					translate([threadedRodMidPos,yPlateHeight/2, 0]) CouplingNutFastenerHoles();
-                    
-                    
+				
+                union() {       
                     // cut out room for M8 screws
                     m8Margin = 17.5*mm;
                     m8screwRadius = (8*mm + 0.6) * 0.5;	// M8 screw    
-                    
                     // distance between the M8 screws
                     m8DistanceWidth = yPlateWidth-m8Margin-m8Margin;
                     m8DistanceHeight = yPlateHeight-m8Margin-m8Margin;
@@ -572,7 +549,62 @@ module YPlate() {
                     translate([yPlateWidth-m8Margin,yPlateHeight-m8Margin,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=m8screwRadius);                    
 				}
 			}
-		}		
+		}	
+}
+
+module YPlateBottom() {
+		
+	translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
+	{ 
+		// debug pointer to find middle position on Y plate
+		//translate([xYCarriagePos+8, 0, 0]) cylinder(r=10, h=300); // mid position
+	
+       difference() {
+           YPlateBase();   
+           
+           union() {				
+					// bearing positions
+					bearingLeftPos = (mdfLength*1/3)-(mdfDepth+yPlateMargin)
+					-( lm8uuOutDia / 2);
+					bearingRightPos = (mdfLength*2/3)-(mdfDepth+yPlateMargin)
+					-( lm8uuOutDia / 2);														
+					// cut out room for the zip-ties
+					// top bearings zip-tie holes
+					translate([bearingLeftPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
+					
+					translate([bearingRightPos,yPlateBearingMargin,0]) ZipTieBearingHoles();
+
+					// bottom bearings zip-tie holes
+					translate([bearingLeftPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
+					
+					translate([bearingRightPos,yPlateHeight-yPlateBearingMargin-lm8uuLength,0]) ZipTieBearingHoles();
+			
+					// cut out room for the Coupling Nut fastener screw
+                    // store the mid position for the threaded rod
+                    threadedRodMidPos = (mdfLength*1/2)-(mdfDepth+yPlateMargin);
+		               
+					translate([threadedRodMidPos,yPlateHeight/2, 0]) CouplingNutFastenerHoles();
+           }
+           
+       }   
+        
+	}			
+}
+
+module YPlateTop() {
+    
+	translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)+80]) 
+	{ 
+		difference() {
+            YPlateBase(); 
+           
+            hole_margin_x = 55;
+            hole_margin_y = 15;
+            
+            for ( x = [0:50:300] , y = [0:50:200] ) {
+                translate([x+hole_margin_x,y+hole_margin_y,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=4);
+            }
+        } 
 	}			
 }
 
@@ -1234,12 +1266,19 @@ module ZSliderLayout() {
     translate([0,65,0]) ZSliderBottomLayout();
 }
 
-module YPlateLayout() {
-    //translate([mdfDepth+yPlateMargin,yPlatePos,(mdfWidth/2)+(lm8uuOutDia/2*mm)]) 
+module YPlateBottomLayout() {
     
     // reset the position to zero
-    projection() rotate([0,0,0]) translate([-mdfDepth-yPlateMargin,-yPlatePos,0]) YPlate();
+    projection() rotate([0,0,0]) translate([-mdfDepth-yPlateMargin,-yPlatePos,0]) YPlateBottom();
 }
+
+module YPlateTopLayout() {
+    
+    // reset the position to zero
+    projection() rotate([0,0,0]) translate([-mdfDepth-yPlateMargin,-yPlatePos,0]) YPlateTop();
+}
+
+
 
 //!ZSlider();
 //!YSupportTop();

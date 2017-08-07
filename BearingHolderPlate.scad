@@ -13,7 +13,7 @@ Abbrev.	Inner D.	Outer D.	Thickness	Notes
 bearingInnerDia = 8; 		
 bearingOuterDia = 22;	// outer dimensions
 bearingThickness = 7;	// thickness
-bearingClearance = 0.3;	// clearance around the outer dimensions
+bearingClearance = 0.2;	// clearance around the outer dimensions
 
 bearingDiameter = bearingOuterDia + bearingClearance;
 wallThickness = 0.6;	// thickness of the wall
@@ -140,7 +140,7 @@ difference()
 {
 	union() {
 		translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();	
-		cylinder(r=bearingDiameter/2+0.5,h=plate_height+(mdfDepth-bearingThickness)/2);
+		cylinder(r=bearingDiameter/2,h=plate_height+(mdfDepth-bearingThickness)/2);
 	}
 
 	translate([0,0,-epsilon]) 
