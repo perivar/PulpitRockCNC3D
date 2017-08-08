@@ -601,8 +601,12 @@ module YPlateTop() {
             hole_margin_x = 55;
             hole_margin_y = 15;
             
-            for ( x = [0:50:300] , y = [0:50:200] ) {
-                translate([x+hole_margin_x,y+hole_margin_y,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=4);
+            m8screwRadius = (8*mm + 0.6) * 0.5;	// M8 screw    
+            m6screwRadius = (6*mm + 0.4) * 0.5;	// M6 screw
+            screwRadius = m6screwRadius;
+            
+            for ( x = [0:20:300] , y = [0:20:200] ) {
+                translate([x+hole_margin_x,y+hole_margin_y,-epsilon]) cylinder(h=mdfDepth+2*epsilon, r=screwRadius);
             }
         } 
 	}			
