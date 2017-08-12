@@ -7,7 +7,7 @@ use <LM8UUHolder.scad>
 use <linear_bearing.scad>
 use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
-use <HexagonNutHolder.scad>
+use <HexagonNutHolder2.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
@@ -1287,8 +1287,8 @@ module YPlateTopLayout() {
 //!ZSlider();
 //!YSupportTop();
 //!YSupportBottom();
-//!SliderBottom();
-//!SliderTop();
+//!ZSliderBottom();
+//!ZSliderTop();
 
 //!ZSliderLayout();
 //!ZSliderTopLayout();
