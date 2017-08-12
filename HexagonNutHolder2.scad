@@ -39,8 +39,8 @@ plateMargin = 6; // originally 2 mm
 // hexagon coupling
 couplingNutWidth = 13;	// distance from flat to flat = 13mm
 couplingNutLength = 35; // length of the coupling nut = 35mm 
-couplingExtraMargin = 0.2; // margin when printing (0.3). TODO: can be even smaller. 0.2?
-couplingExtraLength = 1.0; // margin when printing (0.3).
+couplingExtraMargin = 0.2; // margin when printing (0.2). TODO: can be even smaller. 0.1?
+couplingExtraLength = 0.2; // margin when printing (0.2).
 
 threadRod_margin = 1.0; // 0.5 is very tight
 
