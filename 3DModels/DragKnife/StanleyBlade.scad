@@ -62,7 +62,7 @@ module blade(useAsDifference) {
 }
 
 
-blade(true);
+blade(false);
 
 // check gradient manually
 //color("white") rotate([0,0,-51.34]) translate([0,0,-bladethickness/2]) cube([50,50,bladethickness]);
