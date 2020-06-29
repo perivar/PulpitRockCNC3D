@@ -14,7 +14,7 @@ Abbrev.	Inner D.	Outer D.	Thickness	Notes
 */
 
 bearingInnerDia = 8; 	 // 608 bearing 	
-bearingClearance = 0.2;	// clearance around the outer dimensions
+bearingClearance = 0.1;	// clearance around the outer dimensions
 
 top_height = bearingInnerDia-bearingClearance; // thickness of top cylinder (
 
@@ -32,17 +32,17 @@ module support_bottom_holder() {
 difference() {
 hull() {
     // left cylinder
-translate([bottom_rad,bottom_rad,0]) cylinder(h = bottom_height, r1 = bottom_rad, r2 = bottom_rad, center = false);
+translate([bottom_rad,bottom_rad,0]) cylinder(h = bottom_height, r = bottom_rad, center = false);
 
 // right cylinder
-translate([bottom_length,bottom_rad,0]) cylinder(h = bottom_height, r1 = bottom_rad, r2 = bottom_rad, center = false);
+translate([bottom_length,bottom_rad,0]) cylinder(h = bottom_height, r = bottom_rad, center = false);
 }
 
 // right screw hole
-translate([bottom_length,bottom_rad,-epsilon]) cylinder(h = hscrew_hole, r1 = rscrewhole, r2 = rscrewhole, center = false);
+translate([bottom_length,bottom_rad,-epsilon]) cylinder(h = hscrew_hole, r = rscrewhole, center = false);
 
 // left screw hole
-translate([bottom_rad,bottom_rad,-epsilon]) cylinder(h = hscrew_hole, r1 = rscrewhole, r2 = rscrewhole, center = false);
+translate([bottom_rad,bottom_rad,-epsilon]) cylinder(h = hscrew_hole, r = rscrewhole, center = false);
 
 }
 }
@@ -74,10 +74,10 @@ module support_top() {
     fasten_length = 30;
     
     // short top fasten cylinder
-    translate([offset_x,offset_y,fasten_rad]) rotate([-90,0,0]) cylinder(h = base_length, r1 = base_rad, r2 = base_rad, center = false);
+    translate([offset_x,offset_y,fasten_rad]) rotate([-90,0,0]) cylinder(h = base_length, r = base_rad, center = false);
     
     // long top fasten cylinder
-    translate([offset_x,offset_y,fasten_rad]) rotate([-90,0,0]) cylinder(h = fasten_length, r1 = fasten_rad, r2 = fasten_rad, center = false);   
+    translate([offset_x,offset_y,fasten_rad]) rotate([-90,0,0]) cylinder(h = fasten_length, r = fasten_rad, center = false);   
 }
 
 module drag_knife() {
@@ -104,6 +104,13 @@ translate([-epsilon,-epsilon,-4]) cube([100,100,4]);
 // remove everything higher than than z = top_height
 translate([-epsilon,-epsilon,top_height]) cube([100,100,4]);
 }
+
+// test to show where the center of the main cylinder is 
+// related to the blade edge
+//color("blue") translate([-epsilon+12.1,0,fasten_rad]) cube([fasten_rad,80,4]);
+
+// test to show the offset from blade and center = 3,9 mm
+//color("green") translate([8.1,0,fasten_rad]) cube([3.90,fasten_rad,4]);
 }
 
 

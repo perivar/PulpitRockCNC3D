@@ -48,7 +48,7 @@ difference() {
     }
      
             // base to fit in dremel holder
-            translate([width/2,height,thickness/2]) rotate([-90,0,0]) cylinder(h = 12, r = base_diameter/2, center = false);         
+            translate([width/2,height,thickness/2]) rotate([-90,0,0]) cylinder(h = 16, r = base_diameter/2, center = false);         
     }
             
         // bottom hole

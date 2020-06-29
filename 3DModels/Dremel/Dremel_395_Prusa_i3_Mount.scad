@@ -66,14 +66,14 @@ module Dremel395Mount() {
         scale([2,1,1])
     translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = n, scale = 11/m) square(m, center = false);
 
-        translate([width,0,0]) mirror() 
+        translate([width,0,0]) mirror([1,0,0]) 
         scale([2,1,1])
     translate([m,0,platethickness]) rotate([0,0,90]) linear_extrude(height = n, scale = 11/m) square(m, center = false);
 
         // supports for the big hole
         translate([0,height-thickness-bigextrawidth,platethickness]) rotate([0,-90,180]) Triangle(10,bigextraheight,12);
 
-        translate([width,0,0]) mirror() 
+        translate([width,0,0]) mirror([1,0,0]) 
         translate([0,height-thickness-bigextrawidth,platethickness]) rotate([0,-90,180]) Triangle(10,bigextraheight,12);
 
         }
@@ -113,7 +113,16 @@ module ScrewHolder(thickness=11) {
     
     difference() {
         // screw holder
-        translate([-screwmountthickness-screwmountslit/2,0,0]) cube([totalthickness,thickness,screwmountheight]);
+        union() {
+            translate([-screwmountthickness-screwmountslit/2,0,0]) cube([totalthickness,thickness,screwmountheight]);
+            
+            // support for the screw holder
+            //for (i = [1, -1]) {
+            translate([-screwmountthickness-screwmountslit/2,thickness,-screwmountheight+6]) rotate([0,-90,90]) Triangle(5,screwmountheight+5,thickness);
+            
+    translate([-screwmountthickness-screwmountslit/2+15,thickness-thickness,-screwmountheight+6]) rotate([0,-90,-90]) Triangle(5,screwmountheight+5,thickness);            
+            //}
+        }
 
         // screw hole
         translate([-screwmountthickness-screwmountslit/2-epsilon,thickness/2,screwmountheight/2]) rotate([90,0,0]) rotate([0,90,0]) HexBolt();
@@ -149,7 +158,8 @@ module Bolt(screw_length = 40) {
     union()
 	{
 		cylinder(h=screw_length,r=screw_dia/2,$fn=100);
-		cylinder(h=nut_height+epsilon,r= nut_dia/2, $fn=6);
+        // add 10 to the height so that we can difference a bolt that is partially hidden
+		translate([0,0,-20]) cylinder(h=nut_height+epsilon+20,r= nut_dia/2, $fn=6);
 	}
 }
 
