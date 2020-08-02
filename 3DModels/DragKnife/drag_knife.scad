@@ -6,6 +6,9 @@ use<StanleyBlade.scad>;
 
 //#translate([-72.3,-44.16,0]) import("DragKnife_Rotor.stl");
 
+//translate([-11.53,-16.214,-53.785]) import("DragKnife_Rotor2.stl");
+
+
 blade_rot_deg = -51.34; // rotate blade degrees
 
 /*
@@ -52,7 +55,7 @@ module support_bottom() {
 support_bottom_holder();
 
 // side support bar
-translate([bottom_rad,bottom_rad*2-2,0]) cube([6,37,bottom_height]);
+translate([bottom_rad,bottom_rad*2-2,0]) cube([6,37-5,bottom_height]);
 
 // cross support bar
 translate([bottom_rad,bottom_rad*2+5,0]) rotate([0,0,blade_rot_deg]) cube([8,30,bottom_height]);
@@ -64,14 +67,14 @@ translate([10,40,0]) rotate([0,0,blade_rot_deg*2]) cube([6,25.9,bottom_height]);
 translate([bottom_rad,bottom_rad*2-1,0]) cube([16,10,bottom_height]);
 
 // top cube
-translate([bottom_rad,bottom_rad*2+25,0]) cube([(base_rad+1.4)*2,10,top_height]);
+translate([bottom_rad,bottom_rad*2+25,0]) cube([(base_rad+1.4)*2,10-5,top_height]);
 }
 
 module support_top() {
     offset_x = 12.1;
-    offset_y = bottom_rad*2+25+10;
-    base_length = 9;
-    fasten_length = 30;
+    offset_y = bottom_rad*2+25+10-5;
+    base_length = 9-5;
+    fasten_length = 30-5;
     
     // short top fasten cylinder
     translate([offset_x,offset_y,fasten_rad]) rotate([-90,0,0]) cylinder(h = base_length, r = base_rad, center = false);
@@ -104,6 +107,11 @@ translate([-epsilon,-epsilon,-4]) cube([100,100,4]);
 // remove everything higher than than z = top_height
 translate([-epsilon,-epsilon,top_height]) cube([100,100,4]);
 }
+}
+
+
+// use this to render the main holder
+drag_knife();
 
 // test to show where the center of the main cylinder is 
 // related to the blade edge
@@ -111,11 +119,6 @@ translate([-epsilon,-epsilon,top_height]) cube([100,100,4]);
 
 // test to show the offset from blade and center = 3,9 mm
 //color("green") translate([8.1,0,fasten_rad]) cube([3.90,fasten_rad,4]);
-}
-
-
-// use this to render the main holder
-drag_knife();
 
 // use this to render the holder clip
 //support_bottom_holder();
