@@ -1089,8 +1089,62 @@ module DremelExtension() {
         translate([27.5,extThickness+epsilon,30]) rotate([90,0,0]) ZSliderHolePattern();
            
         }         
+    }     
+}
+
+module SpindleExtension() {
+    // extension to get the drill holder lower
+    extHeight = 60;
+    extWidth = 90; // 55
+    extThickness = 20;
+    
+    
+    translate([-extWidth/2,-extThickness-13,-extHeight+30]) {
+       difference() { 
+            cube([extWidth,extThickness,extHeight]);
+           
+        // the screw holes (with indents)
+        translate([extWidth/2,extThickness+20-epsilon-extThickness-20,30]) rotate([-90,0,0]) ZSliderHolePattern();
+    
+        // triangle removal
+            translate([-epsilon,-epsilon,extHeight+epsilon]) rotate([-90,0,0]) Triangle(50,20,extThickness+2*epsilon);
+
+           mirror([1,0,0]) translate([-epsilon-90,-epsilon,extHeight+epsilon]) rotate([-90,0,0]) Triangle(50,20,extThickness+2*epsilon);
+
+        }    
     }
-     
+    
+    // support
+    translate([-extWidth/2,-extThickness-3,-extHeight+30]) {
+        rotate([0,90,0]) Triangle(10,20,extWidth);
+    }
+    
+    margin = 0;
+    
+    translate([-extWidth/2,-extThickness-13,-extHeight-40]) {
+
+    // spindle holder
+           //translate ([5.8,49,margin]) scale([1,1,1]) rotate([90,0,0]) import("V2/spindle_aluminum_holder.stl");
+
+       difference() { 
+           cube([extWidth,15,extHeight+20]);
+
+        // spindle holes
+           translate([-epsilon,-epsilon,-epsilon]) cube([25,4,50]);
+           translate([45-11,-epsilon,-epsilon]) cube([22,4,50]);
+           translate([90-25+epsilon,-epsilon,-epsilon]) cube([25,4,50]);
+           
+  // screw holes to the spindle holder         
+           translate([10,20,8+margin]) rotate([90,0,0]) cylinder(r=3, h=80);  
+  
+  translate([10,20,28+margin]) rotate([90,0,0]) cylinder(r=3, h=80);           
+           
+translate([80,20,28+margin]) rotate([90,0,0]) cylinder(r=3, h=80);                      
+
+translate([80,20,8+margin]) rotate([90,0,0]) cylinder(r=3, h=80);                      
+
+        }         
+    }         
 }
 
 module ZSliderHolePattern(screw_length = 40)
@@ -1295,3 +1349,4 @@ module YPlateTopLayout() {
 //!ZSliderBottomLayout();
 //!Dremel395Mount();
 //!translate([0,0,33]) rotate([90,0,0]) DremelExtension();
+//!translate([0,0,33]) rotate([90,0,0]) SpindleExtension();
