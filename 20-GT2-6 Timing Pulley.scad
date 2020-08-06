@@ -19,7 +19,7 @@ use <roundedcylinder.scad>
 // Arc Teeth Pitch = 2mm
 // 2.35 width inner circle 
 
-$fn = 100;
+//$fn = 100; // comment out to avoid unresponive models
 
 tol = 0.05; // used for CSG (Constructive Solid Geometry operations) subtraction/ addition
 

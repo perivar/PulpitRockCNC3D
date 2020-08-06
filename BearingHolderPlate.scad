@@ -134,16 +134,19 @@ module bearingHolePlate() {
 	}
 }
 
-mdfDepth = 12.7;
+module BearingFastener() {
+    mdfDepth = 12.7;
 
-difference() 
-{
-	union() {
-		translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();	
-		cylinder(r=bearingDiameter/2,h=plate_height+(mdfDepth-bearingThickness)/2);
-	}
+    difference() 
+    {
+        union() {
+            translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();	
+            cylinder(r=bearingDiameter/2,h=plate_height+(mdfDepth-bearingThickness)/2);
+        }
 
-	translate([0,0,-epsilon]) 
-	cylinder(r=bearingInnerDia/2+2,h=plate_height+bearingThickness+2*epsilon);
+        translate([0,0,-epsilon]) 
+        cylinder(r=bearingInnerDia/2+2,h=plate_height+bearingThickness+2*epsilon);
+    }
 }
 
+// BearingFastener()

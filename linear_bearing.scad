@@ -11,9 +11,11 @@ LINEAR_BEARING_B  = 3;  //Outer locking groove B
 LINEAR_BEARING_D1 = 4;  //Outer locking groove D1
 LINEAR_BEARING_W  = 5;  //W
 
-
 // Common bearing names
 LinearBearing = "LM8UU";
+
+// fn resolution 
+resolution = 20; // default 100
 
 // Linear Bearing dimensions
 //  model == "XXXXX"   ?   [    dr,      D,      L,        B,      D1,       W]:
@@ -82,10 +84,10 @@ module linearBearing(pos=[0,0,0], angle=[0,0,0], model=LinearBearing,
     color(material) {
       translate(pos)
         difference() {
-          cylinder(r=od/2, h=h,  $fn = 100);
+          cylinder(r=od/2, h=h,  $fn = resolution);
           color(holeMaterial)
             translate([0,0,-10*epsilon])
-              cylinder(r=id/2, h=h+20*epsilon,  $fn = 100);
+              cylinder(r=id/2, h=h+20*epsilon,  $fn = resolution);
         }
     }
   }

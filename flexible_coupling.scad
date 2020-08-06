@@ -14,7 +14,7 @@ use <threads.scad>
 // 8mm hole depth = 17.1 mm
 // 5mm hole = 5,05
 
-$fn = 100;
+//$fn = 100; // comment out to avoid unresponive models
 
 tol = 0.05; // used for CSG (Constructive Solid Geometry operations) subtraction/ addition
 

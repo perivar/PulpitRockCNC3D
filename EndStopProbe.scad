@@ -1,4 +1,4 @@
-$fn=100;
+//$fn=100; // comment out to avoid unresponive models
 epsilon=0.1;
 
 // distance switch opening

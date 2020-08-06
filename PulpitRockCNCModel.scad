@@ -8,11 +8,15 @@ use <linear_bearing.scad>
 use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
 use <HexagonNutHolder2.scad>
+use <BearingHolderPlate.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
-$fa=0.5;   	// default minimum facet angle
-$fs=0.5; 	// default minimum facet size
+//$fa=0.5;   	// default minimum facet angle
+//$fs=0.5; 	// default minimum facet size
+
+// specific $fn
+resolution = 20;
 
 epsilon = 0.1*mm; // small tolerance used for CSG subtraction/addition
 	
@@ -271,7 +275,7 @@ module ThreadedRods() {
 	}
 }
 
-module Fasteners() {
+module Fasteners() {  
 
 	// hexagon bolt X axis
 	color (Aluminum) translate([xYCarriagePos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([90,0,0]) rotate([0,90,0]) CouplingNut();
@@ -280,7 +284,19 @@ module Fasteners() {
 	// 12.5 mm from center of coupling to plate
 	// 6 mm from top flat to plate
 	color ("White") translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin+12.5]) rotate([0,180,0]) HexagonNutHolder();
-	
+    
+    // X M8 nut to keep protect the steppers and remove wiggling    
+    color (Aluminum) translate([mdfLength-mdfDepth-(7.5/2)-2*epsilon,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos])  rotate([0,90,0]) CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=7.5);
+
+    // and the X fastener plate
+    translate([mdfLength+5,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos])  rotate([0,-90,0]) BearingFastener();
+    
+    // Y M8 nut to keep protect the steppers and remove wiggling    
+    color (Aluminum) translate([mdfLength*1/2,mdfDepth+(7.5/2)+2*epsilon,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=7.5);
+    
+    // and the Y fastener plate
+    translate([mdfLength*1/2,-5,mdfWidth/2-stepperExtraMargin]) rotate([-90,0,0]) BearingFastener();
+        
 	// hexagon bolt Y axis
 	color (Aluminum) translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		
 		
@@ -301,10 +317,10 @@ module Bearings() {
 	color (Aluminum) {
 		
 		// 608 bearing Y axis
-		translate([mdfLength*1/2,mdfDepth/2,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) bearing(model=608);
+		translate([mdfLength*1/2,mdfDepth,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) bearing(model=608);
 		
 		// 608 bearing X axis
-		translate([mdfLength-(mdfDepth/2),mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
+		translate([mdfLength-mdfDepth,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
 		
 								
 		
@@ -390,13 +406,13 @@ module CouplingNutFastenerHoles() {
 		
 	// screw holes
 	translate([screw_space_x/2,screw_space_y/2,-epsilon])
-	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=resolution);
 	translate([-screw_space_x/2,screw_space_y/2,-epsilon])
-	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=resolution);
 	translate([screw_space_x/2,-screw_space_y/2,-epsilon])
-	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=resolution);
 	translate([-screw_space_x/2,-screw_space_y/2,-epsilon])
-	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=20);
+	cylinder(r=screw_dia/2, h=mdfDepth+2*epsilon, $fn=resolution);
 }
 
 module Front() {
@@ -929,13 +945,13 @@ module YSupportCommon()
         translate([marginY,baseThickness/2,baseLength-smallHoleDepth])		
 				SmallNut();
         translate([marginY,baseThickness/2,baseLength-smallHoleDepth+epsilon])		
-				cylinder(h=smallHoleDepth+2*epsilon,r=3/2,$fn=33);
+				cylinder(h=smallHoleDepth+2*epsilon,r=3/2,$fn=resolution);
 
 		// right
 		translate([-marginY,baseThickness/2,baseLength-smallHoleDepth])		
 				SmallNut();
 		translate([-marginY,baseThickness/2,baseLength-smallHoleDepth+epsilon])		
-				cylinder(h=smallHoleDepth+2*epsilon,r=3/2,$fn=33);
+				cylinder(h=smallHoleDepth+2*epsilon,r=3/2,$fn=resolution);
 
 		// take out the place for the holes
 		translate([yPlateBearingMargin+lm8uuLength-4.1,baseHeight-52.6,0]) rotate([0,0,90]) ZipTieBearingHoles();
@@ -1038,7 +1054,7 @@ nut_height = 3.0 + screw_margin; // M3 = 2.3 mm, M4 = 3 mm - orig. 3
 	union()
 	{
 		cylinder(h=screw_length,r= screw_dia/2);
-		cylinder(h=nut_height+epsilon,r= nut_dia/2, $fn=6);
+		cylinder(h=nut_height+epsilon,r= nut_dia/2,$fn=6);
 	}
 }
 
@@ -1219,11 +1235,11 @@ module ZSlider()
 			// the round holder parts for the bushings
 			translate([-sliderWidth/2,sliderHeight/2,0])
 				rotate([90,0,0])
-					cylinder(h=sliderHeight,r=zSliderThickness/2,$fn=33);
+					cylinder(h=sliderHeight,r=zSliderThickness/2,$fn=resolution);
 			
             translate([sliderWidth/2,sliderHeight/2,0])
 				rotate([90,0,0])
-					cylinder(h=sliderHeight,r=zSliderThickness/2,$fn=33);
+					cylinder(h=sliderHeight,r=zSliderThickness/2,$fn=resolution);
 
             //translate([0,0,-13]) CouplerNutHolder();
 		
@@ -1244,24 +1260,24 @@ module ZSlider()
 
         translate([-sliderWidth/2,doubleBearingHeight/2,0])
 			rotate([90,0,0])
-				cylinder(h=doubleBearingHeight,r=(bearingDia)/2,$fn=33);
+				cylinder(h=doubleBearingHeight,r=(bearingDia)/2,$fn=resolution);
 		translate([sliderWidth/2,doubleBearingHeight/2,0])
 			rotate([90,0,0])
-				cylinder(h=doubleBearingHeight,r=(bearingDia)/2,$fn=33);
+				cylinder(h=doubleBearingHeight,r=(bearingDia)/2,$fn=resolution);
 			
             // the cutouts for the rails
 		translate([-sliderWidth/2,sliderHeight/2+epsilon,0])
 			rotate([90,0,0])
-				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+rodMargin)/2,$fn=33);
+				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+rodMargin)/2,$fn=resolution);
 		
         translate([sliderWidth/2,sliderHeight/2+epsilon,0])
 			rotate([90,0,0])
-				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+rodMargin)/2,$fn=33);
+				cylinder(h=sliderHeight+2*epsilon,r=(smoothRodDia+rodMargin)/2,$fn=resolution);
 		
         // the threaded rod
 		translate([0,100,-5])
 			rotate(a=[90,0,0])
-				cylinder(h=200,r=(threadRodDia+rodMargin)/2,$fn=33);
+				cylinder(h=200,r=(threadRodDia+rodMargin)/2,$fn=resolution);
 
     // holes to keep the slider addons in place
     translate([0,0,zSliderThickness/2-30+4-epsilon])
