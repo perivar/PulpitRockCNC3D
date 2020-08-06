@@ -136,15 +136,18 @@ module Assembled() {
     Back();
     SideLeft();
     SideRight();
-	//Bottom();
-	YPlateBottom();
-    YPlateTop();
-	SmoothRods();
+	//Bottom(); // not used
+    
+    YPlateTop(); // this takes a lot of capacity and makes the model slower
+	YPlateBottom(); // this also a bit
+	
+    SmoothRods();
 	ThreadedRods();
-	StepperMotors();
-	Bearings();
+    StepperMotors();
+    Bearings();
 	Fasteners();
-	ZModule2();		
+	
+    ZModule2();	// this takes a lot of capacity and makes the model slower	
 }
 
 // exploded view
@@ -155,8 +158,9 @@ module Exploded() {
     translate([-expanded, 0, 0]) SideLeft();
     translate([expanded, 0, 0]) SideRight();   
 	translate([0, 0, -expanded]) Bottom();		
-	translate([0, 0, expanded/3]) YPlateBottom();
-    translate([0, 0, expanded/2]) YPlateTop();
+
+    translate([0, 0, expanded/2]) YPlateTop(); // this takes a lot of capacity and makes the model slower
+	translate([0, 0, expanded/3]) YPlateBottom(); // this also a bit
 	
 	SmoothRods();
 	ThreadedRods();
@@ -286,16 +290,24 @@ module Fasteners() {
 	color ("White") translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin+12.5]) rotate([0,180,0]) HexagonNutHolder();
     
     // X M8 nut to keep protect the steppers and remove wiggling    
-    color (Aluminum) translate([mdfLength-mdfDepth-(7.5/2)-2*epsilon,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos])  rotate([0,90,0]) CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=7.5);
+    color (Aluminum) translate([mdfLength-mdfDepth-(7.5/2)-2*epsilon,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([45,0,0]) rotate([0,90,0]) CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=7.5);
 
-    // and the X fastener plate
-    translate([mdfLength+5,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos])  rotate([0,-90,0]) BearingFastener();
+    // and the X fastener outside plate
+    translate([mdfLength+5,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos])  rotate([0,-90,0]) BearingFastenerOutside();
+
+    // and the X fastener inside plate
+    translate([mdfLength-mdfDepth-12,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos])  rotate([0,90,0]) BearingFastenerInside();
+
     
     // Y M8 nut to keep protect the steppers and remove wiggling    
     color (Aluminum) translate([mdfLength*1/2,mdfDepth+(7.5/2)+2*epsilon,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) CouplingNut(dia=couplingNutHoleDia, width=couplingNutWidth, height=7.5);
     
-    // and the Y fastener plate
-    translate([mdfLength*1/2,-5,mdfWidth/2-stepperExtraMargin]) rotate([-90,0,0]) BearingFastener();
+    // and the Y fastener outside plate
+    translate([mdfLength*1/2,-5,mdfWidth/2-stepperExtraMargin]) rotate([-90,0,0]) BearingFastenerOutside();   
+    
+    // and the Y fastener inside plate
+    translate([mdfLength*1/2,mdfDepth+12,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) BearingFastenerInside();
+    
         
 	// hexagon bolt Y axis
 	color (Aluminum) translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		

@@ -29,6 +29,8 @@ epsilon = 0.1; // small tolerance used for CSG subtraction/addition
 
 clearance = 0.0;
 
+mdfDepth = 12.7;
+
 // screw/nut dimensions
 // http://www.fairburyfastener.com/xdims_metric_nuts.htm
 screw_dia = 4.5;	// M3 = 3 mm, M4 = 4 mm - orig. 3.4
@@ -42,7 +44,7 @@ plate_width = 35;
 screw_space_x = 22;
 screw_space_y = 22;
 
-module mount_plate() {
+module mount_plate(plate_height=plate_height) {
 	difference()
 	{
 		//bottom plate
@@ -134,19 +136,40 @@ module bearingHolePlate() {
 	}
 }
 
-module BearingFastener() {
-    mdfDepth = 12.7;
+module BearingFastenerOutside() {   
 
     difference() 
     {
         union() {
-            translate([0,0,plate_height]) rotate([0,180,0]) mount_plate();	
+            translate([0,0,plate_height]) rotate([0,180,0]) mount_plate(plate_height);	
             cylinder(r=bearingDiameter/2,h=plate_height+(mdfDepth-bearingThickness)/2);
         }
 
         translate([0,0,-epsilon]) 
-        cylinder(r=bearingInnerDia/2+2,h=plate_height+bearingThickness+2*epsilon);
+        cylinder(r=bearingInnerDia/2+1,h=plate_height+bearingThickness+2*epsilon);
     }
 }
 
-// BearingFastener()
+module BearingFastenerInside() {
+    height = 12; // plate_height;
+    
+    difference() 
+    {
+        union() {
+            translate([0,0,height]) rotate([0,180,0]) mount_plate(height);	            
+        }
+
+        translate([0,0,-epsilon]) cylinder(r=bearingInnerDia/2+1,h=height+bearingThickness+2*epsilon);
+        
+        // enough place for the nut to rotate
+        translate([0,0,4]) cylinder(r=8,h=height+bearingThickness+2*epsilon);
+        
+        // carve out
+        //translate([0,0,4+7.5]) cylinder(r=21/2+1,h=height+bearingThickness+2*epsilon);
+        
+        translate([-12/2,-20,4]) cube([12,50,height+epsilon]);
+    }
+}
+
+//BearingFastenerInside();
+//BearingFastenerOutside();
