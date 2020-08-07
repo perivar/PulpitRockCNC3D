@@ -8,7 +8,7 @@ use <linear_bearing.scad>
 use <flexible_coupling.scad>
 use <20-GT2-6 Timing Pulley.scad>
 use <HexagonNutHolder2.scad>
-use <BearingHolderPlate.scad>
+use <BearingHolderPlate2.scad>
 
 // use $fa=1 and $fs=1.5 during design phase
 // and 0.5 when done
@@ -284,6 +284,7 @@ module Fasteners() {
 	// hexagon bolt X axis
 	color (Aluminum) translate([xYCarriagePos+(zBackPlateWidth/2),500-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([90,0,0]) rotate([0,90,0]) CouplingNut();
 	
+    /*
 	// X axis hex nut coupler fastener
 	// 12.5 mm from center of coupling to plate
 	// 6 mm from top flat to plate
@@ -307,7 +308,14 @@ module Fasteners() {
     
     // and the Y fastener inside plate
     translate([mdfLength*1/2,mdfDepth+12,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) BearingFastenerInside();
-    
+    */
+
+    // the X fastener outside plate
+    translate([mdfLength+5,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin+25,xRodMidPos-13]) rotate([90,0,0]) rotate([0,-90,0]) BearingFastener();
+
+    // and the Y fastener outside plate
+    translate([mdfLength*1/2-24,-5,mdfWidth/2+8]) rotate([-90,0,0]) BearingFastener();   
+
         
 	// hexagon bolt Y axis
 	color (Aluminum) translate([mdfLength/2,yPlatePos+(yPlateHeight/2),mdfWidth/2-stepperExtraMargin]) rotate([90,90,0]) CouplingNut();		
@@ -329,10 +337,10 @@ module Bearings() {
 	color (Aluminum) {
 		
 		// 608 bearing Y axis
-		translate([mdfLength*1/2,mdfDepth,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) bearing(model=608);
+		translate([mdfLength*1/2,4,mdfWidth/2-stepperExtraMargin]) rotate([90,0,0]) bearing(model=608);
 		
 		// 608 bearing X axis
-		translate([mdfLength-mdfDepth,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
+		translate([mdfLength-4,mdfLength-(mdfHighSideRodPos)-mdfDepth+stepperExtraMargin,xRodMidPos]) rotate([0,90,0]) bearing(model=608);
 		
 								
 		
@@ -441,8 +449,8 @@ module Front() {
 				// second hole
 				rotate([90, 0, 0]) translate([mdfLength*2/3,mdfWidth/2,-mdfDepth-1]) cylinder(r=smoothRodDia/2,h=mdfDepth+2);
 
-				// middle hole
-				rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2-stepperExtraMargin,-mdfDepth-1]) cylinder(r=608OutDia/2,h=mdfDepth+2);				
+				// middle hole (add margin to allow the bearing fastener plate to accurately position the bearing)
+				rotate([90, 0, 0]) translate([mdfLength*1/2,mdfWidth/2-stepperExtraMargin,-mdfDepth-1]) cylinder(r=608OutDia/2+2,h=mdfDepth+2);				
 			}
 		}
     }	
@@ -530,9 +538,9 @@ module SideRight() {
 					// second hole
 					rotate([90, 0, 0]) translate([mdfHighSideRodPos,xRodHighPos,-mdfDepth-1])  cylinder(r=smoothRodDia/2,h=mdfDepth+2);
 
-					// middle hole
+					// middle hole (add margin to allow the bearing fastener plate to accurately position the bearing)
 					rotate([90, 0, 0]) translate([mdfHighSideRodPos-stepperExtraMargin,xRodMidPos,-mdfDepth-1]) 
-					cylinder(r=608OutDia/2,h=mdfDepth+2);										
+					cylinder(r=608OutDia/2+2,h=mdfDepth+2);										
 				}
 			}
 		}
@@ -1077,7 +1085,7 @@ module Dremel395Mount() {
     
     difference() {
         union() {
-    translate([-71.575,-66,0]) import("Dremel/Dremel_395_Prusa_i3_Mount.stl", convexity=5);
+    translate([-71.575,-66,0]) import("3DModels/Dremel/Dremel_395_Prusa_i3_Mount.stl", convexity=5);
 
     cube([width,height,thickness]);
         }
@@ -1124,36 +1132,50 @@ module SpindleExtension() {
     // extension to get the drill holder lower
     extHeight = 60;
     extWidth = 90; // 55
-    extThickness = 20;
+    extThickness = 12;
     
     
-    translate([-extWidth/2,-extThickness-13,-extHeight+30]) {
+    translate([-extWidth/2,-extThickness-5,-extHeight+30]) {
        difference() { 
-            cube([extWidth,extThickness,extHeight]);
+            union() {
+                cube([extWidth,extThickness,extHeight]);
+
+                // triangle support                
+                translate([0,0,10]) {
+        rotate([-180,0,0]) rotate([0,90,0]) Triangle(13,15,extWidth);
+    }
+
+            }
            
         // the screw holes (with indents)
-        translate([extWidth/2,extThickness+20-epsilon-extThickness-20,30]) rotate([-90,0,0]) ZSliderHolePattern();
+        //translate([extWidth/2,extThickness+20-epsilon-extThickness-40,30]) rotate([-90,0,0]) ZSliderHolePattern();
+            
+         for(i = [-12, 12], j = [18, 42]) {
+         translate([extWidth/2-i,-25,j]) rotate([-90,0,0]) cylinder(r=2.2, h=50, $fn=30);
+             
+             translate([extWidth/2-i,-10,j]) rotate([-90,0,0]) cylinder(r=5, h=10, $fn=30);
+            }
     
         // triangle removal
-            translate([-epsilon,-epsilon,extHeight+epsilon]) rotate([-90,0,0]) Triangle(50,20,extThickness+2*epsilon);
+            translate([-epsilon,-epsilon-30,extHeight+epsilon]) rotate([-90,0,0]) Triangle(50,20,extThickness+2*epsilon+30);
 
-           mirror([1,0,0]) translate([-epsilon-90,-epsilon,extHeight+epsilon]) rotate([-90,0,0]) Triangle(50,20,extThickness+2*epsilon);
+           mirror([1,0,0]) translate([-epsilon-90,-epsilon-30,extHeight+epsilon]) rotate([-90,0,0]) Triangle(50,20,extThickness+2*epsilon+30);
 
         }    
     }
     
-    // support
+    // triangle support
     translate([-extWidth/2,-extThickness-3,-extHeight+30]) {
         rotate([0,90,0]) Triangle(10,20,extWidth);
     }
-    
+        
     margin = 0;
-    
     translate([-extWidth/2,-extThickness-13,-extHeight-40]) {
 
     // spindle holder
            //translate ([5.8,49,margin]) scale([1,1,1]) rotate([90,0,0]) import("V2/spindle_aluminum_holder.stl");
 
+        translate([0,-5,0])
        difference() { 
            cube([extWidth,15,extHeight+20]);
 
@@ -1376,5 +1398,6 @@ module YPlateTopLayout() {
 //!ZSliderTopLayout();
 //!ZSliderBottomLayout();
 //!Dremel395Mount();
-//!translate([0,0,33]) rotate([90,0,0]) DremelExtension();
-//!translate([0,0,33]) rotate([90,0,0]) SpindleExtension();
+//translate([100,0,33]) rotate([90,0,0]) DremelExtension();
+
+//translate([0,0,100]) rotate([0,0,0]) SpindleExtension();

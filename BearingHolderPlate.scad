@@ -167,9 +167,12 @@ module BearingFastenerInside() {
         // carve out
         //translate([0,0,4+7.5]) cylinder(r=21/2+1,h=height+bearingThickness+2*epsilon);
         
+        //make ut so that the holder can be fitted without disassembling the axis
+        translate([-5,epsilon,-epsilon]) cube([10,plate_width/2,height+epsilon]);
+        
         translate([-12/2,-20,4]) cube([12,50,height+epsilon]);
     }
 }
 
-//BearingFastenerInside();
+BearingFastenerInside();
 //BearingFastenerOutside();
