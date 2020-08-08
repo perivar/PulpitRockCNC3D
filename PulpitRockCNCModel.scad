@@ -1142,18 +1142,18 @@ module SpindleExtension() {
 
                 // triangle support                
                 translate([0,0,10]) {
-        rotate([-180,0,0]) rotate([0,90,0]) Triangle(13,15,extWidth);
+        rotate([-180,0,0]) rotate([0,90,0]) Triangle(14,15,extWidth);
     }
 
             }
            
-        // the screw holes (with indents)
+        // the top screw holes (with indents)
         //translate([extWidth/2,extThickness+20-epsilon-extThickness-40,30]) rotate([-90,0,0]) ZSliderHolePattern();
             
          for(i = [-12, 12], j = [18, 42]) {
          translate([extWidth/2-i,-25,j]) rotate([-90,0,0]) cylinder(r=2.2, h=50, $fn=30);
              
-             translate([extWidth/2-i,-10,j]) rotate([-90,0,0]) cylinder(r=5, h=10, $fn=30);
+             translate([extWidth/2-i,-20,j]) rotate([-90,0,0]) cylinder(r=5, h=20, $fn=30);
             }
     
         // triangle removal
@@ -1165,8 +1165,8 @@ module SpindleExtension() {
     }
     
     // triangle support
-    translate([-extWidth/2,-extThickness-3,-extHeight+30]) {
-        rotate([0,90,0]) Triangle(10,20,extWidth);
+    translate([-extWidth/2,-extThickness-4,-extHeight+30]) {
+        rotate([0,90,0]) Triangle(11,20,extWidth);
     }
         
     margin = 0;
@@ -1175,23 +1175,30 @@ module SpindleExtension() {
     // spindle holder
            //translate ([5.8,49,margin]) scale([1,1,1]) rotate([90,0,0]) import("V2/spindle_aluminum_holder.stl");
 
-        translate([0,-5,0])
+        translate([0,-6,0])
        difference() { 
            cube([extWidth,15,extHeight+20]);
 
-        // spindle holes
-           translate([-epsilon,-epsilon,-epsilon]) cube([25,4,50]);
-           translate([45-11,-epsilon,-epsilon]) cube([22,4,50]);
-           translate([90-25+epsilon,-epsilon,-epsilon]) cube([25,4,50]);
+            // spindle vertical indents
+           translate([-epsilon,-epsilon,-epsilon]) cube([23,2.5,50]);
+           translate([45-11,-epsilon,-epsilon]) cube([22,2.5,50]);
+           translate([90-23+epsilon,-epsilon,-epsilon]) cube([23,2.5,50]);
            
-  // screw holes to the spindle holder         
-           translate([10,20,8+margin]) rotate([90,0,0]) cylinder(r=3, h=80);  
-  
-  translate([10,20,28+margin]) rotate([90,0,0]) cylinder(r=3, h=80);           
+           // screw holes to the spindle holder and indents
+           for (i = [10,80], j = [8, 28]) {
+               // screw hole
+               translate([i,20,j+margin]) rotate([90,0,0]) cylinder(r=3, h=80);  
+               
+               // screw head indents
+               translate([i,15+20-1.2,j+margin]) rotate([90,0,0]) cylinder(r=11/2, h=20);  
+           }
            
-translate([80,20,28+margin]) rotate([90,0,0]) cylinder(r=3, h=80);                      
+           // screw hole indents to the spindle holder         
+           //translate([10,20,8+margin]) rotate([90,0,0]) cylinder(r=3, h=80);  
+           //translate([10,20,28+margin]) rotate([90,0,0]) cylinder(r=3, h=80);
+           //translate([80,20,28+margin]) rotate([90,0,0]) cylinder(r=3, h=80);
+           //translate([80,20,8+margin]) rotate([90,0,0]) cylinder(r=3, h=80);                      
 
-translate([80,20,8+margin]) rotate([90,0,0]) cylinder(r=3, h=80);                      
 
         }         
     }         
