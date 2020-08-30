@@ -1407,4 +1407,4 @@ module YPlateTopLayout() {
 //!Dremel395Mount();
 //translate([100,0,33]) rotate([90,0,0]) DremelExtension();
 
-//translate([0,0,100]) rotate([0,0,0]) SpindleExtension();
+!translate([0,0,100]) rotate([0,0,0]) SpindleExtension();
